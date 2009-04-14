@@ -33,7 +33,19 @@ class Shovel:
 		DFile = DirtFile.read()
 		G_Yaml = yaml.load(DFile)
 		return G_Yaml
+	
+	def extractModuleYaml(self,Yaml,Module):
+		ModuleYaml = []
+		for List in Yaml:
+			for Package in List:
+				if Module in List:
+					ModuleYaml.append(List[Module])
 		
+		if not ModuleYaml:
+			return False
+		else:
+			return ModuleYaml
+				
 	def getDirtModules(self,Yaml):
 		Modules = []
 		for List in Yaml:
@@ -55,7 +67,8 @@ class Shovel:
 		Class = getattr(sys.modules[Module],Name)
 		print Class.__dict__
 		A = Class()
-		A.Main()
+		Yaml = self.extractModuleYaml(self.Yaml,Module)
+		A.NewMain(Yaml)
 				
 	def Main(self):
 		if self.dirtExists():

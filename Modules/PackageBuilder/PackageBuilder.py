@@ -23,13 +23,22 @@ class PackageBuilder(Thread):
 	def __init__(self):
 		#self.Builder       = Builder()
 		self.CoreMessaging = CoreMessaging()
-	def Main(self):
+		self.Packages = {}
+		self.PackageFeatures = {}
+	def getPackages(self,Yaml):
+		for PackageBuilder in Yaml:
+			for Package in PackageBuilder:
+				if 'package' in Package:
+					for Iter in Package['package']:
+						if 'name' in Iter:
+							self.Packages[Iter['name']] = Package['package']
+	def NewMain(self,Yaml):
+		self.getPackages(Yaml)
+		
+	def Main(self,G_Yaml):
 		if os.path.exists("dirt"):
 			D = DispatchYaml()
 			PackageFinish = []
-			DirtFile = open('dirt', 'r')
-			DFile = DirtFile.read()
-			G_Yaml = yaml.load(DFile)
 			PackageCounter = 0
 			#D.GetFeatures(G_Yaml,"ffmpeg")
 			for Dirt in G_Yaml:
