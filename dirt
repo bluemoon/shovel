@@ -1,22 +1,23 @@
 ---
-- package: 
-    - name: ffmpeg
-      filename: ffmpeg-trunk
-      features: ["download:svn build:make"]
-      version: svn
-      download: svn://svn.ffmpeg.org/ffmpeg/trunk
-      patches: []
-      configopts: "--with-gpl"
+- PackageBuilder:
+    - package:
+        - name: ffmpeg
+          filename: ffmpeg-trunk
+          features: ["download:svn build:make"]
+          version: svn
+          download: svn://svn.ffmpeg.org/ffmpeg/trunk
+          patches: []
+          configopts: "--with-gpl"
       
-- package:
-    - name: xine-lib
-      filename: xine-lib-1.1.16.2.tar.bz2
-      features: ["download:http extract:tar build:make"]
-      dependencies:
-          - pkg-config
-          - ffmpeg
-      version: 1.1.16.2
-      download: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
-      configopts: "--without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3 --enable-coreaudio --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest"
-      patches:
-          - "patches/xine-lib-1.1.16.2-osx.patch"
+    - package:
+        - name: xine-lib
+          filename: xine-lib-1.1.16.2.tar.bz2
+          features: ["download:http extract:tar build:make"]
+          dependencies:
+              - pkg-config
+              - ffmpeg
+          version: 1.1.16.2
+          download: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
+          configopts: "--without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3 --enable-coreaudio --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest"
+          patches:
+              - "patches/xine-lib-1.1.16.2-osx.patch"
