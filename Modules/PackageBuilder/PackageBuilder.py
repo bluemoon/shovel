@@ -21,20 +21,47 @@ CoreDependencies = dict(
 
 class PackageBuilder(Thread):
 	def __init__(self):
-		#self.Builder       = Builder()
 		self.CoreMessaging = CoreMessaging()
 		self.Packages = {}
 		self.PackageFeatures = {}
+		
 	def getPackages(self,Yaml):
 		for PackageBuilder in Yaml:
 			for Package in PackageBuilder:
 				if 'package' in Package:
 					for Iter in Package['package']:
 						if 'name' in Iter:
-							self.Packages[Iter['name']] = Package['package']
+							if Iter['name'] not in self.Packages:
+								self.Packages[Iter['name']] = Package['package']
+								#print self.Packages
+	
+	def getAllFeatures(self):
+		"""docstring for getFeatures"""
+		for Keys in self.Packages.keys():
+			self.PackageFeatures[Keys] = []
+			for List in self.Packages[Keys]:
+				for Split in List['features'][0].split(" "):
+					 self.PackageFeatures[Keys].append(Split.split(":"))
+		#print self.PackageFeatures
+			
 	def NewMain(self,Yaml):
 		self.getPackages(Yaml)
-		
+		self.getAllFeatures()
+		PackageCounter = 0
+		for Keys in self.PackageFeatures.keys():
+			for List in self.PackageFeatures[Keys]:
+				if List[0] == "download":
+					for Package in self.Packages[Keys]:
+						self.Downloader = Downloader(List[1],Package['download'],Package['filename'],Package['name'])
+						PackageCounter += 1
+						self.Downloader.start()
+						
+					Message = self.CoreMessaging.ReceiveCheck("downloader")
+					if Message != False:
+						PackageCounter = PackageCounter -1
+						PackageFinish.append(Message.split(":")[0])
+						print Message.split(":")[0] + ': Finished!'
+						
 	def Main(self,G_Yaml):
 		if os.path.exists("dirt"):
 			D = DispatchYaml()
@@ -144,12 +171,12 @@ class Downloader(Thread):
 
 	def svn(self,Arguments,Filename,Name):
 		if not os.path.isdir(Filename):
-			svnBuild = 'svn co ' + Arguments + " tmp/" + Filename
+			svnBuild = '/usr/bin/env svn co ' + Arguments + " tmp/" + Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=None)
 			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done') 
 		else:
-			svnBuild = 'svn up tmp/' + Filename
+			svnBuild = '/usr/bin/env svn up tmp/' + Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=subprocess.PIPE)
 			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done') 

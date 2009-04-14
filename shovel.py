@@ -65,7 +65,7 @@ class Shovel:
 			
 	def loadDirtModClass(self,Module,Name):
 		Class = getattr(sys.modules[Module],Name)
-		print Class.__dict__
+		#print Class.__dict__
 		A = Class()
 		Yaml = self.extractModuleYaml(self.Yaml,Module)
 		A.NewMain(Yaml)
