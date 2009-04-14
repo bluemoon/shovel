@@ -7,6 +7,10 @@ from threading import Thread
 sys.path.append('Core')
 from Messaging import CoreMessaging
 
+### For the term coloring ###
+TermGreen = "\033[1;32m"
+TermEnd   = "\033[1;m"
+
 CoreFeatureMap = { "download" : {"file" : "downloader", "class" : "Downloader"},
 				   "extract"  : {"file" : "extractor" , "class" : "Extractor"},
 				   "patch"	  : {"file" : "patcher"   , "class" : "Patcher"},
@@ -33,7 +37,6 @@ class PackageBuilder(Thread):
 						if 'name' in Iter:
 							if Iter['name'] not in self.Packages:
 								self.Packages[Iter['name']] = Package['package']
-								#print self.Packages
 	
 	def getAllFeatures(self):
 		"""docstring for getFeatures"""
@@ -42,7 +45,6 @@ class PackageBuilder(Thread):
 			for List in self.Packages[Keys]:
 				for Split in List['features'][0].split(" "):
 					 self.PackageFeatures[Keys].append(Split.split(":"))
-		#print self.PackageFeatures
 			
 	def NewMain(self,Yaml):
 		self.getPackages(Yaml)
@@ -59,14 +61,38 @@ class PackageBuilder(Thread):
 					Message = self.CoreMessaging.ReceiveCheck("downloader")
 					if Message != False:
 						PackageCounter = PackageCounter -1
-						PackageFinish.append(Message.split(":")[0])
 						print Message.split(":")[0] + ': Finished!'
+		
+		while PackageCounter != 0:
+			Message = self.CoreMessaging.Receive("downloader")
+			PackageCounter = PackageCounter -1
+			print Message.split(":")[0] + ': downloaded ['+TermGreen+'ok'+TermEnd+']'
+			
+		for Keys in self.PackageFeatures.keys():
+			for List in self.PackageFeatures[Keys]:
+				for Package in self.Packages[Keys]:
+					if List[0] == "extract":
+						print Package['name'] + ': extracted ['+TermGreen+'ok'+TermEnd+']'
+						self.Extractor = Extractor(List[1],Package['filename'])
+						self.Extractor.run()
 						
+		for Keys in self.PackageFeatures.keys():
+			for List in self.PackageFeatures[Keys]:
+				for Package in self.Packages[Keys]:
+					if List[0] == "build":
+						self.Builder = Builder(List[1],Package['filename'])
+						self.Builder.run()
+						print Package['name'] + ': Building ['+TermGreen+'ok'+TermEnd+']'
+							
+		
+		
+			
 	def Main(self,G_Yaml):
 		if os.path.exists("dirt"):
 			D = DispatchYaml()
 			PackageFinish = []
 			PackageCounter = 0
+			WaitingFlag = 0
 			#D.GetFeatures(G_Yaml,"ffmpeg")
 			for Dirt in G_Yaml:
 				for Package in Dirt['package']:
@@ -85,6 +111,7 @@ class PackageBuilder(Thread):
 								PackageCounter = PackageCounter -1
 								PackageFinish.append(Message.split(":")[0])
 								print Message.split(":")[0] + ': Finished!'
+					
                         
 			while PackageCounter != 0:
 				Message = self.CoreMessaging.Receive("downloader")
@@ -127,13 +154,30 @@ class PackageBuilder(Thread):
 								print 'Building: ' + Package['name'] + ' using [' + Split[1] + ']'
 								#self.Extractor = Extractor(Split[1],Package['filename'])
 								#self.Extractor.run()
-class Builder(Thread):
-    def run(self,Command,Arguments):
-        Attr = getattr(self,Command)
-        Attr()
-    def make(self):
-        pass
 
+
+class Builder:
+	def __init__(self,Command,Arguments):
+		self.Filename = Arguments
+		self.Command = Command
+	def run(self):
+		Attr = getattr(self,self.Command)
+		Attr(self.Filename)
+	def make(self,Filename):
+		CWD = os.getcwd()
+		if 'tar' or 'gz' or 'bz2' in Filename.split("."):
+			tmp = Filename.split(".")[:-2]
+			File =  ".".join(tmp)
+		else:
+			File = Filename
+			
+		os.chdir('tmp/'+File)
+		p = subprocess.Popen('./configure',shell=True,stdout=None)
+		p.wait()
+		o = subprocess.Popen('make',shell=True,stdout=None)
+		o.wait()
+		os.chdir(CWD)
+		
 class Downloader(Thread):
 	def __init__(self,Command,Arguments,Filename,Name):
 		self.Command = Command
