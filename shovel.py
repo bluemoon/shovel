@@ -49,9 +49,8 @@ class Shovel:
 	def getDirtModules(self,Yaml):
 		Modules = []
 		for List in Yaml:
-			for Package in List:
-				if Package not in Modules:
-					Modules.append(Package)
+			if List not in Modules:
+				Modules.append(List)
 		if Modules:
 			return Modules
 		else:
@@ -73,8 +72,14 @@ class Shovel:
 	def Main(self):
 		if self.dirtExists():
 			self.Yaml = self.loadDirt()
+			#print self.Yaml
 			self.Modules = self.getDirtModules(self.Yaml)
-			self.loadDirtModules(self.Modules)
+			for Module in self.Modules:
+				for Arg in sys.argv[1:]:
+					if Module == Arg: 
+						print "Hi!"
+			
+			#self.loadDirtModules(self.Modules)
 		
 if __name__ == "__main__":
     M = Shovel()

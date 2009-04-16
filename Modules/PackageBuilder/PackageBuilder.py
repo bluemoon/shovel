@@ -65,7 +65,7 @@ class PackageBuilder(Thread):
 		
 		while PackageCounter != 0:
 			Message = self.CoreMessaging.Receive("downloader")
-			PackageCounter = PackageCounter -1
+			PackageCounter = PackageCounter - 1
 			print Message.split(":")[0] + ': downloaded ['+TermGreen+'ok'+TermEnd+']'
 			
 		for Keys in self.PackageFeatures.keys():

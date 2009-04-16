@@ -1,23 +1,43 @@
----
-- PackageBuilder:
-    - package:
-        - name: ffmpeg
-          filename: ffmpeg-trunk
-          features: ["download:svn build:make"]
-          version: svn
-          download: svn://svn.ffmpeg.org/ffmpeg/trunk
-          patches: []
-          configopts: "--with-gpl"
-      
-    - package:
-        - name: xine-lib
-          filename: xine-lib-1.1.16.2.tar.bz2
-          features: ["download:http extract:tar build:make"]
-          dependencies:
-              - pkg-config
-              - ffmpeg
-          version: 1.1.16.2
-          download: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
-          configopts: "--without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3 --enable-coreaudio --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest"
-          patches:
-              - "patches/xine-lib-1.1.16.2-osx.patch"
+pre.flight:
+    ffmpeg:
+        use: shovel.packagebuilder
+        dependencies:
+            use: shovel.systools.pkgconfig
+        download:
+            use: shovel.downloader.svn
+            link: svn://svn.ffmpeg.org/ffmpeg/trunk
+            as: ffmpeg-trunk
+        patcher:
+            use: shovel.patcher.patch
+            patches:
+                - patches/xine-lib-1.1.16.2-osx.patch
+            
+        build:
+            use: shovel.builder.make
+            configure: []
+        
+    xine-lib:
+        use: shovel.packagebuilder
+        dependencies:
+            - ffmpeg
+        download:
+            use: shovel.downloader.http
+            link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
+        extract:
+            use: shovel.extractor.tar.bz2
+        build:
+            use: shovel.builder.make
+            configure: []
+            
+build:
+    python:
+       use: shovel.python.glob
+       glob: src 
+       use: shovel.python.pyrex
+       pyrex: src/pyrex
+
+dist:
+    sign:
+        use: shovel.enc.pgp
+    upload:
+        use: shovel.uploader.svn
