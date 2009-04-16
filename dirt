@@ -24,7 +24,7 @@ pre.flight:
             use: shovel.downloader.http
             link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
         extract:
-            use: shovel.extractor.tar.bz2
+            use: shovel.extractor.tar
         build:
             use: shovel.builder.make
             configure: []

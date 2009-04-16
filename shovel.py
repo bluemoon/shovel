@@ -55,29 +55,59 @@ class Shovel:
 			return Modules
 		else:
 			return False
+	def getDirtSubModule(self,Yaml,Module):
+		Md = {}
+		for Mod in Yaml[Module]:
+			Md[Mod] = Yaml[Module][Mod]
+		if Md:
+			return Md
+		else:
+			return False
 	
 	def loadDirtModules(self,Modules):
 		for Mod in Modules:
 			#sys.path.append('Modules')
 			#print Mod
 			self.loadDirtModClass(Mod,Mod)
-			
+		
 	def loadDirtModClass(self,Module,Name):
 		Class = getattr(sys.modules[Module],Name)
 		#print Class.__dict__
 		A = Class()
 		Yaml = self.extractModuleYaml(self.Yaml,Module)
 		A.NewMain(Yaml)
-				
+	def parseUseFlags(self,Key):
+		return Key.split('.')
+	def checkKeyList(self,Key):
+		return True
+	def createModuleInstance(self,Module):
+		return Module
+	def KeyChecker(self,Yaml):
+		for Keys in Yaml.keys():
+			if Keys == 'use':
+				if self.checkKeyList(Yaml[Keys]):
+					print self.parseUseFlags(Yaml[Keys])
+					self.createModuleInstance(Yaml[Keys])
+			else:
+				if hasattr(Yaml[Keys], 'keys'):
+					for SubKeys in Yaml[Keys].keys():
+						if SubKeys == 'use':
+							if self.checkKeyList(Yaml[Keys][SubKeys]):
+								print self.parseUseFlags(Yaml[Keys][SubKeys])
+								Instance = self.createModuleInstance(Yaml[Keys][SubKeys])
+		
 	def Main(self):
+		self.Runner = {}
 		if self.dirtExists():
 			self.Yaml = self.loadDirt()
-			#print self.Yaml
 			self.Modules = self.getDirtModules(self.Yaml)
 			for Module in self.Modules:
 				for Arg in sys.argv[1:]:
-					if Module == Arg: 
-						print "Hi!"
+					if Module == Arg:
+						self.Runner[Arg] = self.getDirtSubModule(self.Yaml,Module)
+						for I in self.getDirtModules(self.Runner[Arg]):
+							self.KeyChecker(self.getDirtSubModule(self.Runner[Arg],I))
+						
 			
 			#self.loadDirtModules(self.Modules)
 		
