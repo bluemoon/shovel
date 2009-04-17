@@ -38,30 +38,68 @@ class Dirt(object):
 		DFile = DirtFile.read()
 		G_Yaml = yaml.load(DFile)
 		return G_Yaml
+	
 class Blocks(object):
 	def ParseBlock(self,Yaml,X=None):
-		print Yaml
-		if X:
-			if hasattr(Yaml, 'keys'):
-				print X
-				for Blocks in Yaml.keys()[X]:
-					X = Blocks
-					self.ParseBlock(Yaml.keys(),X)
-		else:
+		Block = []
+		if hasattr(Yaml, 'keys'):
 			for Blocks in Yaml.keys():
-				X = Blocks
-				self.ParseBlock(Yaml.keys(),X)
-				
+			 	Block.append(Blocks)
+			
+		return Block
 
-class FuckYou(object):
+class Features(object):
+	pass
+
+class ShovelNew(object):
 	def __init__(self):
 		self.Blocks = Blocks()
 		self.Dirt = Dirt()
+		self.Config = Configurator()
+		self.Commands = []
+	def CommandOutOfBlock(self,Block):
+		for B in Block:
+			self.Commands.append(B)
+	
+	def runArgV(self):
+		for ArgV in sys.argv[1:]:
+			if ArgV in self.Commands:
+				self.runBlock(ArgV)
+	def checkArgV(self):
+		Arg = 0
+		for ArgV in sys.argv[1:]:
+			Arg += 1
+		if Arg == 0:
+			return False
+		else:
+			return True
+	def runBlock(self,Block):
+		for Runner in self.Blocks.ParseBlock(self.DirtY[Block]):
+			for SubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner]):
+				if SubRunner == 'use':
+					Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner])
+					if not Feature:
+						print "The feature " + self.DirtY[Block][Runner][SubRunner] + " is not available"
+				for uberSubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]):
+					if uberSubRunner == 'use':
+						Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner][uberSubRunner])
+						if not Feature:
+							print "The feature " + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + " is not available"
+					else:
+						pass
+						
+	def displayHelp(self):
+		print self.Blocks.ParseBlock(self.DirtY)
+			
 	def Main(self):
 		if self.Dirt.dirtExists():
-			Dirt = self.Dirt.loadDirt()
-			self.Blocks.ParseBlock(Dirt)
-		
+			self.DirtY = self.Dirt.loadDirt()
+			BaseBlock = self.Blocks.ParseBlock(self.DirtY)
+			self.CommandOutOfBlock(BaseBlock)
+			if self.checkArgV():
+				self.runArgV()
+			else:
+				self.displayHelp()
 		
 class Shovel:
 	"""docstring for Shovel"""
@@ -162,5 +200,5 @@ class Shovel:
 			#self.loadDirtModules(self.Modules)
 		
 if __name__ == "__main__":
-    M = Shovel()
+    M = ShovelNew()
     M.Main()

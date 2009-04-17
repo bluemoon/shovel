@@ -16,7 +16,10 @@ class Configurator(object):
 	def deleteModuleLoaded(self):
 		pass
 	def getFeature(self,Feature):
-		pass
+		if Feature in self.Features:
+			return True
+		else:
+			return False
 	def deleteFeature(self,Feature):
 		pass
 	def putFeature(self,Fture):
