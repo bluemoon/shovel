@@ -5,6 +5,7 @@ import yaml
 import threading
 import imp
 import re
+import fnmatch
 from threading import Thread
 
 sys.path.append('Core')
@@ -27,6 +28,12 @@ from Loader import CoreHandler
 #  Config for each package linked to its feature list
 #  Module list linked with the package
 #  Instance list linked with the package
+# 
+# Plugins:
+#  1. So the plugin loader will recurse the directory and load all of the plugins.
+#  2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
+
+
 class Dirt(object):
 	def dirtExists(self):
 		if os.path.exists("dirt"):
@@ -49,13 +56,39 @@ class Blocks(object):
 		return Block
 
 class Features(object):
-	pass
+	def SplitByClass(self,Search):
+		Temp = Search.split(".")
+		return ".".join(Temp[:2])
+	def RunFeature(self,Feature):
+		pass
+class Plugins:
+	def __init__(self):
+		self.Loader = CoreHandler()
+		self.Config = Configurator()
+				
+	def LoadAll(self,Folder=None):
+		def locate(pattern, root=os.getcwd()):
+			for path, dirs, files in os.walk(root):
+				for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
+					yield filename
+		for Py in locate("*.py","Plugins"):
+			self.LoadAbsolute(Py)
+	def LoadAbsolute(self,AbsPath):
+		AbsSplit = AbsPath.split('/')
+		File = AbsSplit[-1:]
+		nFile = File[0].split(".") 
+		self.Load(nFile[0],"/".join(AbsSplit[:-1]))
+	def Load(self,Name=None,Folder=None):
+		self.Config.putFeature('shovel.'+Name.lower())
+		self.Loader.Load(Name,Folder)
 
 class ShovelNew(object):
 	def __init__(self):
 		self.Blocks = Blocks()
 		self.Dirt = Dirt()
 		self.Config = Configurator()
+		self.Features = Features()
+		self.Plugins = Plugins()
 		self.Commands = []
 	def CommandOutOfBlock(self,Block):
 		for B in Block:
@@ -77,14 +110,21 @@ class ShovelNew(object):
 		for Runner in self.Blocks.ParseBlock(self.DirtY[Block]):
 			for SubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner]):
 				if SubRunner == 'use':
-					Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner])
+					Search = self.Features.SplitByClass(self.DirtY[Block][Runner][SubRunner])
+					Feature = self.Config.getFeature(Search)
 					if not Feature:
 						print "The feature " + self.DirtY[Block][Runner][SubRunner] + " is not available"
+					else:
+						self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
+						
 				for uberSubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]):
 					if uberSubRunner == 'use':
-						Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner][uberSubRunner])
+						Search = self.Features.SplitByClass(self.DirtY[Block][Runner][SubRunner][uberSubRunner])
+						Feature = self.Config.getFeature(Search)
 						if not Feature:
 							print "The feature " + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + " is not available"
+						else:
+							self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
 					else:
 						pass
 						
@@ -92,6 +132,7 @@ class ShovelNew(object):
 		print self.Blocks.ParseBlock(self.DirtY)
 			
 	def Main(self):
+		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():
 			self.DirtY = self.Dirt.loadDirt()
 			BaseBlock = self.Blocks.ParseBlock(self.DirtY)

@@ -2,7 +2,7 @@ from threading import Thread
 from Configurator import feature
 
 class Downloader(Thread):
-	@feature('shovel.downloader')
+	#@feature('shovel.downloader')
 	def __init__(self,Command,Arguments,Filename,Name):
 		self.Command = Command
 		self.Arguments = Arguments
