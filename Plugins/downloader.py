@@ -2,7 +2,7 @@ from threading import Thread
 from Configurator import feature
 
 class Downloader(Thread):
-	#@feature('shovel.downloader')
+	@feature
 	def __init__(self,Command,Arguments,Filename,Name):
 		self.Command = Command
 		self.Arguments = Arguments
@@ -10,7 +10,7 @@ class Downloader(Thread):
 		self.Name     = Name
 		self.CoreMessaging = CoreMessaging()
 		Thread.__init__(self)
-        
+		
 	def run(self):
 		Attr = getattr(self,self.Command)
 		Attr(self.Arguments,self.Filename,self.Name)
@@ -47,6 +47,16 @@ class Downloader(Thread):
 			svnBuild = '/usr/bin/env svn up tmp/' + Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=subprocess.PIPE)
 			p.wait()
+			self.CoreMessaging.Send("downloader",Name + ':done')
+			 
+	def git(self,Arguments,Filename,Name):
+		if not os.path.isdir(Filename):
+			gitBuild = '/usr/bin/env git clone ' + Arguments + " tmp/" + Filename
+			p = subprocess.Popen(gitBuild,shell=True,stdout=None)
+			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done') 
-        
-        
+		else:
+			gitBuild = '/usr/bin/env git pull tmp/' + Filename
+			p = subprocess.Popen(gitBuild,shell=True,stdout=subprocess.PIPE)
+			p.wait()
+			self.CoreMessaging.Send("downloader",Name + ':done')

@@ -17,8 +17,9 @@ class Configurator:
 			for FindModule in self.Modules.keys():
 				if FindModule == Module:
 					return Module
-		def putModuleLoaded(self,Module,Handle):
-			pass
+		def putModuleLoaded(self,Module):
+			self.Modules[Module] = []
+			return self.Modules
 		def deleteModuleLoaded(self):
 			pass
 		def getFeature(self,Feature):
@@ -44,11 +45,12 @@ class Configurator:
 	def __setattr__(self, attr, value):
 		return setattr(self.__instance, attr, value)	
 
-class feature(object):
-	def __init__(self,Feature):
+def feature(args):
 		#self.putFeature(Feature)
-		pass
-	def __call__(self,Feature):
-		pass
+		def _feature(*kw):
+			print kw
+			return kw
+		return _feature
+		
 	
 		

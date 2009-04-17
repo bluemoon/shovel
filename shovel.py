@@ -15,7 +15,7 @@ from PackageBuilder import PackageBuilder
 #### From Core ####
 from Messaging  import CoreMessaging
 from Terminal import TermGreen,TermEnd
-from Configurator import Configurator
+from Configurator import Configurator,feature
 from Loader import CoreHandler
 
 # Data Model:
@@ -30,7 +30,7 @@ from Loader import CoreHandler
 #  Instance list linked with the package
 # 
 # Plugins:
-#  1. So the plugin loader will recurse the directory and load all of the plugins.
+# [x] 1. So the plugin loader will recurse the directory and load all of the plugins.
 #  2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
 
 
@@ -77,10 +77,11 @@ class Plugins:
 		AbsSplit = AbsPath.split('/')
 		File = AbsSplit[-1:]
 		nFile = File[0].split(".") 
-		self.Load(nFile[0],"/".join(AbsSplit[:-1]))
+		Module = self.Load(nFile[0],"/".join(AbsSplit[:-1]))
+		self.Config.putModuleLoaded(nFile[0])
 	def Load(self,Name=None,Folder=None):
 		self.Config.putFeature('shovel.'+Name.lower())
-		self.Loader.Load(Name,Folder)
+		return self.Loader.Load(Name,Folder)
 
 class ShovelNew(object):
 	def __init__(self):
@@ -115,6 +116,7 @@ class ShovelNew(object):
 					if not Feature:
 						print "The feature " + self.DirtY[Block][Runner][SubRunner] + " is not available"
 					else:
+						print "Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner] + TermEnd
 						self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
 						
 				for uberSubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]):
@@ -124,6 +126,7 @@ class ShovelNew(object):
 						if not Feature:
 							print "The feature " + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + " is not available"
 						else:
+							print "Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + TermEnd
 							self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
 					else:
 						pass
