@@ -30,7 +30,7 @@ pre.flight:
         build:
             use: shovel.builder.make
             folder: xine-lib-1.1.16.2
-            configure: []
+            configure: ["--with-ffmpeg=../ffmpeg-trunk/"]
             
 build:
     python:
