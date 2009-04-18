@@ -26,9 +26,7 @@ class builder:
 		
 		if Configure:
 			print "[make] Configure Options: " + " ".join(Configure)
-			p = subprocess.Popen('./configure ' + " ".join(Configure),shell=True,stdout=subprocess.PIPE)
-			while p.stdout.readline():
-				pass
+			p = subprocess.Popen('./configure ' + " ".join(Configure),shell=True,stdout=None)
 			p.wait()
 		else:
 			p = subprocess.Popen('./configure',shell=True,stdout=subprocess.PIPE)
@@ -51,4 +49,7 @@ class builder:
 				print read[:-1]
 			
 		o.wait()
+		Debug("Build Return Code: %d" % (o.returncode),"INFO")
+		if o.returncode > 0:
+			raise Exception('BuildError')
 		os.chdir(CWD)
