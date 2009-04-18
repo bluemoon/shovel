@@ -23,10 +23,12 @@ class Configurator:
 		def deleteModuleLoaded(self):
 			pass
 		def getFeature(self,Feature):
-			if Feature in self.Features:
-				return True
-			else:
-				return False
+			for F in self.Features:
+				#print F
+				#print Feature
+				if F == Feature:
+					return True
+					
 		def deleteFeature(self,Feature):
 			pass
 		def putFeature(self,Fture):

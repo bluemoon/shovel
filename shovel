@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ### System Includes ###
 import sys
 import os
@@ -6,6 +7,8 @@ import threading
 import imp
 import re
 import fnmatch
+import time
+import inspect
 from threading import Thread
 
 sys.path.append('Core')
@@ -14,9 +17,11 @@ sys.path.append('Plugins/PackageBuilder')
 from PackageBuilder import PackageBuilder
 #### From Core ####
 from Messaging  import CoreMessaging
-from Terminal import TermGreen,TermEnd
+from Terminal import TermGreen,TermOrange,TermEnd
 from Configurator import Configurator,feature
 from Loader import CoreHandler
+from Debug import Debug,SetDebug
+
 
 # Data Model:
 #  {"package": 
@@ -31,9 +36,15 @@ from Loader import CoreHandler
 # 
 # Plugins:
 # [x] 1. So the plugin loader will recurse the directory and load all of the plugins.
+#  Requires class instance ->
 #  2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
+#
+# Any code that has 
+#### FROZEN ####
+# has been feature frozen and will not be changed
 
 
+#### FROZEN ####
 class Dirt(object):
 	def dirtExists(self):
 		if os.path.exists("dirt"):
@@ -45,7 +56,8 @@ class Dirt(object):
 		DFile = DirtFile.read()
 		G_Yaml = yaml.load(DFile)
 		return G_Yaml
-	
+#### END FROZEN ####
+
 class Blocks(object):
 	def ParseBlock(self,Yaml,X=None):
 		Block = []
@@ -53,14 +65,39 @@ class Blocks(object):
 			for Blocks in Yaml.keys():
 			 	Block.append(Blocks)
 			
+		Block.reverse()
 		return Block
 
 class Features(object):
+	def __init__(self):
+		self.Loader = CoreHandler()
+		self.Config = Configurator()
 	def SplitByClass(self,Search):
 		Temp = Search.split(".")
 		return ".".join(Temp[:2])
-	def RunFeature(self,Feature):
-		pass
+	def SplitClass(self,Search):
+		Temp = Search.split(".")
+		return Temp[1:2][0]
+	def SplitFunction(self,Search):
+		Temp = Search.split(".")
+		return Temp[-1:][0]
+	def RunFeature(self,Feature,Name):
+		if hasattr(Feature, 'keys'):
+			for Use in Feature.keys():
+				if Use == 'use':
+					Module = self.Loader.GetModule(self.SplitClass(Feature[Use]))
+					if hasattr(Module,self.SplitClass(Feature[Use])):
+						self.Config.PutConfig(Name,Feature)
+						#Debug(self.Config.GetConfig(Name),"DEBUG")
+						DynamicClass = getattr(Module,self.SplitClass(Feature[Use]))
+						DyC = DynamicClass()
+						DynamicFunction = getattr(DynamicClass,self.SplitFunction(Feature[Use]))
+						DyF = DynamicFunction(DyC,Name)
+						
+		else:
+			#Debug(self.SplitClass(Feature),"DEBUG")
+			pass
+			
 class Plugins:
 	def __init__(self):
 		self.Loader = CoreHandler()
@@ -73,32 +110,54 @@ class Plugins:
 					yield filename
 		for Py in locate("*.py","Plugins"):
 			self.LoadAbsolute(Py)
+			
 	def LoadAbsolute(self,AbsPath):
 		AbsSplit = AbsPath.split('/')
 		File = AbsSplit[-1:]
 		nFile = File[0].split(".") 
 		Module = self.Load(nFile[0],"/".join(AbsSplit[:-1]))
 		self.Config.putModuleLoaded(nFile[0])
+		
 	def Load(self,Name=None,Folder=None):
 		self.Config.putFeature('shovel.'+Name.lower())
-		return self.Loader.Load(Name,Folder)
-
+		self.Loader.Load(Name,Folder)
+		Loader = self.Loader.GetModule(Name)
+   		try:
+			for Function in Loader.__dict__[Name].__dict__:
+				if Function[0:2] != '__':
+					self.Config.putFeature('shovel.'+Name.lower()+"." +Function)
+					Debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,"INFO")
+		except AttributeError:
+			pass
+		
 class ShovelNew(object):
 	def __init__(self):
-		self.Blocks = Blocks()
-		self.Dirt = Dirt()
-		self.Config = Configurator()
+		self.Blocks   = Blocks()
+		self.Dirt     = Dirt()
+		self.Config   = Configurator()
 		self.Features = Features()
-		self.Plugins = Plugins()
+		self.Plugins  = Plugins()
 		self.Commands = []
 	def CommandOutOfBlock(self,Block):
 		for B in Block:
 			self.Commands.append(B)
 	
+	def addArgVdebug(self):
+		global __Debug
+		__Debug = ""
+		for ArgV in sys.argv[1:]:
+			if ArgV == '-v':
+				__Debug = "WARNING"
+			if ArgV == '-vv':
+				__Debug = "INFO"
+			if ArgV == '-vvv':
+				__Debug = "DEBUG"
+				
 	def runArgV(self):
 		for ArgV in sys.argv[1:]:
 			if ArgV in self.Commands:
 				self.runBlock(ArgV)
+
 	def checkArgV(self):
 		Arg = 0
 		for ArgV in sys.argv[1:]:
@@ -107,34 +166,41 @@ class ShovelNew(object):
 			return False
 		else:
 			return True
+			
 	def runBlock(self,Block):
 		for Runner in self.Blocks.ParseBlock(self.DirtY[Block]):
-			for SubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner]):
+			sub = self.Blocks.ParseBlock(self.DirtY[Block][Runner])
+			sub.reverse()
+			for SubRunner in sub:
 				if SubRunner == 'use':
-					Search = self.Features.SplitByClass(self.DirtY[Block][Runner][SubRunner])
-					Feature = self.Config.getFeature(Search)
+					Name = self.Features.SplitClass(self.DirtY[Block][Runner][SubRunner])
+					Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner])
 					if not Feature:
-						print "The feature " + self.DirtY[Block][Runner][SubRunner] + " is not available"
+						Debug("Feature " +TermOrange + self.DirtY[Block][Runner][SubRunner] + TermEnd + " is not available","WARNING")
 					else:
-						print "Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner] + TermEnd
-						self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
-						
+						Debug("Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner] + TermEnd,"INFO")
+						self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
+				#Debug(self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]),"DEBUG")	
 				for uberSubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]):
 					if uberSubRunner == 'use':
-						Search = self.Features.SplitByClass(self.DirtY[Block][Runner][SubRunner][uberSubRunner])
-						Feature = self.Config.getFeature(Search)
+						Name = self.Features.SplitClass(self.DirtY[Block][Runner][SubRunner][uberSubRunner])
+						Feature = self.Config.getFeature(self.DirtY[Block][Runner][SubRunner]['use'])
 						if not Feature:
-							print "The feature " + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + " is not available"
+							Debug("Feature "+ TermOrange+ self.DirtY[Block][Runner][SubRunner][uberSubRunner]+TermEnd + " is not available","WARNING")
 						else:
-							print "Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + TermEnd
-							self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner])
+							Debug("Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + TermEnd,"INFO")
+							self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
 					else:
 						pass
 						
 	def displayHelp(self):
-		print self.Blocks.ParseBlock(self.DirtY)
+		MainBlocks = self.Blocks.ParseBlock(self.DirtY)
+		print "These are the commands available: " 
+		print " ".join(MainBlocks)
 			
 	def Main(self):
+		self.addArgVdebug()
+		SetDebug(_ShovelNew__Debug)
 		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():
 			self.DirtY = self.Dirt.loadDirt()
@@ -240,9 +306,14 @@ class Shovel:
 							self.KeyChecker(self.getDirtSubModule(self.Runner[Arg],I))
 							print I
 						
-			#print self.Configure.GetConfig("ffmpeg")
-			#self.loadDirtModules(self.Modules)
+	#print self.Configure.GetConfig("ffmpeg")
+	#self.loadDirtModules(self.Modules)
+
+
+	
+
 		
 if __name__ == "__main__":
-    M = ShovelNew()
-    M.Main()
+	
+	M = ShovelNew()
+	M.Main()
