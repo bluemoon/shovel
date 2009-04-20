@@ -12,11 +12,7 @@ class downloader(Thread):
 		self.Config = Configurator()
 		self.CoreMessaging = CoreMessaging()
 		Thread.__init__(self)
-		
-	def run(self):
-		Attr = getattr(self,self.Command)
-		Attr(self.Arguments,self.Filename,self.Name)
-        
+
 	def http(self,Name):
 		Config = self.Config.GetConfig(Name)
 		Debug(Config["link"],"DEBUG")

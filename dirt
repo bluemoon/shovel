@@ -1,36 +1,39 @@
+---
+# Base Block
 pre.flight:
+    # Package Block
     ffmpeg:
-        use: shovel.packagebuilder
-        dependencies:
-            use: shovel.systools.pkgconfig
-        download:
-            use: shovel.downloader.svn
-            link: svn://svn.ffmpeg.org/ffmpeg/trunk
-            as: ffmpeg-trunk
-        patcher:
-            use: shovel.patcher.patch
-            patches:
-                - patches/xine-lib-1.1.16.2-osx.patch
-            
-        build:
+         - use: shovel.packagebuilder
+         - dependencies:
+               use: shovel.systools.pkgconfig
+         - download:
+            use: shovel.downloader.http
+            link: http://ffmpeg.mplayerhq.hu/releases/ffmpeg-0.5.tar.bz2
+         - extract:
+            use: shovel.extractor.tar
+            file: ffmpeg-0.5.tar.bz2
+         - build:
             use: shovel.builder.make
-            folder: ffmpeg-trunk
+            folder: ffmpeg-0.5
             configure: []
         
     xine-lib:
-        use: shovel.packagebuilder
-        dependencies:
+        - use: shovel.packagebuilder
+        - dependencies:
             - ffmpeg
-        download:
+        - download:
             use: shovel.downloader.http
             link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.2.tar.bz2
-        extract:
+        - extract:
             use: shovel.extractor.tar
             file: xine-lib-1.1.16.2.tar.bz2
-        build:
+        - patch:
+            use: shovel.patcher.patch
+            file: ["patches/xine-lib-1.1.16.2-osx.patch"]
+        - build:
             use: shovel.builder.make
             folder: xine-lib-1.1.16.2
-            configure: ["--with-ffmpeg=../ffmpeg-trunk/"]
+            configure: ["--with-ffmpeg=../../sandbox/ffmpeg/"]
             
 build:
     python:

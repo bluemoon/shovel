@@ -9,6 +9,19 @@ class Configurator:
 			self.Packages = {}
 			self.Modules = {}
 			self.Features = []
+			self.BigPackage = {}
+			self.Globals = {}
+		def GetGlobal(self,Global):
+			if self.Globals.has_key(Global):
+				return self.Globals[Global]
+			else:
+				return False
+		def PutGlobal(self,Global,Value):
+			self.Globals[Global] = Value
+		def GetPackage(self,Package):
+			return self.BigPackage[Package]
+		def PutPackage(self,Package,Yaml):
+			self.Packages[Package] = Yaml
 		def GetConfig(self,Package):
 			return self.Packages[Package]
 		def PutConfig(self,Package,Yaml):

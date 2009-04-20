@@ -21,7 +21,7 @@ from Terminal import TermGreen,TermOrange,TermEnd
 from Configurator import Configurator,feature
 from Loader import CoreHandler
 from Debug import Debug,SetDebug
-
+from Dependencies import Dependencies
 
 # Data Model:
 #  {"package": 
@@ -59,13 +59,13 @@ class Dirt(object):
 #### END FROZEN ####
 
 class Blocks(object):
-	def ParseBlock(self,Yaml,X=None):
+	def ParseBlock(self,Yaml,Reverse=False):
 		Block = []
 		if hasattr(Yaml, 'keys'):
 			for Blocks in Yaml.keys():
 			 	Block.append(Blocks)
-			
-		Block.reverse()
+		if Reverse:
+			Block.reverse()
 		return Block
 
 class Features(object):
@@ -88,14 +88,12 @@ class Features(object):
 					Module = self.Loader.GetModule(self.SplitClass(Feature[Use]))
 					if hasattr(Module,self.SplitClass(Feature[Use])):
 						self.Config.PutConfig(Name,Feature)
-						#Debug(self.Config.GetConfig(Name),"DEBUG")
 						DynamicClass = getattr(Module,self.SplitClass(Feature[Use]))
 						DyC = DynamicClass()
 						DynamicFunction = getattr(DynamicClass,self.SplitFunction(Feature[Use]))
 						DyF = DynamicFunction(DyC,Name)
 						
 		else:
-			#Debug(self.SplitClass(Feature),"DEBUG")
 			pass
 			
 class Plugins:
@@ -137,12 +135,14 @@ class ShovelNew(object):
 		self.Config   = Configurator()
 		self.Features = Features()
 		self.Plugins  = Plugins()
+		self.Deps     = Dependencies()
 		self.Commands = []
+		
 	def CommandOutOfBlock(self,Block):
 		for B in Block:
 			self.Commands.append(B)
 	
-	def addArgVdebug(self):
+	def addArgV(self):
 		global __Debug
 		__Debug = ""
 		for ArgV in sys.argv[1:]:
@@ -152,13 +152,17 @@ class ShovelNew(object):
 				__Debug = "INFO"
 			if ArgV == '-vvv':
 				__Debug = "DEBUG"
+			if ArgV == '--sandbox':
+				self.Config.PutGlobal("sandbox",True)
 				
 	def runArgV(self):
 		for ArgV in sys.argv[1:]:
 			if ArgV in self.Commands:
 				self.runBlock(ArgV)
+				self.DependencyRunner(ArgV)
 
 	def checkArgV(self):
+		""" Checks to see if any arguments were passed """
 		Arg = 0
 		for ArgV in sys.argv[1:]:
 			Arg += 1
@@ -166,11 +170,76 @@ class ShovelNew(object):
 			return False
 		else:
 			return True
+	
+	def WorkRunner(self,Block,Work):
+		Debug("block: "+Block + " work: " +Work,"DEBUG")
+		for work in self.DirtY[Block][Work]:
+			if hasattr(work,'keys'):
+				for Keys in work.keys():
+					if hasattr(work[Keys],'keys'):
+						if work[Keys].has_key('use'):
+							if self.Config.getFeature(work[Keys]['use']):
+								self.Config.PutPackage(Work,self.DirtY[Block][Work])
+								self.Features.RunFeature(work[Keys],Work)
+							else:
+								Debug("Not loaded: "+Work[Keys]['use'],"ERROR")
+			else:
+				raise Exception('ParseError')
+				
+	def DependencyRunner(self,Block):
+		for Runner in self.DirtY[Block]:
+			if hasattr(self.DirtY[Block][Runner],'keys'):
+				raise Exception('ParseError')
+			else:
+				for List in self.DirtY[Block][Runner]:
+					if hasattr(List,'keys'):
+						if List.has_key('dependencies'):
+							if hasattr(List['dependencies'],'keys'):
+								if List['dependencies'].has_key('use'):
+									pass
+							else:
+								for Deps in List['dependencies']:
+									Debug("[" +Runner + "] depends on: " + Deps,"INFO")
+									self.Deps.DependencyGeneratorAdd(Runner,Deps)
+						else:
+							self.Deps.DependencyGeneratorAdd(Runner)
+					else:
+						raise Exception('ParseError')
+						
+		DepList = self.Deps.DependencyGeneratorRun()
+		Rev = []
+		for RevDep in DepList[0]:
+			Rev.append(RevDep)
 			
+		while Rev:
+			Work = Rev.pop()
+			self.WorkRunner(Block,Work)
+			
+	def runFeatureBlock(self,Block):
+		Counter = 0
+		for Runner in self.Blocks.ParseBlock(self.DirtY[Block],True):
+			Debug(Runner,"DEBUG")
+			List = self.DirtY[Block][Runner]
+			List.reverse()
+			print List.pop()
+			for subRunner in self.DirtY[Block][Runner]:
+				print subRunner
+				for mF in self.Blocks.ParseBlock(subRunner):
+					if hasattr(subRunner[mF],'keys'):
+						if subRunner[mF].has_key('use'):
+							print subRunner[mF]['use']
+							Feature = self.Config.getFeature(subRunner[mF]['use'])
+							if Feature:
+								self.Features.RunFeature(subRunner[mF],subRunner)
+					if subRunner.has_key('use'):
+						print subRunner['use']
+
+					#Debug(subRunner,"DEBUG")
+				
 	def runBlock(self,Block):
 		for Runner in self.Blocks.ParseBlock(self.DirtY[Block]):
 			sub = self.Blocks.ParseBlock(self.DirtY[Block][Runner])
-			sub.reverse()
+			#sub.reverse()
 			for SubRunner in sub:
 				if SubRunner == 'use':
 					Name = self.Features.SplitClass(self.DirtY[Block][Runner][SubRunner])
@@ -178,8 +247,8 @@ class ShovelNew(object):
 					if not Feature:
 						Debug("Feature " +TermOrange + self.DirtY[Block][Runner][SubRunner] + TermEnd + " is not available","WARNING")
 					else:
-						Debug("Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner] + TermEnd,"INFO")
-						self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
+						Debug("Instance created: "+ TermGreen + self.DirtY[Block][Runner][SubRunner] + TermEnd,"INFO")
+						#self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
 				#Debug(self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]),"DEBUG")	
 				for uberSubRunner in self.Blocks.ParseBlock(self.DirtY[Block][Runner][SubRunner]):
 					if uberSubRunner == 'use':
@@ -188,8 +257,8 @@ class ShovelNew(object):
 						if not Feature:
 							Debug("Feature "+ TermOrange+ self.DirtY[Block][Runner][SubRunner][uberSubRunner]+TermEnd + " is not available","WARNING")
 						else:
-							Debug("Is loaded: "+ TermGreen + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + TermEnd,"INFO")
-							self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
+							Debug("Instance created: "+ TermGreen + self.DirtY[Block][Runner][SubRunner][uberSubRunner] + TermEnd,"INFO")
+							#self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
 					else:
 						pass
 						
@@ -199,7 +268,7 @@ class ShovelNew(object):
 		print " ".join(MainBlocks)
 			
 	def Main(self):
-		self.addArgVdebug()
+		self.addArgV()
 		SetDebug(_ShovelNew__Debug)
 		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():
@@ -211,108 +280,7 @@ class ShovelNew(object):
 			else:
 				self.displayHelp()
 		
-class Shovel:
-	"""docstring for Shovel"""
-	def __init__(self, arg=None):
-		self.arg = arg
-		self.Configure = Configurator()
-		self.Loader = CoreHandler()
-		
-	def dirtExists(self):
-		if os.path.exists("dirt"):
-			return True
-		else:
-			return False
-			
-	def loadDirt(self):
-		DirtFile = open('dirt', 'r')
-		DFile = DirtFile.read()
-		G_Yaml = yaml.load(DFile)
-		return G_Yaml
-	
-	def extractModuleYaml(self,Yaml,Module):
-		ModuleYaml = []
-		for List in Yaml:
-			for Package in List:
-				if Module in List:
-					ModuleYaml.append(List[Module])
-		
-		if not ModuleYaml:
-			return False
-		else:
-			return ModuleYaml
-				
-	def getDirtModules(self,Yaml):
-		Modules = []
-		for List in Yaml:
-			if List not in Modules:
-				Modules.append(List)
-		if Modules:
-			return Modules
-		else:
-			return False
-	def getDirtSubModule(self,Yaml,Module):
-		Md = {}
-		for Mod in Yaml[Module]:
-			Md[Mod] = Yaml[Module][Mod]
-		if Md:
-			return Md
-		else:
-			return False
-	
-	def loadDirtModules(self,Modules):
-		for Mod in Modules:
-			#sys.path.append('Modules')
-			#print Mod
-			self.loadDirtModClass(Mod,Mod)
-		
-	def loadDirtModClass(self,Module,Name):
-		Class = getattr(sys.modules[Module],Name)
-		#print Class.__dict__
-		A = Class()
-		Yaml = self.extractModuleYaml(self.Yaml,Module)
-		A.NewMain(Yaml)
-	def parseUseFlags(self,Key):
-		return Key.split('.')
-	def checkKeyList(self,Key):
-		return True
-	def createModuleInstance(self,Module):
-		return Module
-	def KeyChecker(self,Yaml):
-		for Keys in Yaml.keys():
-			if Keys == 'use':
-				if self.checkKeyList(Yaml[Keys]):
-					Module = self.Loader.Load(self.parseUseFlags(Yaml[Keys])[1],"Plugins")
-					self.createModuleInstance(Yaml[Keys])
-			else:
-				if hasattr(Yaml[Keys], 'keys'):
-					for SubKeys in Yaml[Keys].keys():
-						if SubKeys == 'use':
-							if self.checkKeyList(Yaml[Keys][SubKeys]):
-								Module = self.Loader.Load(self.parseUseFlags(Yaml[Keys][SubKeys])[1],"Plugins")
-								Instance = self.createModuleInstance(Yaml[Keys][SubKeys])
-		
-	def Main(self):
-		self.Runner = {}
-		if self.dirtExists():
-			self.Yaml = self.loadDirt()
-			self.Modules = self.getDirtModules(self.Yaml)
-			for Module in self.Modules:
-				for Arg in sys.argv[1:]:
-					if Module == Arg:
-						self.Runner[Arg] = self.getDirtSubModule(self.Yaml,Module)
-						for I in self.getDirtModules(self.Runner[Arg]):
-							self.Configure.PutConfig(Arg,self.Runner[Arg])
-							self.KeyChecker(self.getDirtSubModule(self.Runner[Arg],I))
-							print I
-						
-	#print self.Configure.GetConfig("ffmpeg")
-	#self.loadDirtModules(self.Modules)
 
-
-	
-
-		
 if __name__ == "__main__":
 	
 	M = ShovelNew()

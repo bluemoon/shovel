@@ -3,8 +3,12 @@ class Dependencies:
 		self.DependencyList = {}
 	def BuildCoreDependencies(self,CoreDep):
 		self.DependencyList = CoreDep
-	def DependencyGeneratorAdd(self,Dependant,DependsOn):
-		self.DependencyList[Dependant] = DependsOn
+	def DependencyGeneratorAdd(self,Dependant,DependsOn=None):
+		if DependsOn == None:
+			self.DependencyList[Dependant] = []
+		else:
+			self.DependencyList[Dependant] = []
+			self.DependencyList[Dependant].append(DependsOn)
 	def DependencyGeneratorRun(self):
 		D = dict((k, set(self.DependencyList[k])) for k in self.DependencyList)
 		R = []
