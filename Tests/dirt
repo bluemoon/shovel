@@ -15,7 +15,7 @@ pre.flight:
          - build:
             use: shovel.builder.make
             folder: ffmpeg-0.5
-            configure: ["--enable-postproc --enable-gpl"]
+            configure: []
         
     xine-lib:
         - use: shovel.packagebuilder

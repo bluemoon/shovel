@@ -3,7 +3,7 @@ class Singleton:
 	def __init__(self):
 		self.__dict__ = self.__shared_state
 		
-class Configurator:
+class Configurator(Singleton):
 	class __impl:
 		def __init__(self):
 			self.Packages = {}
@@ -11,6 +11,7 @@ class Configurator:
 			self.Features = []
 			self.BigPackage = {}
 			self.Globals = {}
+			
 		def GetGlobal(self,Global):
 			if self.Globals.has_key(Global):
 				return self.Globals[Global]
@@ -21,7 +22,7 @@ class Configurator:
 		def GetPackage(self,Package):
 			return self.BigPackage[Package]
 		def PutPackage(self,Package,Yaml):
-			self.Packages[Package] = Yaml
+			self.BigPackage[Package] = Yaml
 		def GetConfig(self,Package):
 			return self.Packages[Package]
 		def PutConfig(self,Package,Yaml):
@@ -37,8 +38,6 @@ class Configurator:
 			pass
 		def getFeature(self,Feature):
 			for F in self.Features:
-				#print F
-				#print Feature
 				if F == Feature:
 					return True
 					
