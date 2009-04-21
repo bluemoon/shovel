@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-from Configurator import Configurator
-from Debug import Debug,GetDebug
+from Core.Configurator import Configurator
+from Core.Debug import Debug,GetDebug
 
 class systools:
 	def __init__(self):

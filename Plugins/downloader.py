@@ -1,7 +1,7 @@
 from threading import Thread
-from Messaging import CoreMessaging
-from Configurator import Configurator
-from Debug import Debug,GetDebug
+from Core.Messaging import CoreMessaging
+from Core.Configurator import Configurator
+from Core.Debug import Debug,GetDebug
 import os
 import urllib
 import subprocess
@@ -18,16 +18,24 @@ class downloader(Thread):
 		Debug(Config["link"],"DEBUG")
 		Download = Config["link"]
 		Filename = Config["link"].split("/")[-1:][0]
+		
 		print "[http] Downloading: " + Filename
-		lib = os.path.isdir('tmp')
+		
+		tmp = os.path.isdir('tmp/')
+		lib = os.path.isdir('tmp/downloads/')
+		if not tmp:
+			os.mkdir('tmp')
 		Debug(os.getcwd(),"DEBUG")
-		if not os.path.exists("tmp/" +Filename):
+		
+		self.Config.CreateOutYaml(Name)
+		
+		if not os.path.exists("tmp/downloads/" +Filename):
 			if lib is False:
-				os.mkdir('tmp')
-				data = urllib.urlretrieve(Download, "tmp/" + Filename)
+				os.mkdir('tmp/downloads/')
+				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename)
 				urllib.urlcleanup()
 			elif lib is True:
-				data = urllib.urlretrieve(Download, "tmp/" + Filename)
+				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename)
 				urllib.urlcleanup()
 				Debug("Folder tmp is pre-existing","INFO")
 			  	data = 'Preexisting'
@@ -52,7 +60,7 @@ class downloader(Thread):
 		Debug(Filename,"DEBUG")
 		print "[svn] Checking out: " + Filename
 		if not os.path.isdir(Filename):
-			svnBuild = '/usr/bin/env svn co ' + Download + " tmp/" + Filename
+			svnBuild = '/usr/bin/env svn co ' + Download + " tmp/downloads/" + Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=subprocess.PIPE)
 			while p.stdout.readline():
 				if p.stdout.readline() != "\n":
@@ -61,7 +69,7 @@ class downloader(Thread):
 			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done') 
 		else:
-			svnBuild = '/usr/bin/env svn up tmp/' + Filename
+			svnBuild = '/usr/bin/env svn up tmp/downloads/ '+ Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=subprocess.PIPE)
 			while p.stdout.readline():
 				if p.stdout.readline() != "\n":
@@ -72,12 +80,12 @@ class downloader(Thread):
 			 
 	def git(self,Arguments,Filename,Name):
 		if not os.path.isdir(Filename):
-			gitBuild = '/usr/bin/env git clone ' + Arguments + " tmp/" + Filename
+			gitBuild = '/usr/bin/env git clone ' + Arguments + " tmp/downloads/" + Filename
 			p = subprocess.Popen(gitBuild,shell=True,stdout=None)
 			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done') 
 		else:
-			gitBuild = '/usr/bin/env git pull tmp/' + Filename
+			gitBuild = '/usr/bin/env git pull tmp/downloads/' + Filename
 			p = subprocess.Popen(gitBuild,shell=True,stdout=subprocess.PIPE)
 			p.wait()
 			self.CoreMessaging.Send("downloader",Name + ':done')

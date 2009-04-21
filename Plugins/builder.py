@@ -3,9 +3,9 @@ import os
 import subprocess
 import re
 #### Local Imports ####
-from Configurator import Configurator
-from Debug import Debug
-from Terminal import TermGreen,TermEnd
+from Core.Configurator import Configurator
+from Core.Debug import Debug
+from Core.Terminal import TermGreen,TermEnd
 
 
 class builder:
@@ -23,17 +23,18 @@ class builder:
 		CWD = os.getcwd()
 		
 		if self.Config.GetGlobal("sandbox"):
-			if not os.path.exists("sandbox"):
-				os.mkdir('sandbox')
-			if not os.path.exists("sandbox/"+Name):
-				os.mkdir('sandbox/'+Name)
+			if not os.path.exists("tmp/sandbox"):
+				os.mkdir('tmp/sandbox')
+			if not os.path.exists("tmp/sandbox/"+Name):
+				os.mkdir('tmp/sandbox/'+Name)
 			
-			NewConfigure = "--prefix="+CWD+"/sandbox/"+Name + " " + " ".join(Configure)
+			NewConfigure = "--prefix="+CWD+"/tmp/sandbox/"+Name + " " + " ".join(Configure)
 			Debug(NewConfigure,"DEBUG")
 			Configure = NewConfigure
-			
+		else:
+			Configure = " ".join(Configure)
 		
-		os.chdir('tmp/'+File)
+		os.chdir('tmp/downloads/'+File)
 		Debug("Configuring...","INFO")
 		print "[make] Configuring: " + Name
 		
@@ -59,6 +60,7 @@ class builder:
 			if match:
 				print "Compiling: " + match[0] + "      [" +TermGreen + "ok" + TermEnd +"]"
 			else:
+				#pass
 				print read[:-1]
 			
 		o.wait()

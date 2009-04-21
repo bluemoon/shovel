@@ -11,7 +11,16 @@ class Configurator(Singleton):
 			self.Features = []
 			self.BigPackage = {}
 			self.Globals = {}
-			
+			self.Out = {}
+		def GetOutYaml(self,Global):
+			if self.Out.has_key(Global):
+				return self.Out[Global]
+			else:
+				return False
+		def CreateOutYaml(self,Global):
+			self.Out[Global] = []
+		def AppendOutYaml(self,Global,Value):
+			self.Out[Global].append(Value)
 		def GetGlobal(self,Global):
 			if self.Globals.has_key(Global):
 				return self.Globals[Global]

@@ -13,12 +13,18 @@ from threading import Thread
 
 sys.path.append('Core/')
 #### From Core ####
-from Messaging  import CoreMessaging
-from Terminal import TermGreen,TermOrange,TermEnd
-from Configurator import Configurator,feature
-from Loader import CoreHandler
-from Debug import Debug,SetDebug
-from Dependencies import Dependencies
+from Core.Messaging     import CoreMessaging
+from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
+from Core.Configurator  import Configurator,feature
+from Core.Loader        import CoreHandler
+from Core.Debug         import Debug,SetDebug
+from Core.Dependencies  import Dependencies
+from Core.Blocks        import Blocks
+from Core.Dirt          import Dirt
+from Core.Features      import Features
+from Core.Plugin        import Plugin
+from Core.File			import rmDirectoryRecursive
+import Plugins
 
 # Data Model:
 #  {"package": 
@@ -34,131 +40,68 @@ from Dependencies import Dependencies
 # Plugins:
 # [x] 1. So the plugin loader will recurse the directory and load all of the plugins.
 #  Requires class instance ->
-#  2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
+# [x] 2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
 #
 # Any code that has 
 #### FROZEN ####
 # has been feature frozen and will not be changed
+	
 
-
-#### FROZEN ####
-class Dirt(object):
-	def dirtExists(self):
-		if os.path.exists("dirt"):
-			return True
-		else:
-			return False
-	def loadDirt(self):
-		DirtFile = open('dirt', 'r')
-		DFile = DirtFile.read()
-		G_Yaml = yaml.load(DFile)
-		return G_Yaml
-#### END FROZEN ####
-
-class Blocks(object):
-	def ParseBlock(self,Yaml,Reverse=False):
-		Block = []
-		if hasattr(Yaml, 'keys'):
-			for Blocks in Yaml.keys():
-			 	Block.append(Blocks)
-		if Reverse:
-			Block.reverse()
-		return Block
-
-class Features(object):
-	def __init__(self):
-		self.Loader = CoreHandler()
-		self.Config = Configurator()
-	def SplitByClass(self,Search):
-		Temp = Search.split(".")
-		return ".".join(Temp[:2])
-	def SplitClass(self,Search):
-		Temp = Search.split(".")
-		return Temp[1:2][0]
-	def SplitFunction(self,Search):
-		Temp = Search.split(".")
-		return Temp[-1:][0]
-	def RunFeature(self,Feature,Name):
-		if hasattr(Feature, 'keys'):
-			for Use in Feature.keys():
-				if Use == 'use':
-					Module = self.Loader.GetModule(self.SplitClass(Feature[Use]))
-					if hasattr(Module,self.SplitClass(Feature[Use])):
-						self.Config.PutConfig(Name,Feature)
-						DynamicClass = getattr(Module,self.SplitClass(Feature[Use]))
-						DyC = DynamicClass()
-						DynamicFunction = getattr(DynamicClass,self.SplitFunction(Feature[Use]))
-						DyF = DynamicFunction(DyC,Name)
-						
-		else:
-			pass
-			
-class Plugins:
-	def __init__(self):
-		self.Loader = CoreHandler()
-		self.Config = Configurator()
-				
-	def LoadAll(self,Folder=None):
-		def locate(pattern, root=os.getcwd()):
-			for path, dirs, files in os.walk(root):
-				for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
-					yield filename
-		for Py in locate("*.py","Plugins"):
-			self.LoadAbsolute(Py)
-			
-	def LoadAbsolute(self,AbsPath):
-		AbsSplit = AbsPath.split('/')
-		File = AbsSplit[-1:]
-		nFile = File[0].split(".") 
-		Module = self.Load(nFile[0],"/".join(AbsSplit[:-1]))
-		self.Config.putModuleLoaded(nFile[0])
-		
-	def Load(self,Name=None,Folder=None):
-		self.Config.putFeature('shovel.'+Name.lower())
-		self.Loader.Load(Name,Folder)
-		Loader = self.Loader.GetModule(Name)
-   		try:
-			for Function in Loader.__dict__[Name].__dict__:
-				if Function[0:2] != '__':
-					self.Config.putFeature('shovel.'+Name.lower()+"." +Function)
-					Debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,"INFO")
-		except AttributeError:
-			pass
-		
 class ShovelNew(object):
 	def __init__(self):
 		self.Blocks   = Blocks()
 		self.Dirt     = Dirt()
 		self.Config   = Configurator()
 		self.Features = Features()
-		self.Plugins  = Plugins()
+		self.Plugins  = Plugin()
 		self.Deps     = Dependencies()
 		self.Commands = []
 		
 	def CommandOutOfBlock(self,Block):
 		for B in Block:
 			self.Commands.append(B)
-	
+		
 	def addArgV(self):
 		global __Debug
 		__Debug = ""
+		ArgCounter = 0
 		# Im going to go to a class based approach soon
 		for ArgV in sys.argv[1:]:
 			if ArgV == '-v':
 				__Debug = "WARNING"
+				ArgCounter += 1
 			if ArgV == '-vv':
 				__Debug = "INFO"
+				ArgCounter += 1
 			if ArgV == '-vvv':
 				__Debug = "DEBUG"
+				ArgCounter += 1
 			if ArgV == '--sandbox':
+				ArgCounter += 1
 				self.Config.PutGlobal("sandbox",True)
+			if ArgV == '--clean':
+				ArgCounter += 1
+				print "Cleaning up."
+				rmDirectoryRecursive("tmp/")
+				sys.exit(0)	
 				
+		if ArgCounter == self.checkArgV():
+			print "No options passed assuming" + TermBlue + " all "+ TermEnd
+			self.RunAll = True
+		else:
+			self.RunAll = False
+			
 	def runArgV(self):
-		for ArgV in sys.argv[1:]:
-			if ArgV in self.Commands:
-				self.runBlock(ArgV)
-				self.DependencyRunner(ArgV)
-
+		if self.RunAll == True:
+			for All in self.Commands:
+				self.runBlock(All)
+				self.DependencyRunner(All)
+		else:
+			for ArgV in sys.argv[1:]:
+				if ArgV in self.Commands:
+					self.runBlock(ArgV)
+					self.DependencyRunner(ArgV)
+	
 	def checkArgV(self):
 		""" Checks to see if any arguments were passed """
 		Arg = 0
@@ -167,7 +110,7 @@ class ShovelNew(object):
 		if Arg == 0:
 			return False
 		else:
-			return True
+			return Arg
 	
 	def WorkRunner(self,Block,Work):
 		Debug("block: "+Block + " work: " +Work,"DEBUG")
