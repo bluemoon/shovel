@@ -24,6 +24,7 @@ from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
 from Core.File			import rmDirectoryRecursive
+from Core.Utils			import PPrint
 import Plugins
 
 # Data Model:
@@ -37,10 +38,40 @@ import Plugins
 #  Module list linked with the package
 #  Instance list linked with the package
 # 
+# All:
+# 1. Get all the code to follow the 80 character line limit
+# 2. More comments!
+# 3. Write more tests!
+# 
+# Shovel Core:
+# 1. Write a class to take over for lots of if's on argv input
+# 2. Remove the actual parsing from this class, seperate it so that 
+#    it is easier to update
+#
 # Plugins:
-# [x] 1. So the plugin loader will recurse the directory and load all of the plugins.
+# [x] 1. So the plugin loader will recurse the directory
+#        and load all of the plugins.
 #  Requires class instance ->
-# [x] 2. Then a function will pass over each class and use __dict__ to determine the functions and will add to the configurator
+# [x] 2. Then a function will pass over each class and use __dict__
+#        to determine the functions and will add to the configurator
+#  3. Support better namespacing and inheritance for the plugin names
+# Downloader:
+# [x] 1. Progress bar for urllib
+#
+# Patcher:
+# 1. Actually get this to work
+# 
+#
+# Builder:
+# 1. Find a more elegant way for stderr to be run
+# 2. Support options to enable/disable the parsing of gcc
+#
+#
+# Utils:
+# 1. Get pprint to multiline print properly
+# 2. Consolidate all of the terminal utilities here
+#
+#
 #
 # Any code that has 
 #### FROZEN ####
@@ -86,7 +117,7 @@ class ShovelNew(object):
 				sys.exit(0)	
 				
 		if ArgCounter == self.checkArgV():
-			print "No options passed assuming" + TermBlue + " all "+ TermEnd
+			print "No options passed assuming [" + TermBlue + "all"+ TermEnd + "]"
 			self.RunAll = True
 		else:
 			self.RunAll = False
@@ -210,16 +241,16 @@ class ShovelNew(object):
 			
 	def Main(self):
 		self.addArgV()
+		PPrint("Testing prettyPrint",'ok',None,'GREEN')
 		SetDebug(_ShovelNew__Debug)
 		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():
 			self.DirtY = self.Dirt.loadDirt()
 			BaseBlock = self.Blocks.ParseBlock(self.DirtY)
 			self.CommandOutOfBlock(BaseBlock)
-			if self.checkArgV():
-				self.runArgV()
-			else:
-				self.displayHelp()
+			self.checkArgV()
+			self.runArgV()
+			
 		
 
 if __name__ == "__main__":

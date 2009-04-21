@@ -23,7 +23,12 @@ class extractor:
 				End = File.split(".")
 				if End[-1] == "bz2":
 					tar = tarfile.open(name="tmp/downloads/" + File,mode='r:bz2')
-					extract = tar.extractall(path="tmp/downloads/",members=None)
+					try:
+						extract = tar.extractall(path="tmp/downloads/",members=None)
+					except EOFError,e:
+						print "The file appears to be corrupt, run with",
+						print "--clean and then retry building"
+						Debug(e,"ERROR")
 				if End[-1] == "gz":
 					tar = tarfile.open(name="tmp/downloads/" + File,mode='r:gz')
 					extract = tar.extractall(path="tmp/downloads/",members=None)

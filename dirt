@@ -15,7 +15,7 @@ pre.flight:
          - build:
             use: shovel.builder.make
             folder: ffmpeg-0.5
-            configure: ["--enable-postproc --enable-gpl"]
+            configure: ["--enable-postproc --enable-gpl --disable-mmx"]
         
     xine-lib:
         - use: shovel.packagebuilder
@@ -30,8 +30,7 @@ pre.flight:
         - patch:
             use: shovel.patcher.patch
             file: 
-                - "patches/xine-lib-1.1.16.2-osx.patch@p:1"
-                
+                - "patches/xine-lib-1.1.16.2-osx.patch@p:1"    
         - build:
             use: shovel.builder.make
             folder: xine-lib-1.1.16.2

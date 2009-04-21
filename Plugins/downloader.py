@@ -2,10 +2,15 @@ from threading import Thread
 from Core.Messaging import CoreMessaging
 from Core.Configurator import Configurator
 from Core.Debug import Debug,GetDebug
+from Core.ProgressBar import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
 import os
 import urllib
 import subprocess
+import sys
+import sys
 
+def _reporthook(numblocks, blocksize, filesize, url,pbar):
+	pbar.update((numblocks*blocksize*100)/filesize)
 
 class downloader(Thread):
 	def __init__(self):
@@ -32,10 +37,18 @@ class downloader(Thread):
 		if not os.path.exists("tmp/downloads/" +Filename):
 			if lib is False:
 				os.mkdir('tmp/downloads/')
-				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename)
+				widgets = [Filename + " ", Percentage(), ' ', Bar(),' ', ETA(), ' ', ' ']
+				pbar = ProgressBar(widgets=widgets).start()
+				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename,lambda nb, bs, fs, url=Download: _reporthook(nb,bs,fs,url,pbar))
+				pbar.finish()
+				print
 				urllib.urlcleanup()
 			elif lib is True:
-				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename)
+				widgets = [Filename + " ", Percentage(), ' ', Bar(),' ', ETA(), ' ', ' ']
+				pbar = ProgressBar(widgets=widgets).start()
+				data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename,lambda nb, bs, fs, url=Download: _reporthook(nb,bs,fs,url,pbar))
+				pbar.finish()
+				print
 				urllib.urlcleanup()
 				Debug("Folder tmp is pre-existing","INFO")
 			  	data = 'Preexisting'
