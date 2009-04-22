@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 ##############################################################################
-## File: CommandOptions.py
+## File: Lexer.py
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/04/22
@@ -7,11 +8,8 @@
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 ##############################################################################
 
-#### Class:CommandOptions ####################################################
-class CommandOptions(object):
-	def __init__(self):
-		pass
-	def AddOption(self,Option,Variable=None,Value=None,Function=None):
-		pass
-		
-		
+
+#### System Imports ##########################################################
+import exceptions
+#### Local Imports ###########################################################
+from Library.Plex import *

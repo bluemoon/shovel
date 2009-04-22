@@ -1,11 +1,24 @@
+#!/usr/bin/env python
+##############################################################################
+## File: Loader.py
+## Version: -*-dev-*-
+## Author: Alex Toney (toneyalex@gmail.com)
+## Date: 2009/04/22
+## Copyright (c) 2009 Alex Toney
+## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
+##############################################################################
+
+#### System Includes #########################################################
 import imp
 import sys
 
+#### Class:Singleton #########################################################
 class Singleton:
 	__shared_state = {}
 	def __init__(self):
 		self.__dict__ = self.__shared_state
 
+#### Class:CoreHandler #######################################################
 class CoreHandler:
 	class __impl:
 		def __init__(self):

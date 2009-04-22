@@ -1,8 +1,17 @@
-#### System Imports ####
+##############################################################################
+## File: builder.py
+## Version: -*-dev-*-
+## Author: Alex Toney (toneyalex@gmail.com)
+## Date: 2009/04/22
+## Copyright (c) 2009 Alex Toney
+## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
+##############################################################################
+
+#### System Imports ##########################################################
 import os
 import subprocess
 import re
-#### Local Imports ####
+#### Local Imports ###########################################################
 from Core.Configurator import Configurator
 from Core.Debug        import Debug
 from Core.Terminal     import TermGreen,TermEnd
@@ -30,10 +39,9 @@ class builder:
 			# I dont like the values hardcoded
 			if not os.path.exists("tmp/sandbox"):
 				os.mkdir('tmp/sandbox')
-			if not os.path.exists("tmp/sandbox/"+Name):
-				os.mkdir('tmp/sandbox/'+Name)
+
 			# This adds --prefix= so that it doesnt install it to the system
-			NewConfigure = "--prefix="+CWD+"/tmp/sandbox/"+Name + " " + " ".join(Configure)
+			NewConfigure = "--prefix="+CWD+"/tmp/sandbox/" + " " + " ".join(Configure)
 			# Prints out the whole string
 			Debug(NewConfigure,"DEBUG")
 			Configure = NewConfigure
@@ -47,32 +55,35 @@ class builder:
 		
 		if Configure:
 			print "[make] Configure Options: " + Configure
-			p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=subprocess.PIPE)
+			p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=None)
 			p.wait()
 		else:
-			p = subprocess.Popen('./configure',shell=True,stdout=subprocess.PIPE)
-			while p.stdout.readline():
-				pass
+			p = subprocess.Popen('./configure',shell=True,stdout=None)
 			p.wait()
 		
 		Debug("Building:" + Name,"INFO")
 		print "[make] Building: " + Name
 		
-		o = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 		regex = re.compile('[a-zA-Z0-9/_]*\.c')
 		#warning = re.compile('[a-zA-Z0-9/_]*\.c:[0-9]*:\swarning:[a-zA-Z0-9/_]*')
-		while o.stdout.readline():
-			read = o.stdout.readline()
-			match = regex.findall(read)
-			if match:
-				PPrint("Compiling: " + match[0],"ok",None,"GREEN")
-			else:
-				PPrint("Out: "+read[:-1],"!!","BLUE","BLUE")
-			
-		o.wait()
+		if self.Config.GetGlobal("nonpretty"):
+			MakeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
+			#while MakeSub.poll() is None:
+				#Read = MakeSub.stdout.readline()
+				#print Read[:-1]
+		else:
+			MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			while MakeSub.poll() is None:
+				Read = MakeSub.stdout.readline()
+				match = regex.findall(Read)
+				if match:
+					PPrint("Compiling: " + match[0],"ok",None,"GREEN")
+				else:
+					PPrint("Out: "+Read[:-1],"!!","BLUE","BLUE")
+		MakeSub.wait()
 		# Make sure the build returns a valid code and doesnt fail
-		Debug("Build Return Code: %d" % (o.returncode),"INFO")
-		if o.returncode > 0:
+		Debug("Build Return Code: %d" % (MakeSub.returncode),"INFO")
+		if MakeSub.returncode > 0:
 			raise Exception('BuildError')
 		
 		if self.Config.GetGlobal("sandbox"):

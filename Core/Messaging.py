@@ -1,9 +1,19 @@
-### System Imports ###
+#!/usr/bin/env python
+##############################################################################
+## File: Messaging.py
+## Version: -*-dev-*-
+## Author: Alex Toney (toneyalex@gmail.com)
+## Date: 2009/04/22
+## Copyright (c) 2009 Alex Toney
+## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
+##############################################################################
+
+#### System Imports ##########################################################
 import time
-### Local Imports ###
+#### Local Imports ###########################################################
 from CoreManifest import CoreElements
 
-
+#### Class:CoreMessaging #####################################################
 class CoreMessaging:
 	# The class __impl is for the singleton
 	# So we dont create more than one instance of this

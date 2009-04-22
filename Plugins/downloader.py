@@ -28,6 +28,7 @@ class downloader(Thread):
 		
 		tmp = os.path.isdir('tmp/')
 		lib = os.path.isdir('tmp/downloads/')
+		
 		if not tmp:
 			os.mkdir('tmp')
 		Debug(os.getcwd(),"DEBUG")
@@ -63,6 +64,8 @@ class downloader(Thread):
 			else: 
 				return True, lib
 		
+		Down = {"downloader":True}		
+		self.Config.AppendOutYaml(Name,Down)
 		self.CoreMessaging.Send("downloader",Name+ ':done')
 
 	def svn(self,Name):

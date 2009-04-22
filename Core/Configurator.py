@@ -1,8 +1,19 @@
+##############################################################################
+## File: Configurator.py
+## Version: -*-dev-*-
+## Author: Alex Toney (toneyalex@gmail.com)
+## Date: 2009/04/22
+## Copyright (c) 2009 Alex Toney
+## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
+##############################################################################
+
+#### Class:Singleton #########################################################
 class Singleton:
 	__shared_state = {}
 	def __init__(self):
 		self.__dict__ = self.__shared_state
-		
+
+#### Class:Configurator ######################################################
 class Configurator(Singleton):
 	class __impl:
 		def __init__(self):
@@ -12,6 +23,8 @@ class Configurator(Singleton):
 			self.BigPackage = {}
 			self.Globals = {}
 			self.Out = {}
+		def GetAllOut(self):
+			return self.Out
 		def GetOutYaml(self,Global):
 			if self.Out.has_key(Global):
 				return self.Out[Global]
@@ -20,6 +33,8 @@ class Configurator(Singleton):
 		def CreateOutYaml(self,Global):
 			self.Out[Global] = []
 		def AppendOutYaml(self,Global,Value):
+			if not self.Out.has_key(Global):
+				self.CreateOutYaml()
 			self.Out[Global].append(Value)
 		def GetGlobal(self,Global):
 			if self.Globals.has_key(Global):
@@ -32,6 +47,12 @@ class Configurator(Singleton):
 			return self.BigPackage[Package]
 		def PutPackage(self,Package,Yaml):
 			self.BigPackage[Package] = Yaml
+		def FindInPackage(self,Search,Package):
+			for Lots in self.BigPackage[Package]:
+				if hasattr(Lots,'keys'):
+					if Lots.has_key(Search):
+						return Lots[Search]
+					
 		def GetConfig(self,Package):
 			return self.Packages[Package]
 		def PutConfig(self,Package,Yaml):

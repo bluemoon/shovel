@@ -1,6 +1,7 @@
 from Core.Configurator import Configurator
 from Core.Debug import Debug
 import os
+import sys
 import tarfile
 
 def ExtractNameFromTar(Tar):
@@ -29,6 +30,13 @@ class extractor:
 						print "The file appears to be corrupt, run with",
 						print "--clean and then retry building"
 						Debug(e,"ERROR")
+						sys.exit(0)
 				if End[-1] == "gz":
 					tar = tarfile.open(name="tmp/downloads/" + File,mode='r:gz')
-					extract = tar.extractall(path="tmp/downloads/",members=None)
+					try:
+						extract = tar.extractall(path="tmp/downloads/",members=None)
+					except EOFError,e:
+						print "The file appears to be corrupt, run with",
+						print "--clean and then retry building"
+						Debug(e,"ERROR")
+						sys.exit(0)
