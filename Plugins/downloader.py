@@ -2,7 +2,7 @@ from threading import Thread
 from Core.Messaging import CoreMessaging
 from Core.Configurator import Configurator
 from Core.Debug import Debug,GetDebug
-from Core.ProgressBar import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
+from Core.Utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
 import os
 import urllib
 import subprocess

@@ -1,6 +1,48 @@
----
+---^strict:mosaic
 # Base Block
-pre.flight:
+Linux:
+  pre.flight:
+    # Package Block
+    ffmpeg:
+      dependencies: !use[shovel.systools.pkgconfig]
+      download[shovel.download.http]:
+	link: http://ffmpeg.mplayerhq.hu/releases/ffmpeg-0.5.tar.bz2
+      extract[shovel.extractor.tar]:
+	file: @splitHttpName({b:download:link})
+      build[shovel.builder.make]:
+	folder: @splitTarName({b:extract:file})
+	configure: ["--enable-postproc --enable-gpl --disable-vhook --enable-shared"]
+        
+    xine-lib:
+        - use: shovel.packagebuilder
+        - dependencies:
+            - ffmpeg
+        - download:
+            use: shovel.downloader.http
+            link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2
+        - extract:
+            use: shovel.extractor.tar
+            file: xine-lib-1.1.16.tar.bz2
+        - build:
+            use: shovel.builder.make
+            folder: xine-lib-1.1.16
+            configure: ["--with-ffmpeg=../../sandbox/ffmpeg/ --without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3  --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest"]
+            
+  build:
+    python:
+       use: shovel.python.glob
+       glob: src 
+       use: shovel.python.cython
+       pyrex: src/pyrex
+
+  dist:
+    sign:
+        use: shovel.enc.pgp
+    upload:
+        use: shovel.uploader.svn
+
+Darwin:
+  pre.flight:
     # Package Block
     ffmpeg:
          - use: shovel.packagebuilder
@@ -35,15 +77,15 @@ pre.flight:
             use: shovel.builder.make
             folder: xine-lib-1.1.16.2
             configure: ["--with-ffmpeg=../../sandbox/ffmpeg/ --without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3 --enable-coreaudio --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest"]
-            
-build:
+  
+  build:
     python:
        use: shovel.python.glob
        glob: src 
        use: shovel.python.pyrex
        pyrex: src/pyrex
 
-dist:
+  dist:
     sign:
         use: shovel.enc.pgp
     upload:
