@@ -32,11 +32,11 @@ from Core.Blocks        import Blocks
 from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
-from Core.File			import rmDirectoryRecursive
-from Core.Utils			import PPrint
+from Core.File		import rmDirectoryRecursive
+from Core.Utils		import PPrint
 
 
-from Core.Lexer import Lexi
+#from Core.Lexer import Lexi
 
 import Plugins
 
@@ -321,9 +321,9 @@ class ShovelNew(object):
 	def Main(self):
 		self.addArgV()
 		#PPrint("Testing prettyPrint",'ok',None,'GREEN')
-                lexi = Lexi()
-                lexi.loadLexer("dirt")
-                lexi.runLexer()
+                #lexi = Lexi()
+                #lexi.loadLexer("dirt")
+                #lexi.runLexer()
 		SetDebug(_ShovelNew__Debug)
 		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():

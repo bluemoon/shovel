@@ -115,15 +115,10 @@ class DirtLexer(Scanner):
     Comment = Str("#") + Rep(AnyBut("\n"))
     EscapedNewline = Str("\\\n")
     LineTerm = Str("\n") | Eof
-
     Schema = (Str("---") + Opt(Str("^")) + Name + Str(":") + (Name|Number) + LineTerm)
-    
     Block = (Rep(Name|Number) + Str(":") + Opt(Any(" \t")) + LineTerm)
-
     FeatureBlock = (Rep(Name|Number|Period|OpenBracket|CloseBracket) + Str(":"))
-
     Function = (Str("@") + Name + Opt(Rep(OpenBracket)+ AnyChar|Punctuation  + Rep(CloseBracket)))
-
     ListBlock = (Str("-") + Opt(Any(" \t")) + Rep(Name|Number|Period))
 
     Lexicon = Lexicon([

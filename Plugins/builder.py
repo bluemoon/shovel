@@ -15,7 +15,7 @@ import re
 from Core.Configurator import Configurator
 from Core.Debug        import Debug
 from Core.Terminal     import TermGreen,TermEnd
-from Core.Utils		   import PPrint
+from Core.Utils	       import PPrint
 
 
 class builder:
@@ -39,9 +39,12 @@ class builder:
 			# I dont like the values hardcoded
 			if not os.path.exists("tmp/sandbox"):
 				os.mkdir('tmp/sandbox')
-
+			os.mkdir('tmp/sandbox/tmp')
+			#p = subprocess.Popen('cp tmp/%s tmp/sandbox/tmp/' % (File),shell=True,stdout=None)
+			#p.wait()
+			
 			# This adds --prefix= so that it doesnt install it to the system
-			NewConfigure = "--prefix="+CWD+"/tmp/sandbox/" + " " + " ".join(Configure)
+			NewConfigure = "--prefix="+ CWD + " " + " ".join(Configure)
 			# Prints out the whole string
 			Debug(NewConfigure,"DEBUG")
 			Configure = NewConfigure
@@ -49,7 +52,7 @@ class builder:
 			# The values should be listified so join them
 			Configure = " ".join(Configure)
 		
-		os.chdir('tmp/downloads/'+File)
+		os.chdir(CWD + '/tmp/downloads/' + File)
 		Debug("Configuring...","INFO")
 		print "[make] Configuring: " + Name
 		
@@ -90,5 +93,7 @@ class builder:
 			Debug("Sandbox Install","INFO")
 			SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 			SB.wait()
-			
-		os.chdir(CWD)
+
+		if self.Config.GetGlobal("sandbox"):
+			os._exit(0)
+		#os.chdir(CWD)
