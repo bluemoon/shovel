@@ -18,11 +18,6 @@ class Arguments:
 		else:
 			return False
 
-	def generateHelp(self):
-		for All in self.Arguments:
-			if self.Arguments[All]['helpstring']:
-				print "%s	%s [%s=%s]" % (All,self.Arguments[All]['helpstring'],self.Arguments[All]['name'],self.Arguments[All]['value'])
-
 	def countArguments(self,Arguments):
 		Arg = 0
 		for ArgV in Arguments[1:]:
@@ -32,3 +27,15 @@ class Arguments:
 		else:
 			return Arg
 		
+	def parseArguments(self,Arguments):
+		for Args in Arguments[1:]:		
+			for All in self.Arguments:
+				if Args == All:
+					self.Cfg.PutGlobal(self.Arguments[All]['name'],self.Arguments[All]['value'])
+
+	def generateHelp(self):
+		for All in self.Arguments:
+			if self.Arguments[All]['helpstring']:
+				print "%s	%s [%s=%s]" % (All,self.Arguments[All]['helpstring'],self.Arguments[All]['name'],self.Arguments[All]['value'])
+
+	

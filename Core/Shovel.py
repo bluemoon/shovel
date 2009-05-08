@@ -24,7 +24,7 @@ from Core.Messaging     import CoreMessaging
 from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
 from Core.Configurator  import Configurator,feature
 from Core.Loader        import CoreHandler
-from Core.Debug         import Debug,SetDebug
+from Core.Debug         import *
 from Core.Dependencies  import Dependencies
 from Core.Blocks        import Blocks
 from Core.Dirt          import Dirt
@@ -85,21 +85,27 @@ class ShovelNew(object):
 	def CommandOutOfBlock(self,Block):
 		for B in Block:
 			self.Commands.append(B)
-		
+
+	# DEPRECATED - changing to class Arguments	
 	def addArgV(self):
 		global __Debug
 		__Debug = ""
+		#PutGlobal("DEBUG",NONE)
 		ArgCounter = 0
 		# Im going to go to a class based approach soon
 		for ArgV in sys.argv[1:]:
+			# Sets the debug verbosity			
 			if ArgV == '-v':
 				__Debug = "WARNING"
+				#PutGlobal("DEBUG",WARNING)
 				ArgCounter += 1
 			if ArgV == '-vv':
 				__Debug = "INFO"
+				#PutGlobal("DEBUG",INFO)
 				ArgCounter += 1
 			if ArgV == '-vvv':
 				__Debug = "DEBUG"
+				#PutGlobal("DEBUG",DEBUG)
 				ArgCounter += 1
 			if ArgV == '--sandbox':
 				ArgCounter += 1
@@ -119,7 +125,8 @@ class ShovelNew(object):
 			self.RunAll = True
 		else:
 			self.RunAll = False
-			
+
+	# DEPRECATED - changing to class Arguments		
 	def runArgV(self):
 		if self.RunAll == True:
 			for All in self.Commands:
@@ -130,7 +137,8 @@ class ShovelNew(object):
 				if ArgV in self.Commands:
 					self.runBlock(ArgV)
 					self.DependencyRunner(ArgV)
-	
+
+	# DEPRECATED - changing to class Arguments
 	def checkArgV(self):
 		""" Checks to see if any arguments were passed """
 		Arg = 0
@@ -232,7 +240,8 @@ class ShovelNew(object):
 							#self.Features.RunFeature(self.DirtY[Block][Runner][SubRunner],Runner)
 					else:
 						pass
-						
+
+	# DEPRECATED - changing to class Arguments					
 	def displayHelp(self):
 		MainBlocks = self.Blocks.ParseBlock(self.DirtY)
 		print "These are the commands available: " 
@@ -240,10 +249,6 @@ class ShovelNew(object):
         
 	def Main(self):
 		self.addArgV()
-		#PPrint("Testing prettyPrint",'ok',None,'GREEN')
-                #lexi = Lexi()
-                #lexi.loadLexer("dirt")
-                #lexi.runLexer()
 		SetDebug(_ShovelNew__Debug)
 		self.Plugins.LoadAll()
 		if self.Dirt.dirtExists():
