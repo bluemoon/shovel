@@ -26,7 +26,7 @@ from Core.File			import rmDirectoryRecursive
 from Core.Utils			import PPrint
 
 
-#from Core.Lexer import Lexi
+from Core.Lexer import Lexi
 
 import Plugins
 
@@ -310,21 +310,20 @@ class ShovelNew(object):
         
 	def Main(self):
 		self.addArgV()
-		#PPrint("Testing prettyPrint",'ok',None,'GREEN')
-                #lexi = Lexi()
-                #lexi.loadLexer("dirt")
-                #lexi.runLexer()
-		SetDebug(_ShovelNew__Debug)
-		self.Plugins.LoadAll()
-		if self.Dirt.dirtExists():
-			self.DirtY = self.Dirt.loadDirt()
-                        OsBlock = self.Blocks.ParseBlock(self.DirtY)
-                        OsSpecific = self.BlockOSspecific(OsBlock)
-                        #print OsSpecific
-                        if OsSpecific:
-                            BaseBlock = self.Blocks.ParseBlock(self.DirtY[self.OS[0]])
-                            self.CommandOutOfBlock(BaseBlock)
-			self.checkArgV()
-			self.runArgV()
+        lexi = Lexi()
+        lexi.loadLexer("new_dirt")
+        lexi.runLexer()
+        SetDebug(_ShovelNew__Debug)
+        self.Plugins.LoadAll()
+        if self.Dirt.dirtExists():
+            self.DirtY = self.Dirt.loadDirt()
+            OsBlock = self.Blocks.ParseBlock(self.DirtY)
+            OsSpecific = self.BlockOSspecific(OsBlock)
+            #print OsSpecific
+            if OsSpecific:
+                BaseBlock = self.Blocks.ParseBlock(self.DirtY[self.OS[0]])
+                self.CommandOutOfBlock(BaseBlock)
+            self.checkArgV()
+            self.runArgV()
 			
 		
