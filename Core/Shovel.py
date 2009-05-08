@@ -57,7 +57,13 @@ def StringParse(self,String):
     Parse = re.compile("\{[a-zA-Z]*\:[a-zA-Z0-9]*\}")
     ParseGroup = Parse.group()
     print ParseGroup
-    
+
+class Shovel(object):
+    def __init__(self):
+        pass    
+    def Main(self):
+        pass
+
 #### Class:ShovelNew #########################################################
 class ShovelNew(object):
 	def __init__(self):

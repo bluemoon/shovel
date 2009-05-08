@@ -21,7 +21,21 @@ from Core.Utils	       import PPrint
 class builder:
 	def __init__(self):
 		self.Config = Configurator()
-		
+	def waf(self,Name):
+		Debug(Name,"DEBUG")
+		Config = self.Config.GetConfig(Name)
+		CWD = os.getcwd()
+		Folder = Config["folder"]
+		os.chdir(Folder)
+
+		print "[waf] Configure: "
+		wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
+		wafConfigure.wait()
+		print "[waf] Build: "
+		wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
+		wafBuild.wait()
+
+		os.chdir(CWD)
 	def make(self,Name):
 		Debug(Name,"DEBUG")
 		# Get all the info from the container class

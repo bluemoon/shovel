@@ -18,8 +18,8 @@ class TestBlocks(libpry.AutoTree):
 		sys.path.append('../')
 		from Core.Blocks import Blocks
 		from Core.Dirt   import Dirt
-		self.Blocks = Blocks()
-		self.Dirt =   Dirt()
+		self.Blocks = Core.Blocks()
+		self.Dirt = Core.Dirt()
 	def test_Blocks(self):
 		Dirt = self.Dirt.loadDirt()
 		assert self.Blocks.ParseBlock(Dirt) == ['pre.flight', 'dist', 'build']

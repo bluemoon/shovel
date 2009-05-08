@@ -12,6 +12,11 @@
 import inspect
 import os
 
+NONE    = 0
+WARNING = 1
+INFO    = 2
+DEBUG   = 3
+
 global __Debug
 global _ShovelNew__Debug
 

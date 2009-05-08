@@ -29,14 +29,12 @@ class Plugin:
 				
 	def LoadAll(self,Folder=None):
 		Dir = os.path.join(os.path.dirname(__file__)).split("/")[:-2]
-		#Debug(Plugins.__dict__['__path__'][0],"DEBUG")
 		def locate(pattern, root=Plugins.__dict__['__path__'][0]):
 			for path, dirs, files in os.walk(root):
 				for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
 					yield filename
 					
 		for Py in locate("*.py",Plugins.__dict__['__path__'][0]):
-			#Debug(Py,"DEBUG")
 			self.LoadAbsolute(Py)
 			
 	def LoadAbsolute(self,AbsPath):
@@ -58,3 +56,4 @@ class Plugin:
 						Debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,"INFO")
 		except AttributeError:
 			pass
+
