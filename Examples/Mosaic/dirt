@@ -1,0 +1,46 @@
+---
+Linux:
+  # Base Block
+  pre.flight:
+    # Package Block
+    ffmpeg:
+         - dependencies:
+               use: shovel.systools.pkgconfig
+         - download:
+            use: shovel.downloader.http
+            link: http://ffmpeg.mplayerhq.hu/releases/ffmpeg-0.5.tar.bz2
+         - extract:
+            use: shovel.extractor.tar
+            file: ffmpeg-0.5.tar.bz2
+         - build:
+            use: shovel.builder.make
+            folder: ffmpeg-0.5
+            configure: ["--enable-postproc --enable-gpl",
+                        " --disable-mmx2"]
+        
+    xine-lib:
+        - dependencies:
+            - ffmpeg
+        - download:
+            use: shovel.downloader.http
+            link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2
+        - extract:
+            use: shovel.extractor.tar
+            file: xine-lib-1.1.16.tar.bz2
+        - build:
+            use: shovel.builder.make
+            folder: xine-lib-1.1.16
+            configure: [" --without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3  --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest  --disable-mmx2"]
+            
+  #build:
+    #python:
+    #   use: shovel.python.glob
+    #   glob: src 
+    #   use: shovel.python.pyrex
+    #   pyrex: src/pyrex
+
+  #dist:
+    #sign:
+    #    use: shovel.enc.pgp
+    #upload:
+    #    use: shovel.uploader.svn

@@ -6,11 +6,16 @@ extend it more, it sorts out dependencies already.
 Use:
 # ./shovel
 
-or:
+Or:
 
 # python setup.py bdist_egg
 # easy_install {eggname}
 
-then use it from the command line
+Then use it from the command line
 
 # shovel
+
+Then see:
+# Examples/Mosaic/dirt 
+
+for how the build files look
