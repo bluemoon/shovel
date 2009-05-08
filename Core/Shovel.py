@@ -1,3 +1,11 @@
+##############################################################################
+## File: Shovel.py
+## Version: -*-dev-*-
+## Author: Alex Toney (toneyalex@gmail.com)
+## Date: 2009/05/08
+## Copyright (c) 2009 Alex Toney
+## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
+##############################################################################
 #### System Includes #########################################################
 from threading import Thread
 import sys
