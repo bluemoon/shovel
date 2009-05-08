@@ -1,0 +1,16 @@
+This is going to be a project builder automation tool. ie. building
+pre-requisites, I have working code that does this already but i plan to 
+extend it more, it sorts out dependencies already. 
+
+
+Use:
+# ./shovel
+
+or:
+
+# python setup.py bdist_egg
+# easy_install {eggname}
+
+then use it from the command line
+
+# shovel
