@@ -16,11 +16,13 @@ from Core.Configurator import Configurator
 from Core.Debug        import Debug
 from Core.Terminal     import TermGreen,TermEnd
 from Core.Utils	       import PPrint
+
 class make:
   def __init__(self):
     self.Config = Configurator()
     self.cwd = os.getcwd()
     self.sandbox_path = 'tmp/sandbox'
+    
   def Configure(self,Directory,Configure):
     # If sandox is passed, prepare to build a sandbox
     if self.Config.GetGlobal("sandbox"):
@@ -130,3 +132,4 @@ class builder:
     m.Configure(File,Configure)
     print "[make] Build" 
     m.Build(File)
+
