@@ -13,5 +13,5 @@ from Core.Shovel import ShovelNew
 
 #### Function:Main ###########################################################
 if __name__ == "__main__":
-	M = ShovelNew()
-	M.Main()
+  M = ShovelNew()
+  M.Main()
