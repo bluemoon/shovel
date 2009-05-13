@@ -33,7 +33,7 @@ from Core.File		    	import rmDirectoryRecursive
 from Core.Utils		    	import PPrint
 
 
-#from Core.Lexer import Lexi
+from Core.Lexer import Lexi
 
 import Plugins
 
@@ -52,10 +52,13 @@ def StringParse(self,String):
     print ParseGroup
 
 class Shovel(object):
-    def __init__(self):
-        pass    
-    def Main(self):
-        pass
+  def __init__(self):
+    pass    
+  def Main(self):
+    lexi = Lexi()
+    lexi.loadLexer("new_dirt")
+    lexi.runLexer()
+    
 
 #### Class:ShovelNew #########################################################
 class ShovelNew(object):

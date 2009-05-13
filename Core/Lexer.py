@@ -14,22 +14,72 @@ import exceptions
 import re
 #### Local Imports ###########################################################
 from Core.Plex import *
-
+class Schema(object):
+  pass
 class Lexi(object):
   def __init__(self):
-    pass
+    self.LexQueue = []
+    self.Current = []
+  
+  # LEXICAL SCHEME
+  Punctuation  = 'punct'
+  Colon        = ':'
+  OpenBracket  = '['
+  CloseBracket = ']'
+  newLine      = '\n'
+  
   def loadLexer(self,File):
     self.fHandle = open(File,"r")
     self.Lexer = DirtLexer(self.fHandle)
+
+  def startBlock(self,Block):
+    #print Block[1:-2]
+    pass
+  def newLineReset(self):
+    self.LexQueue = []
+  def next(self):
+    self.Value, self.Text = self.Lexer.read()
+    self.nexted = True
+  def expect(self,What):
+    self.next()
+    if self.Text == What:
+      return True
+    else:
+      return False
+
   def runLexer(self):
+    self.Value      = True
+    self.Level      = 0
+    self.flExpected = False
+
     while 1:
-      Value, Text = self.Lexer.read()
-      if Text and Text <> Value:
-        print "%s(%s)" % (Value, repr(Text))
-      else:
-        print repr(Value)
-      if Value is None:
+      self.BrackOpen = False
+      self.nexted = False
+      self.next()
+      #print '[%s] %s' % (self.Value,self.Text) 
+      if self.Value == 'INDENT':
+        self.Level = self.Level + 1
+      if self.Value == 'DEDENT':
+        self.Level = self.Level - 1
+      if self.Value == 'schema':
+        print '[%s] %s' % (self.Value,self.Text[4:])
+      if self.Value == 'block':
+        print '%d:[%s] %s' % (self.Level,self.Value,self.Text[1:-2])
+        
+        self.startBlock(self.Text)
+      if self.Value == 'use_fblock':
+        print '%d:[%s] %s' % (self.Level,self.Value,self.Text)
+      if self.Value == 'fblock':
+        print '%d:[%s] %s' % (self.Level,self.Value,self.Text)
+
+      if self.Value is None:
         break
+      
+      if not self.nexted:
+        self.next()
+
+      #self.LexQueue.append(self.Text)
+      
                 
 class DirtLexer(Scanner):
   def __init__(self,File):
@@ -73,75 +123,71 @@ class DirtLexer(Scanner):
       self.IndentationStack.pop()
       self.produce('DEDENT', '')
   
-  def DeclareSchema(self,Text):
-    SchemaRe = re.compile("[a-zA-Z0-9\^\:]")
-    Schema = SchemaRe.findall(Text)
-    if Schema:
-      print True
-    else:
-      print False
             
         
   def eof(self):
     self.DedentTo(0)
     
-    Letter   = Range("AZaz") | Any("_")
-    Digit    = Range("09")
-    HexDigit = Range("09AFaf")
-    Name     = Letter + Rep(Letter | Digit)
-    Number   = Rep1(Digit) | (Str("0x") + Rep1(HexDigit))
-    Indentation = Rep(Str(" ")) | Rep(Str("\t"))
+  Letter   = Range("AZaz") | Any("_")
+  Digit    = Range("09")
+  HexDigit = Range("09AFaf")
+  Name     = Letter + Rep(Letter | Digit)
+  Number   = Rep1(Digit) | (Str("0x") + Rep1(HexDigit))
+  Indentation = Rep(Str(" ")) | Rep(Str("\t"))
 
-    SqString = (
+  SqString = (
       Str("'") + 
       Rep(AnyBut("\\\n'") | (Str("\\") + AnyChar)) + 
       Str("'"))
-    DqString = (
+  DqString = (
       Str('"') + 
       Rep(AnyBut('\\\n"') | (Str("\\") + AnyChar)) + 
       Str('"'))
-    NonDq = AnyBut('"') | (Str('\\') + AnyChar)
-    TqString = (
+  NonDq = AnyBut('"') | (Str('\\') + AnyChar)
+  TqString = (
       Str('"""') +
       Rep(
       NonDq |
       (Str('"') + NonDq) |
       (Str('""') + NonDq)) + Str('"""'))
     
-    StringLiteral = SqString | DqString | TqString
-    Punctuation = Any(":,;<>+*/|&=.%`~^-!@")
-    Period = Str(".")
-    OpenBracket  = Any("{([<")
-    CloseBracket = Any("})]>")
-    bBracketOpen  = Str("{")
-    bBracketClose = Str("}") 
-    bFunction = (OpenBracket + Rep(Name|Punctuation|Number) + CloseBracket)
-    iFunction = ( Any("!") + Name + AnyBut(" \n"))
-    Function = (Any("@") + Name + ((OpenBracket + AnyChar + CloseBracket)| AnyChar))
-    Diphthong = Str("==", "!=", "<=", "<<", ">>", "**")
-    Spaces = Rep1(Any(" \t"))
-    Comment = Str("#") + Rep(AnyBut("\n"))
-    EscapedNewline = Str("\\\n")
-    LineTerm = Str("\n") | Eof
-    Schema = (Str("---") + Opt(Str("^")) + Name + Str(":") + (Name|Number) + LineTerm)
-    Block = (Rep(Name|Number) + Str(":") + Opt(Any(" \t")) + LineTerm)
-    FeatureBlock = (Rep(Name|Number|Period|OpenBracket|CloseBracket) + Str(":"))
-    Function = (Str("@") + Name + Opt(Rep(OpenBracket)+ AnyChar|Punctuation  + Rep(CloseBracket)))
-    ListBlock = (Str("-") + Opt(Any(" \t")) + Rep(Name|Number|Period))
+  StringLiteral = SqString | DqString | TqString
+  Punctuation = Any(":,;<>+*/|&=.%`~^-!@")
+  Period = Str(".")
+  Colon = Str(":")
+  OpenBracket  = Any("{([<")
+  CloseBracket = Any("})]>")
+  bBracketOpen  = Str("{")
+  bBracketClose = Str("}") 
+  bFunction = (OpenBracket + Rep(Name|Punctuation|Number) + CloseBracket)
+  iFunction = ( Any("!") + Name + AnyBut(" \n"))
+  Function = (Any("@") + Name + ((OpenBracket + AnyChar + CloseBracket)| AnyChar))
+  Diphthong = Str("==", "!=", "<=", "<<", ">>", "**")
+  Spaces = Rep1(Any(" \t"))
+  Comment = Str("#") + Rep(AnyBut("\n"))
+  EscapedNewline = Str("\\\n")
+  LineTerm = Str("\n") | Eof
+  Schema = (Str("---") + Opt(Str("^")) + Name + Str(":") + (Name|Number))
+  Block = (OpenBracket + Rep(Punctuation|Name) + CloseBracket + Str(":"))
+  FeatureBlock = (Rep(Punctuation|Name) + Str(":") + Rep(AnyBut('\n')) )
+  wUseFeatureBlock = (Name + OpenBracket + Rep(Punctuation|Name) + CloseBracket + Str(":"))
+  
+  Function = (Str("@") + Name + Opt(Rep(OpenBracket)+ AnyChar|Punctuation  + Rep(CloseBracket)))
+  ListBlock = (Str("-") + Opt(Any(" \t")) + Rep(Name|Number|Period))
 
-    Lexicon = Lexicon([
+  Lexicon = Lexicon([
     	(Name,                  'name'),
     	(Number,                'number'),
     	(StringLiteral,         'string'),
-        (Punctuation,           'punct'),
+      (Punctuation,           'punct'),
+      (Schema,                'schema'),
+      (Block,                 'block'),
+      (wUseFeatureBlock,      'use_fblock'),
+      (FeatureBlock,          'fblock'),
     	(OpenBracket,           OpenBracketAction),
     	(CloseBracket,          CloseBracketAction),
-        (Schema,                DeclareSchema),
-        #(Function,              'Function'),
-        #(Block,                 'Block'),
-        #(FeatureBlock,          'FeatureBlock'),
     	(LineTerm,              NewlineAction),
-        (Comment,               IGNORE),
+      (Comment,               IGNORE),
     	(Spaces,                IGNORE),
     	(EscapedNewline,        IGNORE),
     	State('indent', [
