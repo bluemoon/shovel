@@ -12,34 +12,82 @@
 #### System Imports ##########################################################
 import exceptions
 import re
+import os
 #### Local Imports ###########################################################
 from Core.Plex import *
-class Schema(object):
+class SchemaNotFound(Exception):
   pass
+class Schema(object):
+  def schemaFromDirt(self,Schema):
+    schSplit = Schema.split(':')
+    if schSplit[0] == 'strict':
+      self.SchemaStrict = True
+    self.SchemaName = schSplit[1]
+    self.schemaLoad(self.SchemaName)
+
+  def schemaLoad(self,Schema):
+    if os.path.exists("Schema/" + Schema):
+      Schema = open("Schema/" + Schema,"r")
+      while 1:
+        Line = Schema.readline()
+        if not Line:
+          break
+    else:
+      raise SchemaNotFound
+
+class ProceduralParser(object):
+  def __init__(self):
+    self.noFurther   = False
+    self.commands    = []
+    self.useFeatures = []
+
+  def ParseBlock(self,Text,Level):
+    import os
+    CleanText = Text[1:-2]
+    #print '%d:%s' % (Level,CleanText)
+    if Level == 0:
+      if os.uname()[0] == CleanText:
+        self.noFurther = False
+        print '%d:%s' % (Level,CleanText)
+      else:
+        self.noFurther = True
+    elif Level == 1 and not self.noFurther:
+      print '%d:%s' % (Level,CleanText)
+      self.commands.append(CleanText)
+    elif Level == 2 and not self.noFurther:
+      print '%d:%s' % (Level,CleanText)
+      #Configurator.PutPackage(self,Package,Yaml)
+
+  def ParseUseFeatureBlock(self,Text,Level):
+    if not self.noFurther:
+      self.useFeatures.append(Text[:-2].split('[')[1])
+      print Text[:-2].split('[')[0]
+
+  def ParseFeatureBlock(self,Text,Level):
+    if not self.noFurther:
+      print "  " + Text
+
 class Lexi(object):
   def __init__(self):
     self.LexQueue = []
     self.Current = []
-  
-  # LEXICAL SCHEME
-  Punctuation  = 'punct'
-  Colon        = ':'
-  OpenBracket  = '['
-  CloseBracket = ']'
-  newLine      = '\n'
+    self.ProParse = ProceduralParser()
   
   def loadLexer(self,File):
     self.fHandle = open(File,"r")
     self.Lexer = DirtLexer(self.fHandle)
 
-  def startBlock(self,Block):
-    #print Block[1:-2]
-    pass
+  def runSchema(self,Sch):
+    S = Schema()
+    S.schemaFromDirt(Sch)
+
   def newLineReset(self):
     self.LexQueue = []
+
   def next(self):
     self.Value, self.Text = self.Lexer.read()
     self.nexted = True
+
   def expect(self,What):
     self.next()
     if self.Text == What:
@@ -63,14 +111,13 @@ class Lexi(object):
         self.Level = self.Level - 1
       if self.Value == 'schema':
         print '[%s] %s' % (self.Value,self.Text[4:])
+        self.runSchema(self.Text[4:])
       if self.Value == 'block':
-        print '%d:[%s] %s' % (self.Level,self.Value,self.Text[1:-2])
-        
-        self.startBlock(self.Text)
+        self.ProParse.ParseBlock(self.Text,self.Level)
       if self.Value == 'use_fblock':
-        print '%d:[%s] %s' % (self.Level,self.Value,self.Text)
+        self.ProParse.ParseUseFeatureBlock(self.Text,self.Level)
       if self.Value == 'fblock':
-        print '%d:[%s] %s' % (self.Level,self.Value,self.Text)
+        self.ProParse.ParseFeatureBlock(self.Text,self.Level)
 
       if self.Value is None:
         break
