@@ -20,7 +20,6 @@ import inspect
 
 sys.path.append('Core/')
 #### From Core ###############################################################
-from Core.Messaging     import CoreMessaging
 from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
 from Core.Configurator  import Configurator,feature
 from Core.Loader        import CoreHandler
