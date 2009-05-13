@@ -29,8 +29,8 @@ from Core.Blocks        import Blocks
 from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
-from Core.File			import rmDirectoryRecursive
-from Core.Utils			import PPrint
+from Core.File		    	import rmDirectoryRecursive
+from Core.Utils		    	import PPrint
 
 
 #from Core.Lexer import Lexi
@@ -45,12 +45,6 @@ except ImportError:
     Debug("Psyco not loaded.","INFO")
 else:
 	Debug("Psyco Enabled!","INFO")
-
-
-#
-# Any code that has 
-#### FROZEN ####
-# has been feature frozen and will not be changed
 
 def StringParse(self,String):
     Parse = re.compile("\{[a-zA-Z]*\:[a-zA-Z0-9]*\}")
