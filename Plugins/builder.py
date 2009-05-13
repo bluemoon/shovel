@@ -28,7 +28,7 @@ class make:
     if self.Config.GetGlobal("sandbox"):
       if not os.path.exists(self.sandbox_path):
         os.mkdir(self.sandbox_path)
-      NewConfigure = "--prefix="+ self.cwd + self.sandbox_path + " ".join(Configure)
+      NewConfigure = "--prefix="+ self.cwd +"/" + self.sandbox_path  +" " + " ".join(Configure)
       Debug(NewConfigure,"DEBUG")
       Configure = NewConfigure
       

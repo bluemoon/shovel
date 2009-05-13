@@ -6,7 +6,7 @@
  Shovel Core:
      1. Write a class to take over for lots of if's on argv input
 
-     2. Remove the actual parsing from this class, seperate it so that 
+     [/] 2. Remove the actual parsing from this class, seperate it so that 
         it is easier to update
 
      3. I think it would be quite interesting to support different versions of 
@@ -66,10 +66,10 @@
 
  Builder:
      1. Find a more elegant way for stderr to be run
-     2. Support options to enable/disable the parsing of gcc
+     [x] 2. Support options to enable/disable the parsing of gcc
 
 
  Utils:
-     1. Get pprint to multiline print properly
-     2. Consolidate all of the terminal utilities here
+     [/] 1. Get pprint to multiline print properly
+     [x] 2. Consolidate all of the terminal utilities here
 
