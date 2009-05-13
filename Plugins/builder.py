@@ -16,74 +16,50 @@ from Core.Configurator import Configurator
 from Core.Debug        import Debug
 from Core.Terminal     import TermGreen,TermEnd
 from Core.Utils	       import PPrint
-
-
-class builder:
+class make:
   def __init__(self):
     self.Config = Configurator()
-  
-  def waf(self,Name):
-    Debug(Name,"DEBUG")
-    Config = self.Config.GetConfig(Name)
-    CWD = os.getcwd()
-    Folder = Config["folder"]
-    os.chdir(Folder)
-    print "[waf] Configure: " 
-    wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
-    wafConfigure.wait()
-    print "[waf] Build: "
-    wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
-		wafBuild.wait()
-    os.chdir(CWD)
-  
-  def make(self,Name):
-		Debug(Name,"DEBUG")
-    # Get all the info from the container class
-    Config = self.Config.GetConfig(Name)
-		Debug(Config,"DEBUG")
-    # Get the function parameters from the container class
-    File = Config["folder"]
-    Configure = Config["configure"]
-		
-    # Our working directory
-    CWD = os.getcwd()
-    # if --sandbox is passed to the main code
+    self.cwd = os.getcwd()
+    self.sandbox_path = 'tmp/sandbox'
+  def Configure(self,Directory,Configure):
+    # If sandox is passed, prepare to build a sandbox
     if self.Config.GetGlobal("sandbox"):
-      # I dont like the values hardcoded
-      if not os.path.exists("tmp/sandbox"):
-        os.mkdir('tmp/sandbox')
-      os.mkdir('tmp/sandbox/tmp')
-      #p = subprocess.Popen('cp tmp/%s tmp/sandbox/tmp/' % (File),shell=True,stdout=None)
-      #p.wait()			
-      # This adds --prefix= so that it doesnt install it to the system
-      NewConfigure = "--prefix="+ CWD + " " + " ".join(Configure)
-      # Prints out the whole string
+      if not os.path.exists(self.sandbox_path):
+        os.mkdir(self.sandbox_path)
+      NewConfigure = "--prefix="+ self.cwd + self.sandbox_path + " ".join(Configure)
       Debug(NewConfigure,"DEBUG")
       Configure = NewConfigure
+      
+    # Otherwise pass the normal configure options
     else:
-      # The values should be listified so join them
       Configure = " ".join(Configure)
-		
-    os.chdir(CWD + '/tmp/downloads/' + File)
+    Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
+    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
     Debug("Configuring...","INFO")
-    print "[make] Configuring: " + Name
-		
+    
+    # If it has prepared options ie. --prefix.....
     if Configure:
       print "[make] Configure Options: " + Configure
       p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=None)
       p.wait()
+    # Otherwise configure it normally
     else:
       p = subprocess.Popen('./configure',shell=True,stdout=None)
       p.wait()
-		
-    Debug("Building:" + Name,"INFO")
-    print "[make] Building: " + Name
-		
+    
+    Debug("Changing to directory: " + self.cwd ,"DEBUG")
+    os.chdir(self.cwd)
+    
+  def Build(self,Directory):
+    Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
+    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
+    #Debug("Building:" + Name,"INFO")
+    #print "[make] Building: " + Name
     regex = re.compile('[a-zA-Z0-9/_]*\.c')
     if self.Config.GetGlobal("nonpretty"):
       MakeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
     else:
-			MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+      MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
       while MakeSub.poll() is None:
         Read = MakeSub.stdout.readline()
         match = regex.findall(Read)
@@ -101,7 +77,56 @@ class builder:
       Debug("Sandbox Install","INFO")
       SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
       SB.wait()
+    
+    Debug("Changing to directory: " + self.cwd,"DEBUG")
+    os.chdir(self.cwd)
+    
+class waf:
+  def __init__(self):
+    self.cwd = os.getcwd()
 
-    if self.Config.GetGlobal("sandbox"):
-			#os._exit(0)
-			pass
+  def Configure(self,Directory):
+    Debug("waf configuring","DEBUG")
+    Debug("waf changing directory [" +self.cwd + Directory+ "]","DEBUG")
+    os.chdir(self.cwd + Directory)
+    wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
+    wafConfigure.wait()
+    Debug("waf changing directory [" +self.cwd  +"]","DEBUG")
+    os.chdir(self.cwd)
+
+  def Build(self,Directory):
+    Debug("waf building","DEBUG")
+    Debug("waf changing directory [" +self.cwd + Directory+ "]","DEBUG")
+    os.chdir(self.cwd + Directory)
+    wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
+    wafBuild.wait()
+    Debug("waf changing directory [" +self.cwd +"]","DEBUG")
+    os.chdir(self.cwd)
+
+class builder:
+  def __init__(self):
+    self.Config = Configurator()
+
+  def waf(self,Name):
+    Debug(Name,"DEBUG")
+    Config = self.Config.GetConfig(Name)
+    Folder = Config["folder"]
+    w = waf()
+    print "[waf] Configure: " 
+    w.Configure(Folder)
+    print "[waf] Build: "
+    w.Build(Folder)
+  
+  def make(self,Name):
+    Debug(Name,"DEBUG")
+    # Get all the info from the container class
+    Config = self.Config.GetConfig(Name)
+    Debug(Config,"DEBUG")
+    # Get the function parameters from the container class
+    File = Config["folder"]
+    Configure = Config["configure"]
+    m = make()
+    print "[make] Configure" 
+    m.Configure(File,Configure)
+    print "[make] Build" 
+    m.Build(File)

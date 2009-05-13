@@ -1,5 +1,4 @@
 from threading import Thread
-from Core.Messaging import CoreMessaging
 from Core.Configurator import Configurator
 from Core.Debug import Debug,GetDebug
 from Core.Utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
@@ -15,7 +14,6 @@ def _reporthook(numblocks, blocksize, filesize, url,pbar):
 class downloader(Thread):
 	def __init__(self):
 		self.Config = Configurator()
-		self.CoreMessaging = CoreMessaging()
 		Thread.__init__(self)
 
 	def http(self,Name):
@@ -66,7 +64,7 @@ class downloader(Thread):
 		
 		Down = {"downloader":True}		
 		self.Config.AppendOutYaml(Name,Down)
-		self.CoreMessaging.Send("downloader",Name+ ':done')
+
 
 	def svn(self,Name):
 		Config = self.Config.GetConfig(Name)
@@ -83,7 +81,7 @@ class downloader(Thread):
 					if GetDebug() == "INFO" or GetDebug() == "WARNING" or GetDebug() == "DEBUG":
 						print "[svn] " + p.stdout.readline()[:-1]
 			p.wait()
-			self.CoreMessaging.Send("downloader",Name + ':done') 
+
 		else:
 			svnBuild = '/usr/bin/env svn up tmp/downloads/ '+ Filename
 			p = subprocess.Popen(svnBuild,shell=True,stdout=subprocess.PIPE)
@@ -92,16 +90,15 @@ class downloader(Thread):
 					if GetDebug() == "INFO" or GetDebug() == "WARNING" or GetDebug() == "DEBUG":
 						print "[svn] " + p.stdout.readline()
 			p.wait()
-			self.CoreMessaging.Send("downloader",Name + ':done')
+
 			 
 	def git(self,Arguments,Filename,Name):
 		if not os.path.isdir(Filename):
 			gitBuild = '/usr/bin/env git clone ' + Arguments + " tmp/downloads/" + Filename
 			p = subprocess.Popen(gitBuild,shell=True,stdout=None)
 			p.wait()
-			self.CoreMessaging.Send("downloader",Name + ':done') 
 		else:
 			gitBuild = '/usr/bin/env git pull tmp/downloads/' + Filename
 			p = subprocess.Popen(gitBuild,shell=True,stdout=subprocess.PIPE)
 			p.wait()
-			self.CoreMessaging.Send("downloader",Name + ':done')
+
