@@ -15,8 +15,10 @@ import re
 import os
 #### Local Imports ###########################################################
 from Core.Plex import *
+
 class SchemaNotFound(Exception):
   pass
+
 class Schema(object):
   def schemaFromDirt(self,Schema):
     schSplit = Schema.split(':')
