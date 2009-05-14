@@ -57,17 +57,18 @@ def StringParse(self,String):
 class Shovel(object):
   def __init__(self):
     pass
+    
   def Arguments(self):
     import optparse
+    
     usage = "usage: %prog [options] module"
     parser = optparse.OptionParser(usage=usage,version=VERSION)
     parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
     parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
     parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
     parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
+    
     self.options, self.remainder = parser.parse_args()
-    #print self.options
-    #print remainder
     if self.options.sandbox:
       self.Config.PutGlobal("sandbox",True)
     if self.options.nonpretty:

@@ -1,10 +1,21 @@
+RELEASE: Rusty Coal Shovel
+  [x] 1. Optparse arguments
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  All:
      1. Get all the code to follow the 80 character line limit
      2. More comments!
      3. Write more tests!
  
  Shovel Core:
-     1. Write a class to take over for lots of if's on argv input
+     [x]1. Write a class to take over for lots of if's on argv input
 
      [/] 2. Remove the actual parsing from this class, seperate it so that 
         it is easier to update

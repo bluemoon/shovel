@@ -11,6 +11,21 @@
 import sys, os
 import termios, fcntl, struct, sys
 from Core.Configurator import Configurator
+from Core.Debug import Debug
+
+
+def mkdirIfAbsent(*args):
+    for dirName in args:
+      Debug("ensuring that dir exists: %s" % dirName,"DEBUG")
+      if not os.path.exists(dirName):
+        try:
+          Debug("creating dir: %s" % dirName,"DEBUG")
+          os.makedirs(dirName)
+        except OSError, e:
+          print "Could not create dir %s. Error: %s" % (dirName, e)
+
+
+
 ColorList = {
 'USE' : True,
 'BOLD'  :'\x1b[01;1m',
