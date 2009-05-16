@@ -56,6 +56,7 @@ class ProceduralParser(object):
     elif Level == 1 and not self.noFurther:
       print '%d:%s' % (Level,CleanText)
       self.commands.append(CleanText)
+      print self.commands
     elif Level == 2 and not self.noFurther:
       print '%d:%s' % (Level,CleanText)
       #Configurator.PutPackage(self,Package,Yaml)

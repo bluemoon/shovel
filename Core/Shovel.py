@@ -134,15 +134,15 @@ class Shovel(object):
 
             
     def Main(self):
-        ## Parse the arguments
-        self.Arguments()
         self.plugins.LoadAll()
         
         if os.path.exists('.shovel'):
             dirtFile = open('.shovel', 'r')
             dFile = dirtFile.read()
             self.config.setGlobalDump(yaml.load(dFile,Loader=Loader))
-            
+        
+        ## Parse the arguments
+        self.Arguments()
         ## Debug tests
         
         ## debug('testing info',INFO)
