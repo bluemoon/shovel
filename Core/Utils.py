@@ -15,7 +15,7 @@ import functools
 import inspect
 
 from Core.Configurator import Configurator
-from Core.Debug import Debug
+from Core.Debug import *
 
 ##
 # deprecated decorator

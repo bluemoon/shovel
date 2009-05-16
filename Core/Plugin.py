@@ -16,7 +16,7 @@ import fnmatch
 #### Local Imports ###########################################################
 from Core.Loader       import CoreHandler
 from Core.Configurator import Configurator
-from Core.Debug        import Debug
+from Core.Debug        import *
 from Core.Terminal     import TermGreen,TermOrange,TermEnd
 
 import Plugins
@@ -53,7 +53,7 @@ class Plugin:
 				for Function in Loader.__dict__[Name].__dict__:
 					if Function[0:2] != '__':
 						self.Config.putFeature('shovel.'+Name.lower()+"." +Function)
-						Debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,"INFO")
+						debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,INFO)
 		except AttributeError:
 			pass
 

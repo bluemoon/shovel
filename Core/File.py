@@ -10,15 +10,15 @@
 ## System Includes
 import os
 ## Local Includes
-from Core.Debug import Debug
+from Core.Debug import *
 
 def mkdirIfAbsent(*args):
     ''' Create a directory if its not there '''
     for dirName in args:
-        Debug("ensuring that dir exists: %s" % dirName,"DEBUG")
+        debug("ensuring that dir exists: %s" % dirName,DEBUG)
         if not os.path.exists(dirName):
             try:
-                Debug("creating dir: %s" % dirName,"DEBUG")
+                debug("creating dir: %s" % dirName,DEBUG)
                 os.makedirs(dirName)
             except OSError, error:
                 print "Could not create dir %s. Error: %s" % (dirName, error)

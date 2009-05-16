@@ -23,7 +23,7 @@ class make:
     self.cwd = os.getcwd()
     self.sandbox_path = 'tmp/sandbox'
     
-  def Configure(self,Directory,Configure):
+  def Configure(self, Directory, Configure):
     # If sandox is passed, prepare to build a sandbox
     if self.Config.GetGlobal("sandbox"):
       if not os.path.exists(self.sandbox_path):
@@ -35,6 +35,7 @@ class make:
     # Otherwise pass the normal configure options
     else:
       Configure = " ".join(Configure)
+      
     Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
     os.chdir(self.cwd + '/tmp/downloads/' + Directory)
     Debug("Configuring...","INFO")
@@ -52,7 +53,7 @@ class make:
     Debug("Changing to directory: " + self.cwd ,"DEBUG")
     os.chdir(self.cwd)
     
-  def Build(self,Directory):
+  def Build(self, Directory):
     Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
     os.chdir(self.cwd + '/tmp/downloads/' + Directory)
     #Debug("Building:" + Name,"INFO")

@@ -1,7 +1,7 @@
 from Core.Terminal     import TermGreen,TermEnd
 from Core.Utils	       import pprint
 from Core.Configurator import Configurator
-from Core.Debug        import Debug,GetDebug
+from Core.Debug        import *
 from threading         import Thread
 from Core.Utils        import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
 
@@ -26,16 +26,19 @@ class make:
     if self.Config.GetGlobal("sandbox"):
       if not os.path.exists(self.sandbox_path):
         os.mkdir(self.sandbox_path)
+        
       NewConfigure = "--prefix="+ self.cwd +"/" + self.sandbox_path  +" " + " ".join(Configure)
-      Debug(NewConfigure,"DEBUG")
+      debug(NewConfigure, DEBUG)
       Configure = NewConfigure
       
     # Otherwise pass the normal configure options
     else:
       Configure = " ".join(Configure)
-    Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
+    
+    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
+    
     os.chdir(self.cwd + '/tmp/downloads/' + Directory)
-    Debug("Configuring...","INFO")
+    debug("Configuring...", INFO)
     
     # If it has prepared options ie. --prefix.....
     if Configure:
@@ -47,11 +50,11 @@ class make:
       p = subprocess.Popen('./configure',shell=True,stdout=None)
       p.wait()
     
-    Debug("Changing to directory: " + self.cwd ,"DEBUG")
+    debug("Changing to directory: " + self.cwd , DEBUG)
     os.chdir(self.cwd)
     
   def Build(self,Directory):
-    Debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory,"DEBUG")
+    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
     os.chdir(self.cwd + '/tmp/downloads/' + Directory)
     #Debug("Building:" + Name,"INFO")
     #print "[make] Building: " + Name
@@ -67,18 +70,19 @@ class make:
           pprint("Compiling: " + match[0],"ok",None,"GREEN")
         else:
           pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
+          
     MakeSub.wait()
     # Make sure the build returns a valid code and doesnt fail
-    Debug("Build Return Code: %d" % (MakeSub.returncode),"INFO")
+    debug("Build Return Code: %d" % (MakeSub.returncode), INFO)
     if MakeSub.returncode > 0:
       raise Exception('BuildError')
 		
     if self.Config.GetGlobal("sandbox"):
-      Debug("Sandbox Install","INFO")
+      debug("Sandbox Install", INFO)
       SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
       SB.wait()
     
-    Debug("Changing to directory: " + self.cwd,"DEBUG")
+    debug("Changing to directory: " + self.cwd, DEBUG)
     os.chdir(self.cwd)
     
 class waf:
@@ -86,21 +90,21 @@ class waf:
     self.cwd = os.getcwd()
 
   def Configure(self,Directory):
-    Debug("waf configuring","DEBUG")
-    Debug("waf changing directory [" +self.cwd + Directory+ "]","DEBUG")
+    debug("waf configuring", DEBUG)
+    debug("waf changing directory [" +self.cwd + Directory+ "]", DEBUG)
     os.chdir(self.cwd + Directory)
     wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
     wafConfigure.wait()
-    Debug("waf changing directory [" +self.cwd  +"]","DEBUG")
+    debug("waf changing directory [" +self.cwd  +"]", DEBUG)
     os.chdir(self.cwd)
 
   def Build(self,Directory):
-    Debug("waf building","DEBUG")
-    Debug("waf changing directory [" +self.cwd + Directory+ "]","DEBUG")
+    debug("waf building", DEBUG)
+    debug("waf changing directory [" +self.cwd + Directory+ "]", DEBUG)
     os.chdir(self.cwd + Directory)
     wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
     wafBuild.wait()
-    Debug("waf changing directory [" +self.cwd +"]","DEBUG")
+    debug("waf changing directory [" +self.cwd +"]",DEBUG)
     os.chdir(self.cwd)
 
 class builder:
@@ -108,7 +112,7 @@ class builder:
     self.Config = Configurator()
 
   def waf(self,Name):
-    Debug(Name,"DEBUG")
+    debug(Name, DEBUG)
     Config = self.Config.GetConfig(Name)
     Folder = Config["folder"]
     w = waf()
@@ -118,7 +122,7 @@ class builder:
     w.Build(Folder)
   
   def make(self,Folder,Configure,Name):
-    Debug(Name,"DEBUG")
+    debug(Name, DEBUG)
     m = make()
     print "[make] Configure" 
     m.Configure(Folder,Configure)
@@ -195,16 +199,16 @@ class extractor:
 					except EOFError,e:
 						print "The file appears to be corrupt, run with",
 						print "--clean and then retry building"
-						Debug(e,"ERROR")
+						debug(e, ERROR)
 						sys.exit(0)
 				if End[-1] == "gz":
 					tar = tarfile.open(name="tmp/downloads/" + File,mode='r:gz')
 					try:
 						extract = tar.extractall(path="tmp/downloads/",members=None)
-					except EOFError,e:
+					except EOFError, e:
 						print "The file appears to be corrupt, run with",
 						print "--clean and then retry building"
-						Debug(e,"ERROR")
+						debug(e, ERROR)
 						sys.exit(0)
 
 def md5(File,Against):
@@ -235,7 +239,7 @@ class downloader(Thread):
 
   def http(self,Name):
     Config = self.Config.GetConfig(Name)
-    Debug(Config["link"],"DEBUG")
+    debug(Config["link"], DEBUG)
     Download = Config["link"]
     Filename = Config["link"].split("/")[-1:][0]
     
@@ -248,7 +252,7 @@ class downloader(Thread):
 		
     if not tmp:
       os.mkdir('tmp')
-    Debug(os.getcwd(),"DEBUG")
+    debug(os.getcwd(), DEBUG)
 		
     self.Config.CreateOutYaml(Name)
 		
@@ -268,13 +272,13 @@ class downloader(Thread):
         pbar.finish()
         print
         urllib.urlcleanup()
-        Debug("Folder tmp is pre-existing","INFO")
+        debug("Folder tmp is pre-existing", INFO)
         data = 'Preexisting'
       if data is False:
-        Debug('Remote-retrieval: Download failure.',"ERROR")
+        debug('Remote-retrieval: Download failure.', ERROR)
       elif data is None:
-        Debug('Input error: No data for string.',"ERROR")
-				
+        debug('Input error: No data for string.', ERROR)
+	  
       urllib.urlcleanup()
       if data is False:
         return False
@@ -289,10 +293,13 @@ class downloader(Thread):
 
   def svn(self,Name):
     Config = self.Config.GetConfig(Name)
-    Debug(Config["link"],"DEBUG")
+    debug(Config["link"], DEBUG)
+    
     Download = Config["link"]
     Filename = Config["as"]
-    Debug(Filename,"DEBUG")
+    
+    debug(Filename, DEBUG)
+    
     print "[svn] Checking out: " + Filename
     if not os.path.isdir(Filename):
       svnBuild = '/usr/bin/env svn co ' + Download + " tmp/downloads/" + Filename
@@ -352,7 +359,7 @@ class pbuilder(object):
     e.tar(Filename,Name)
     Folder = ExtractNameFromTar(Filename)
     
-    Debug('Adding ' + os.getcwd() + '/tmp/sandbox/lib/pkgconfig/ to PKG_CONFIG_PATH')
+    debug('Adding ' + os.getcwd() + '/tmp/sandbox/lib/pkgconfig/ to PKG_CONFIG_PATH')
     pkgCfg = subprocess.Popen('export PKG_CONFIG_PATH=' + os.getcwd() + '/tmp/sandbox/lib/pkgconfig/',shell=True,stdout=None)
     pkgCfg.wait()
     
