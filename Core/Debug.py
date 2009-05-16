@@ -59,7 +59,9 @@ def debug(string, level=DEBUG):
             hasPrinted = True
             _dPrint(level,string,outer)
 
-        
+    ## we must explicitly delete the frame inspector or it will cause 
+    ## unnecessary garbage
+    del current    
     
 
 

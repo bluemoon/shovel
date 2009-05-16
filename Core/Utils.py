@@ -36,7 +36,7 @@ def deprecated(func):
             filename=func.func_code.co_filename,
             lineno=func.func_code.co_firstlineno + 1
         )
-        
+        del current
         return func(*args, **kwargs)
     return new_func
 
