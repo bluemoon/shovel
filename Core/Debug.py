@@ -17,6 +17,7 @@ NONE    = 0
 WARNING = 1
 INFO    = 2
 DEBUG   = 3
+ERROR   = 4
 
 
 def _levelToString(level):
@@ -32,11 +33,14 @@ def _levelToString(level):
     elif level == 3:
         return 'DEBUG'
 
-def _dPrint(level, string):
+def _dPrint(level, string, iOuter):
     ''' an internal method that prints the debug strings '''
     rLevel = _levelToString(level)
     print '%s:[%s-%d]: %s' % (rLevel,
-    os.path.basename(Outer[1][1]),Outer[1][2],string)
+    os.path.basename(iOuter[1][1]),iOuter[1][2],string)
+    ## we must explicitly delete the frame inspector or it will cause 
+    ## unnecessary garbage
+    del iOuter
     
 def debug(string, level=DEBUG):
     ''' the debug method, a printer for debugging with verbosity control'''
@@ -46,21 +50,15 @@ def debug(string, level=DEBUG):
     outer   = inspect.getouterframes(current)
     
     ## get the debug level from our global class
-    dLevel = config.GetGlobal('debug')
-    
+    dLevel = int(config.GetGlobal('debug'))
     ## Keep a marker so we dont print the same thing more than once
     hasPrinted = False
     
     if dLevel > NONE:
-        if dLevel == WARNING and not hasPrinted:
+        if dLevel >= level and not hasPrinted:
             hasPrinted = True
-            _dPrint(level,string)
-        if dLevel <= INFO and not hasPrinted:
-            hasPrinted = True
-            _dPrint(level,string)
-        if dLevel <= DEBUG and not hasPrinted:
-            hasPrinted = True
-            _dPrint(level,string)
+            _dPrint(level,string,outer)
+
         
     
 

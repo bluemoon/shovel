@@ -30,7 +30,7 @@ from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
 from Core.File		    	import rmDirectoryRecursive
-from Core.Utils		    	import pprint
+from Core.Utils		    	import pprint,deprecated
 
 
 from Core.Lexer import Lexi
@@ -51,6 +51,7 @@ else:
 # Global version string
 VERSION = '0.0.1rc3'
 
+@deprecated
 def StringParse(self,String):
     Parse = re.compile("\{[a-zA-Z]*\:[a-zA-Z0-9]*\}")
     ParseGroup = Parse.group()
@@ -58,7 +59,7 @@ def StringParse(self,String):
 
 class Shovel(object):
   def __init__(self):
-    pass
+    self.config = Configurator()
     
   def Arguments(self):
     ##
@@ -75,10 +76,22 @@ class Shovel(object):
     parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
     
     self.options, self.remainder = parser.parse_args()
+    
+    ## For sandbox installs
     if self.options.sandbox:
-      self.Config.PutGlobal("sandbox",True)
+      self.config.PutGlobal("sandbox",True)
+    
+    ## Disable formatting
     if self.options.nonpretty:
-      self.Config.PutGlobal("nonpretty",True)
+      self.config.PutGlobal("nonpretty",True)
+    
+    ## For debug verbosity
+    if self.options.verbose:
+        if int(self.options.verbose) > 3:
+            raise Exception('DebugLevelExceeded')
+        self.config.PutGlobal("debug",self.options.verbose)
+
+    ## Clean up the tmp/ directory    
     if self.options.clean:
       print "Cleaning up."
       rmDirectoryRecursive("tmp/")
@@ -86,9 +99,14 @@ class Shovel(object):
   
   def Main(self):
     self.Arguments()
-    lexi = Lexi()
-    lexi.loadLexer("new_dirt")
-    lexi.runLexer()
+    #lexi = Lexi()
+    #lexi.loadLexer("new_dirt")
+    #lexi.runLexer()
+    
+    ## Debug tests
+    debug('testing info',INFO)
+    debug('testing warning',WARNING)
+    debug('testing debug',DEBUG)
     
 
 #### Class:ShovelNew #########################################################

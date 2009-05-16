@@ -12,6 +12,7 @@ import sys, os
 import termios, fcntl, struct, sys
 import warnings
 import functools
+import inspect
 
 from Core.Configurator import Configurator
 from Core.Debug import Debug
@@ -25,10 +26,12 @@ def deprecated(func):
   
     @functools.wraps(func)
     def new_func(*args, **kwargs):
+        current = inspect.currentframe()
+        outer = inspect.getouterframes(current)
         warnings.warn_explicit(
-            "Call to deprecated function %(funcname)s." % {
-                'funcname': func.__name__,
-            },
+            "Call to deprecated function %s from %s line %d" % (
+             func.__name__, os.path.basename(outer[1][1]), outer[1][2]    
+            ),
             category=DeprecationWarning,
             filename=func.func_code.co_filename,
             lineno=func.func_code.co_firstlineno + 1
