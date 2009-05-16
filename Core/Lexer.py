@@ -14,7 +14,7 @@ import exceptions
 import re
 import os
 #### Local Imports ###########################################################
-from Core.Plex import *
+from Lib.Plex import *
 
 class SchemaNotFound(Exception):
   pass

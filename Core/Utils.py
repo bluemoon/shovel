@@ -10,78 +10,118 @@
 #### System Imports ##########################################################
 import sys, os
 import termios, fcntl, struct, sys
+import warnings
+import functools
+
 from Core.Configurator import Configurator
 from Core.Debug import Debug
 
+##
+# deprecated decorator
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used."""
+  
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.warn_explicit(
+            "Call to deprecated function %(funcname)s." % {
+                'funcname': func.__name__,
+            },
+            category=DeprecationWarning,
+            filename=func.func_code.co_filename,
+            lineno=func.func_code.co_firstlineno + 1
+        )
+        
+        return func(*args, **kwargs)
+    return new_func
 
-def mkdirIfAbsent(*args):
-    for dirName in args:
-      Debug("ensuring that dir exists: %s" % dirName,"DEBUG")
-      if not os.path.exists(dirName):
-        try:
-          Debug("creating dir: %s" % dirName,"DEBUG")
-          os.makedirs(dirName)
-        except OSError, e:
-          print "Could not create dir %s. Error: %s" % (dirName, e)
 
 
 
+
+
+##
+# The terminal color list
+#
 ColorList = {
-'USE' : True,
-'BOLD'  :'\x1b[01;1m',
-'RED'   :'\x1b[01;91m',
-'GREEN' :'\x1b[32m',
-'YELLOW':'\x1b[33m',
-'PINK'  :'\x1b[35m',
-'BLUE'  :'\x1b[01;34m',
-'CYAN'  :'\x1b[36m',
-'NORMAL':'\x1b[0m',
-'cursor_on'  :'\x1b[?25h',
-'cursor_off' :'\x1b[?25l',
+  'USE' : True,
+  'BOLD'  :'\x1b[01;1m',
+  'RED'   :'\x1b[01;91m',
+  'GREEN' :'\x1b[32m',
+  'YELLOW':'\x1b[33m',
+  'PINK'  :'\x1b[35m',
+  'BLUE'  :'\x1b[01;34m',
+  'CYAN'  :'\x1b[36m',
+  'NORMAL':'\x1b[0m',
+  'cursor_on'  :'\x1b[?25h',
+  'cursor_off' :'\x1b[?25l',
 }
 
-def PPrint(String, Label,Color=None,LabelColor=None):
-	Config = Configurator()
-	if Config.GetGlobal('nonpretty') != True:	
-		PadChar         = ' '
-		EndPadLen       = 2
-		LabelMessageLen = 0
-	
-		s = struct.pack("HHHH", 0, 0, 0, 0)
-		fd_stdout = sys.stdout.fileno()
-		x = fcntl.ioctl(fd_stdout, termios.TIOCGWINSZ, s)
-		Pack = struct.unpack("HHHH", x)
-		RowLen = Pack[1]
-	
-		TotalLen = RowLen
-		if Label:
-			LabelMessageLen = len(Label.splitlines()[0]) + 2
-			
-		StringLen = len(String.splitlines()[0])
-		Padding = PadChar * (TotalLen - (StringLen + LabelMessageLen + EndPadLen))
-		EndPad  = PadChar * EndPadLen
-	
-		Overflow = (StringLen/TotalLen)
-		if Overflow:
-			Counter = 0
-			while Counter < Overflow:
-				sys.stdout.write("%s%s%s\n" %
-				(ColorList[Color.upper()], String[(Counter*TotalLen):((Counter+1)*TotalLen)], ColorList['NORMAL']))
-				Counter += 1
-				if Counter == Overflow:
-					Padding = PadChar * (TotalLen - ((Counter*TotalLen) -((Counter+1)*TotalLen)))
-					sys.stdout.write("%s%s%s%s[%s%s%s]\n" %
-					(ColorList[Color.upper()], String[(Counter*TotalLen):((Counter+1)*TotalLen)], ColorList['NORMAL'], Padding, ColorList[LabelColor.upper()], Label, ColorList['NORMAL']))
-			
-		if Color:
-			sys.stdout.write("%s%s%s%s[%s%s%s]%s\n" %
-			(ColorList[Color.upper()], String, ColorList['NORMAL'], Padding, ColorList[LabelColor.upper()], Label, ColorList['NORMAL'],EndPad))
-		else:
-			sys.stdout.write("%s%s[%s%s%s]%s\n" %
-			(String, Padding, ColorList[LabelColor.upper()], Label, ColorList['NORMAL'],EndPad))
-	else:
-		print "%s [%s]" % (String,Label)
 
+## A pretty print
+## this is replacing PPrint
+def pprint(string, label, color=None, labelColor=None):
+    """ a pretty print that prints with padding and right aligned text """
+    config = Configurator()
+    ##
+    ## If the user doesnt pass --np
+    if config.GetGlobal('nonpretty') != True:
+        padChar     = ' '
+        endPadLen   = 2
+        labelMsgLen = 0
+        
+        ## Nast way of getting the terminal column length
+        sPack = struct.pack("HHHH", 0, 0, 0, 0)
+        fdOut = sys.stdout.fileno()
+        fcN = fcntl.ioctl(fdOut, termios.TIOCGWINSZ, sPack)
+        uPack = struct.unpack("HHHH", fcN)
+        
+        ## this is the row length
+        rowLen = uPack[1]
+        
+        ## re-assign the totalLen
+        totalLen = rowLen
+        
+        if label:
+            ## gets the label length and appends 2 for the brackets
+			labelMsgLen = len(label.splitlines()[0]) + 2
+        
+        ## gets the string length
+        stringLen = len(string.splitlines()[0])
+        ## builds a pad string
+        padding = padChar * (totalLen - (stringLen + labelMsgLen + endPadLen))
+        endPad  = padChar * endPadLen
+		
+		## only label coloring			 
+        if labelColor and not color:
+            sys.stdout.write("%s%s[%s%s%s]%s\n" %
+            (string, padding, ColorList[labelColor.upper()], label, 
+            ColorList['NORMAL'], endPad))	
+        
+		## if we have color
+        if color:
+            sys.stdout.write("%s%s%s%s[%s%s%s]%s\n" %
+            (ColorList[color.upper()], string, ColorList['NORMAL'], padding,
+            ColorList[labelColor.upper()], label, ColorList['NORMAL'], endPad))
+
+        
+	    ## no coloring
+	    #else:
+	    #    sys.stdout.write("%s%s[%s]%s\n" % (string, padding, label, endPad)) 
+
+    ## if nonpretty is True
+    else:
+        print "%s [%s]" % (String,Label)
+		
+
+
+
+
+
+
+## FIXME: Lots of bad variables
 # -*- coding: iso-8859-1 -*-
 #
 # progressbar  - Text progressbar library for python.
@@ -145,7 +185,7 @@ try:
 except ImportError:
     pass
 import signal
-
+#FIXME: Cleanup
 class ProgressBarWidget(object):
     """This is an element of ProgressBar formatting.
 

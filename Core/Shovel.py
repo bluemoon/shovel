@@ -30,15 +30,16 @@ from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
 from Core.File		    	import rmDirectoryRecursive
-from Core.Utils		    	import PPrint
+from Core.Utils		    	import pprint
 
 
 from Core.Lexer import Lexi
 
 import Plugins
 
-# Attempt to speed this up a little
+## Attempt to speed this up a little
 try:
+	## Psyco for a little more performance
     import psyco
     psyco.full()
 except ImportError:
@@ -46,7 +47,8 @@ except ImportError:
 else:
 	Debug("Psyco Enabled!","INFO")
 
-
+##
+# Global version string
 VERSION = '0.0.1rc3'
 
 def StringParse(self,String):
@@ -59,10 +61,14 @@ class Shovel(object):
     pass
     
   def Arguments(self):
+    ##
+    ## 
     import optparse
     
+    ## Usage string
     usage = "usage: %prog [options] module"
     parser = optparse.OptionParser(usage=usage,version=VERSION)
+    
     parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
     parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
     parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
@@ -76,7 +82,7 @@ class Shovel(object):
     if self.options.clean:
       print "Cleaning up."
       rmDirectoryRecursive("tmp/")
-      sys.exit(0)	
+      sys.exit(0)
   
   def Main(self):
     self.Arguments()

@@ -1,5 +1,5 @@
 from Core.Terminal     import TermGreen,TermEnd
-from Core.Utils	       import PPrint
+from Core.Utils	       import pprint
 from Core.Configurator import Configurator
 from Core.Debug        import Debug,GetDebug
 from threading         import Thread
@@ -64,9 +64,9 @@ class make:
         Read = MakeSub.stdout.readline()
         match = regex.findall(Read)
         if match:
-          PPrint("Compiling: " + match[0],"ok",None,"GREEN")
+          pprint("Compiling: " + match[0],"ok",None,"GREEN")
         else:
-          PPrint("Out: "+Read[:-1],"!!","BLUE","BLUE")
+          pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
     MakeSub.wait()
     # Make sure the build returns a valid code and doesnt fail
     Debug("Build Return Code: %d" % (MakeSub.returncode),"INFO")

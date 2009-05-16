@@ -1,21 +1,69 @@
-#!/usr/bin/env python
-##############################################################################
 ## File: Debug.py
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/04/22
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-##############################################################################
 
-#### System Includes #########################################################
+## Local includes
+from Core.Configurator import Configurator
+
+## System includes
 import inspect
 import os
 
+## Static values for debugging
 NONE    = 0
 WARNING = 1
 INFO    = 2
 DEBUG   = 3
+
+
+def _levelToString(level):
+    ''' an internal method that converts the numerical value to
+        a usable string. '''
+        
+    if level == 0:
+        return 'NONE'
+    elif level == 1:
+        return 'WARNING'
+    elif level == 2:
+        return 'INFO'
+    elif level == 3:
+        return 'DEBUG'
+
+def _dPrint(level, string):
+    ''' an internal method that prints the debug strings '''
+    rLevel = _levelToString(level)
+    print '%s:[%s-%d]: %s' % (rLevel,
+    os.path.basename(Outer[1][1]),Outer[1][2],string)
+    
+def debug(string, level=DEBUG):
+    ''' the debug method, a printer for debugging with verbosity control'''
+    config = Configurator()
+    ## Get the frames so we know who's calling us from what line
+    current = inspect.currentframe()
+    outer   = inspect.getouterframes(current)
+    
+    ## get the debug level from our global class
+    dLevel = config.GetGlobal('debug')
+    
+    ## Keep a marker so we dont print the same thing more than once
+    hasPrinted = False
+    
+    if dLevel > NONE:
+        if dLevel == WARNING and not hasPrinted:
+            hasPrinted = True
+            _dPrint(level,string)
+        if dLevel <= INFO and not hasPrinted:
+            hasPrinted = True
+            _dPrint(level,string)
+        if dLevel <= DEBUG and not hasPrinted:
+            hasPrinted = True
+            _dPrint(level,string)
+        
+    
+
 
 global __Debug
 global _ShovelNew__Debug
