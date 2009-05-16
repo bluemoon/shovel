@@ -12,6 +12,11 @@ import os
 ## Local Includes
 from Core.Debug import *
 
+def chdir(dir):
+    ''' Wrapper for os.chdir so that it emits debugging code '''
+    debug("Changing to directory: " + dir, DEBUG)
+    os.chdir(dir)
+
 def mkdirIfAbsent(*args):
     ''' Create a directory if its not there '''
     for dirName in args:

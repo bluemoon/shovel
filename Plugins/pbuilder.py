@@ -4,6 +4,8 @@ from Core.Configurator import Configurator
 from Core.Debug        import *
 from threading         import Thread
 from Core.Utils        import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
+from Core.Exceptions   import BuildError
+import Core.File
 
 import os
 import urllib
@@ -16,122 +18,127 @@ import subprocess
 
 
 class make:
-  def __init__(self):
-    self.Config = Configurator()
-    self.cwd = os.getcwd()
-    self.sandbox_path = 'tmp/sandbox'
-    
-  def Configure(self,Directory,Configure):
-    # If sandox is passed, prepare to build a sandbox
-    if self.Config.GetGlobal("sandbox"):
-      if not os.path.exists(self.sandbox_path):
-        os.mkdir(self.sandbox_path)
+    def __init__(self):
+        self.config = Configurator()
+        self.cwd = os.getcwd()
+        self.sandbox_path = 'tmp/sandbox'
+  
+    def Configure(self,directory,config):
+        # If sandox is passed, prepare to build a sandbox
+        if self.config.GetGlobal("sandbox"):
+            Core.File.mkdirIfAbsent(self.sandbox_path)     
         
-      NewConfigure = "--prefix="+ self.cwd +"/" + self.sandbox_path  +" " + " ".join(Configure)
-      debug(NewConfigure, DEBUG)
-      Configure = NewConfigure
+            newConfigure = "--prefix="+ self.cwd +"/" + self.sandbox_path  +" " + " ".join(config)
+            debug(newConfigure, DEBUG)
+            configure = newConfigure
       
-    # Otherwise pass the normal configure options
-    else:
-      Configure = " ".join(Configure)
-    
-    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
-    
-    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
-    debug("Configuring...", INFO)
-    
-    # If it has prepared options ie. --prefix.....
-    if Configure:
-      print "[make] Configure Options: " + Configure
-      p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=None)
-      p.wait()
-    # Otherwise configure it normally
-    else:
-      p = subprocess.Popen('./configure',shell=True,stdout=None)
-      p.wait()
-    
-    debug("Changing to directory: " + self.cwd , DEBUG)
-    os.chdir(self.cwd)
-    
-  def Build(self,Directory):
-    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
-    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
-    #Debug("Building:" + Name,"INFO")
-    #print "[make] Building: " + Name
-    regex = re.compile('[a-zA-Z0-9/_]*\.c')
-    if self.Config.GetGlobal("nonpretty"):
-      MakeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
-    else:
-      MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-      while MakeSub.poll() is None:
-        Read = MakeSub.stdout.readline()
-        match = regex.findall(Read)
-        if match:
-          pprint("Compiling: " + match[0],"ok",None,"GREEN")
+            # Otherwise pass the normal configure options
         else:
-          pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
-          
-    MakeSub.wait()
-    # Make sure the build returns a valid code and doesnt fail
-    debug("Build Return Code: %d" % (MakeSub.returncode), INFO)
-    if MakeSub.returncode > 0:
-      raise Exception('BuildError')
-		
-    if self.Config.GetGlobal("sandbox"):
-      debug("Sandbox Install", INFO)
-      SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-      SB.wait()
+            configure = " ".join(config)
     
-    debug("Changing to directory: " + self.cwd, DEBUG)
-    os.chdir(self.cwd)
+        Core.File.chdir(self.cwd + '/tmp/downloads/' + directory)
+
+        debug("Configuring...", INFO)
+    
+        # If it has prepared options ie. --prefix.....
+        if configure:
+            print "[make] Configure Options: " + configure
+            p = subprocess.Popen('./configure ' + configure,shell=True,stdout=None)
+            p.wait()
+        # Otherwise configure it normally
+        else:
+            p = subprocess.Popen('./configure',shell=True,stdout=None)
+            p.wait()
+    
+
+        Core.File.chdir(self.cwd)
+    
+    def Build(self,directory):
+        Core.File.chdir(self.cwd + '/tmp/downloads/' + directory)
+        
+        ## Regex to match c files ie. foo.c bar.c etc.c
+        regex = re.compile('[a-zA-Z0-9/_]*\.c')
+        
+        if self.config.GetGlobal("nonpretty"):
+            makeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
+        else:
+            makeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        
+            while makeSub.poll() is None:
+                read = makeSub.stdout.readline()
+                match = regex.findall(read)
+                if match:
+                    pprint("Compiling: " + match[0],"ok",None,"GREEN")
+                else:
+                    pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
+          
+        makeSub.wait()
+        # Make sure the build returns a valid code and doesnt fail
+        debug("Build Return Code: %d" % (makeSub.returncode), INFO)
+        if makeSub.returncode > 0:
+            raise BuildError
+		
+        if self.config.GetGlobal("sandbox"):
+            debug("Sandbox Install", INFO)
+            sB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            sB.wait()
+    
+        debug("Changing to directory: " + self.cwd, DEBUG)
+        Core.File.chdir(self.cwd)
     
 class waf:
-  def __init__(self):
-    self.cwd = os.getcwd()
+    def __init__(self):
+        self.cwd = os.getcwd()
 
-  def Configure(self,Directory):
-    debug("waf configuring", DEBUG)
-    debug("waf changing directory [" +self.cwd + Directory+ "]", DEBUG)
-    os.chdir(self.cwd + Directory)
-    wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
-    wafConfigure.wait()
-    debug("waf changing directory [" +self.cwd  +"]", DEBUG)
-    os.chdir(self.cwd)
+    def Configure(self,directory):
+        debug("waf configuring", DEBUG)
+        debug("waf changing directory [" +self.cwd + directory+ "]", DEBUG)
+        os.chdir(self.cwd + directory)
+        wafConfigure = subprocess.Popen('./waf configure ',shell=True,stdout=None)
+        wafConfigure.wait()
+        debug("waf changing directory [" +self.cwd  +"]", DEBUG)
+        os.chdir(self.cwd)
 
-  def Build(self,Directory):
-    debug("waf building", DEBUG)
-    debug("waf changing directory [" +self.cwd + Directory+ "]", DEBUG)
-    os.chdir(self.cwd + Directory)
-    wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
-    wafBuild.wait()
-    debug("waf changing directory [" +self.cwd +"]",DEBUG)
-    os.chdir(self.cwd)
+    def Build(self,directory):
+        debug("waf building", DEBUG)
+        debug("waf changing directory [" +self.cwd + directory+ "]", DEBUG)
+        os.chdir(self.cwd + Directory)
+        wafBuild = subprocess.Popen('./waf build',shell=True,stdout=None)
+        wafBuild.wait()
+        debug("waf changing directory [" +self.cwd +"]",DEBUG)
+        os.chdir(self.cwd)
+
 
 class builder:
-  def __init__(self):
-    self.Config = Configurator()
+    def __init__(self):
+        self.Config = Configurator()
 
-  def waf(self,Name):
-    debug(Name, DEBUG)
-    Config = self.Config.GetConfig(Name)
-    Folder = Config["folder"]
-    w = waf()
-    print "[waf] Configure: " 
-    w.Configure(Folder)
-    print "[waf] Build: "
-    w.Build(Folder)
+    def waf(self,name):
+        debug(name, DEBUG)
+        
+        Config = self.Config.GetConfig(name)
+        folder = Config["folder"]
+        
+        w = waf()
+        
+        print "[waf] Configure: " 
+        w.Configure(folder)
+        
+        print "[waf] Build: "
+        w.Build(folder)
   
-  def make(self,Folder,Configure,Name):
-    debug(Name, DEBUG)
-    m = make()
-    print "[make] Configure" 
-    m.Configure(Folder,Configure)
-    print "[make] Build" 
-    m.Build(Folder)
+    def make(self,folder,configure,name):
+        debug(name, DEBUG)
+        m = make()
+        print "[make] Configure" 
+        m.Configure(folder,configure)
+        print "[make] Build" 
+        m.Build(folder)
 
-def ExtractNameFromTar(Tar):
-	Tar = Tar.split(".")[:-2]
-	return ".".join(Tar)
+
+def ExtractNameFromTar(tar):
+	tSplit = tar.split(".")[:-2]
+	return ".".join(tSplit)
 	
 def locate(pattern, root=os.getcwd()):
 	for path, dirs, files in os.walk(root):
@@ -212,22 +219,23 @@ class extractor:
 						sys.exit(0)
 
 def md5(File,Against):
-  import hashlib
-  m = hashlib.md5()
-  try:
-    fd = open(File,"rb")
-  except IOError:
-    print "Unable to open the file in readmode:", filename
-    return
-  content = fd.readlines()
-  fd.close()
-  for eachLine in content:
-    m.update(eachLine)
-  Digest = m.hexdigest()
-  if Against == Digest:
-    return True
-  else:
-    return Digest
+    import hashlib
+    m = hashlib.md5()
+    try:
+        fd = open(File,"rb")
+    except IOError:
+        print "Unable to open the file in readmode:", filename
+        return
+  
+    content = fd.readlines()
+    fd.close()
+    for eachLine in content:
+        m.update(eachLine)
+    Digest = m.hexdigest()
+    if Against == Digest:
+        return True
+    else:
+        return Digest
 
 def _reporthook(numblocks, blocksize, filesize, url,pbar):
   pbar.update((numblocks*blocksize*100)/filesize)
@@ -259,6 +267,7 @@ class downloader(Thread):
     if not os.path.exists("tmp/downloads/" +Filename):
       if lib is False:
         os.mkdir('tmp/downloads/')
+        ## FIXME: this is a terrible way to do this
         widgets = [Filename + " ", Percentage(), ' ', Bar(),' ', ETA(), ' ', ' ']
         pbar = ProgressBar(widgets=widgets).start()
         data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename,lambda nb, bs, fs, url=Download: _reporthook(nb,bs,fs,url,pbar))

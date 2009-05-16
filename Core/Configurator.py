@@ -43,6 +43,10 @@ class Configurator(Singleton):
 				return False
 		def PutGlobal(self,Global,Value):
 			self.Globals[Global] = Value
+		def getGlobalDump(self):
+			return self.Globals
+		def setGlobalDump(self,yaml):
+			self.Globals = yaml
 		def GetPackage(self,Package):
 			return self.BigPackage[Package]
 		def PutPackage(self,Package,Yaml):

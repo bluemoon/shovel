@@ -19,6 +19,13 @@ import time
 import subprocess
 import inspect
 
+from yaml import load, dump
+try:
+    from yaml import CLoader as Loader
+    from yaml import CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+    
 ####
 ## From Core
 ##
@@ -69,6 +76,7 @@ class Shovel(object):
         parser = optparse.OptionParser(usage=usage,version=VERSION)
         parser.add_option('-d','--dirt',action="store",dest="dirt",help="Specify the dirt file")
         parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
+        parser.add_option('--set-config',action="store_true", dest='config',help='Sets the config file')
         parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
         parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
         parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
@@ -77,6 +85,7 @@ class Shovel(object):
         parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
         
         self.options, self.remainder = parser.parse_args()
+        
         
         ## Specifying your own dirt file
         if self.options.dirt:
@@ -94,7 +103,7 @@ class Shovel(object):
         
         ## For debug verbosity
         if self.options.verbose:
-            if int(self.options.verbose) > 3:
+            if int(self.options.verbose) > 3 or int(self.options.verbose) < 0:
                 raise Exception('DebugLevelExceeded')
             self.config.PutGlobal("debug",self.options.verbose)
 
@@ -115,14 +124,25 @@ class Shovel(object):
         ## Run internal tests
         if self.options.tests:
             self.config.PutGlobal("tests",self.options.tests)
-            
-    
+        
+        ## For setting a config file
+        if self.options.config:
+            yOut = yaml.dump(self.config.getGlobalDump())
+            fHandle = open('.shovel', 'w')
+            fHandle.write(yOut)
+            fHandle.close()
+
             
     def Main(self):
         ## Parse the arguments
         self.Arguments()
         self.plugins.LoadAll()
         
+        if os.path.exists('.shovel'):
+            dirtFile = open('.shovel', 'r')
+            dFile = dirtFile.read()
+            self.config.setGlobalDump(yaml.load(dFile,Loader=Loader))
+            
         ## Debug tests
         
         ## debug('testing info',INFO)
