@@ -9,7 +9,7 @@
 ##############################################################################
 import sys
 sys.path.append('Core/')
-from Core.Shovel import ShovelNew
+from Core.Shovel import Shovel
 
 #### Function:Main ###########################################################
 if __name__ == "__main__":

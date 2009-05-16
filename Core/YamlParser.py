@@ -9,6 +9,14 @@ from Core.Debug         import *
 import os
 import yaml
 
+from yaml import load, dump
+try:
+    from yaml import CLoader as Loader
+    from yaml import CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+
+
 class yamlParser(object):
     def __init__(self):
         self.commands = []
@@ -31,7 +39,7 @@ class yamlParser(object):
         if self.dirtExists(File):
             dirtFile = open(File, 'r')
             dFile = dirtFile.read()
-            self.dirtY = yaml.load(dFile)
+            self.dirtY = yaml.load(dFile,Loader=Loader)
         else:
             raise DirtFileDoesntExist
     
@@ -48,6 +56,7 @@ class yamlParser(object):
         ## Compare those to whats leftover from optparse
         remain = self.ArgumentRemainders(remainder)
         
+        self.getAllUse()
         ## If not, run all the blocks
         if not remain:
             self.run(All=True)
@@ -104,7 +113,13 @@ class yamlParser(object):
         for remainders in remainder:
             if remainders in self.commands:
                 return True
-                		
+                
+    def getAllUse(self):
+        def use(x): return x == 'use'
+        for a in self.dirtY[self.os[0]]:
+            #print map(use,a) 		
+            pass
+            
     def WorkRunner(self,Block,Work):
         debug("block: "+Block + " work: " +Work,DEBUG)
         for work in self.dirtY[self.os[0]][Block][Work]:
