@@ -12,10 +12,27 @@ import os
 ## Local Includes
 from Core.Debug import *
 
+def touch(file):
+    tfile = open(file, 'w')
+    tfile.close()
+
 def chdir(dir):
     ''' Wrapper for os.chdir so that it emits debugging code '''
     debug("Changing to directory: " + dir, DEBUG)
     os.chdir(dir)
+
+def buildPath(base,*dir):
+    tmp = base + "/" + "/".join(dir)
+    return tmp.replace("//", "/")
+
+
+def condChroot(chrootPath):
+    if chrootPath is not None:
+        saved = { "ruid": os.getuid(), "euid": os.geteuid(), }
+        uid.setresuid(0,0,0)
+        os.chdir(chrootPath)
+        os.chroot(chrootPath)
+        uid.setresuid(saved['ruid'], saved['euid'])
 
 def mkdirIfAbsent(*args):
     ''' Create a directory if its not there '''
