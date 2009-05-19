@@ -2,11 +2,15 @@ import os
 import fcntl
 import shutil
 import stat
+import subprocess
+import re
 
 import Core.File as file
 
 from Core.Debug import *
-
+## to build with gcc:
+##  
+##
 class chroot(object):
     def __init__(self):
         
@@ -32,7 +36,32 @@ class chroot(object):
                 'mount -n -t proc   chroot_proc   %s' % file.buildPath(self.baseDir,'proc'),
                 'mount -n -t sysfs  chroot_sysfs  %s' % file.buildPath(self.baseDir,'sys'),
                ]
-               
+        
+        def _lddGet(self,binary):
+             which = subprocess.Popen('which %s' % (binary), shell=True, stdout=subprocess.PIPE)
+             which.wait()
+             wOut = which.communicate()
+             
+             ldd = subprocess.Popen('ldd %s' % (wOut[0][:-1]), shell=True, stdout=subprocess.PIPE)
+             ldd.wait()
+             lOut = ldd.communicate()
+             
+             for all in lOut:
+                if all:
+                    matchFolder = re.compile('[a-zA-Z0-9\-\./]*')
+                    if matchFolder:
+                        m =  matchFolder.findall(all)
+             
+             for match in m:
+                if match:
+                    isHex = re.compile('0x[0-9a-f]')
+                    hex = isHex.match(match)
+                    if not hex:
+                        print match
+
+                
+             
+                   
         def _getChrootLock(self):
             ''' Tries to establish a lock for the chroot '''
             try:
@@ -166,7 +195,7 @@ class chroot(object):
                 ## copy from your base system    
                 shutil.copy2('/etc/resolv.conf', resolvDir)
 
-            self._copyDirs()    
+            ## self._copyDirs()    
 
             if self.internalDev:
                 self._setupDev()
@@ -185,6 +214,9 @@ class chroot(object):
                 os.remove(localTimePath)
             
             shutil.copy2('/etc/localtime', localTimeDir)
+            
+            self._lddGet('gcc')
+            self._lddGet('ls')
                      
     class Darwin(object):
         def init(self):
