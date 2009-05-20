@@ -1,3 +1,4 @@
+## This is the pbuilder. or package builder
 from Core.Terminal     import TermGreen,TermEnd
 from Core.Utils	       import pprint
 from Core.Configurator import Configurator
@@ -77,7 +78,7 @@ class make:
         debug("Build Return Code: %d" % (makeSub.returncode), INFO)
         if makeSub.returncode > 0:
             raise BuildError
-		
+        
         if self.config.GetGlobal("sandbox"):
             debug("Sandbox Install", INFO)
             sB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -188,14 +189,14 @@ class extractor:
 	def __init__(self):
 		self.Config = Configurator()
 
-	def tar(self,Filename,Name):
-		Tar = {}
-		#Config = self.Config.GetConfig(Name)
-		#Debug(Config,"DEBUG")
-	 	#File = Config["file"]
-		File = Filename
-		self.Config.CreateOutYaml(Name)
-		if not os.path.exists("tmp/downloads/" + ExtractNameFromTar(File)):
+    def tar(self,Filename,Name):
+        Tar = {}
+        #Config = self.Config.GetConfig(Name)
+        #Debug(Config,"DEBUG")
+        #File = Config["file"]
+        File = Filename
+        self.Config.CreateOutYaml(Name)
+        if not os.path.exists("tmp/downloads/" + ExtractNameFromTar(File)):
 			print "[tar] Extracting: " + File
 			if os.path.exists("tmp/downloads/" + File):
 				End = File.split(".")

@@ -1,11 +1,9 @@
-##############################################################################
 ## File: Shovel.py
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/05/08
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-##############################################################################
 #### System Includes #########################################################
 from threading import Thread
 import sys
@@ -48,7 +46,7 @@ import Plugins
 
 ## Attempt to speed this up a little
 try:
-	## Psyco for a little more performance
+    ## Psyco for a little more performance
     import psyco
     psyco.full()
 except ImportError:
@@ -80,7 +78,6 @@ class Shovel(object):
         parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
         parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
         parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
-        parser.add_option('--new-lex',action="store_true",dest="parser",help="Use the new lexer")
         parser.add_option('--lexer',action="store",dest="lexer",help="Use the specified lexer")
         parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
         
@@ -171,7 +168,10 @@ class Shovel(object):
                 from Core.YamlParser import yamlParser
                 yml = yamlParser()
                 yml.main(str(dirtFile),self.remainder)
-                
+            if lexer == 'new':
+                lexi = Lexi()
+                lexi.loadLexer(str(dirtFile))
+                lexi.runLexer()   
             
         
 
