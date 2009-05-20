@@ -20,19 +20,20 @@ class SchemaNotFound(Exception):
   pass
 
 class Schema(object):
-  def schemaFromDirt(self,Schema):
-    schSplit = Schema.split(':')
-    if schSplit[0] == 'strict':
-      self.SchemaStrict = True
-    self.SchemaName = schSplit[1]
-    self.schemaLoad(self.SchemaName)
+    def schemaFromDirt(self,schema):
+        ## split up the schema so its parseable
+        schSplit = schema.split(':')
+        if schSplit[0] == 'strict':
+            self.schemaStrict = True
+        self.schemaName = schSplit[1]
+        self.schemaLoad(self.schemaName)
 
-  def schemaLoad(self,Schema):
-    if os.path.exists("Schema/" + Schema):
-      Schema = open("Schema/" + Schema,"r")
+  def schemaLoad(self,schema):
+    if os.path.exists("Schema/" + schema):
+      sch = open("Schema/" + schema,"r")
       while 1:
-        Line = Schema.readline()
-        if not Line:
+        line = sch.readline()
+        if not line:
           break
     else:
       raise SchemaNotFound
