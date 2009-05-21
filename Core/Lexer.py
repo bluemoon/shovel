@@ -1,26 +1,23 @@
-#!/usr/bin/env python
-##############################################################################
 ## File: Lexer.py
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/04/22
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-##############################################################################
 
 
-#### System Imports ##########################################################
-import exceptions
+## System imports
 import re
 import os
-#### Local Imports ###########################################################
+
+## Local imports
 from Lib.Plex import *
 
-class SchemaNotFound(Exception):
-  pass
+from Core.Exception import SchemaNotFound
+
 
 class Schema(object):
-    def schemaFromDirt(self,schema):
+    def schemaFromDirt(self, schema):
         ## split up the schema so its parseable
         schSplit = schema.split(':')
         if schSplit[0] == 'strict':
@@ -28,48 +25,51 @@ class Schema(object):
         self.schemaName = schSplit[1]
         self.schemaLoad(self.schemaName)
 
-  def schemaLoad(self,schema):
-    if os.path.exists("Schema/" + schema):
-      sch = open("Schema/" + schema,"r")
-      while 1:
-        line = sch.readline()
-        if not line:
-          break
-    else:
-      raise SchemaNotFound
+    def schemaLoad(self, schema):
+        if os.path.exists("Schema/" + schema):
+            sch = open("Schema/" + schema,"r")
+            while 1:
+                line = sch.readline()
+                if not line:
+                    break
+            return schema
+        else:
+            raise SchemaNotFound
 
 class ProceduralParser(object):
-  def __init__(self):
-    self.noFurther   = False
-    self.commands    = []
-    self.useFeatures = []
+    def __init__(self):
+        self.noFurther   = False
+        self.commands    = []
+        self.useFeatures = []
 
-  def ParseBlock(self,Text,Level):
-    import os
-    CleanText = Text[1:-2]
-    #print '%d:%s' % (Level,CleanText)
-    if Level == 0:
-      if os.uname()[0] == CleanText:
-        self.noFurther = False
-        print '%d:%s' % (Level,CleanText)
-      else:
-        self.noFurther = True
-    elif Level == 1 and not self.noFurther:
-      print '%d:%s' % (Level,CleanText)
-      self.commands.append(CleanText)
-      print self.commands
-    elif Level == 2 and not self.noFurther:
-      print '%d:%s' % (Level,CleanText)
-      #Configurator.PutPackage(self,Package,Yaml)
+    def parseBlock(self, text, level):
+        import os
+        cleanText = text[1:-2]
+        #print '%d:%s' % (Level,CleanText)
+        if Level == 0:
+            if os.uname()[0] == cleanText:
+                self.noFurther = False
+                print '%d:%s' % (level, cleanText)
+            else:
+                self.noFurther = True
+        
+        elif level == 1 and not self.noFurther:
+            print '%d:%s' % (level, cleanText)
+            self.commands.append(cleanText)
+            print self.commands
+      
+        elif level == 2 and not self.noFurther:
+            print '%d:%s' % (level, cleanText)
+            #Configurator.PutPackage(self,Package,Yaml)
 
-  def ParseUseFeatureBlock(self,Text,Level):
-    if not self.noFurther:
-      self.useFeatures.append(Text[:-2].split('[')[1])
-      print Text[:-2].split('[')[0]
+    def parseUseFeatureBlock(self, text, level):
+        if not self.noFurther:
+            self.useFeatures.append(Text[:-2].split('[')[1])
+            print Text[:-2].split('[')[0]
 
-  def ParseFeatureBlock(self,Text,Level):
-    if not self.noFurther:
-      print "  " + Text
+    def parseFeatureBlock(self,Text,Level):
+        if not self.noFurther:
+            print "  " + Text
 
 class Lexi(object):
   def __init__(self):
@@ -81,15 +81,15 @@ class Lexi(object):
     self.fHandle = open(File,"r")
     self.Lexer = DirtLexer(self.fHandle)
 
-  def runSchema(self,Sch):
-    S = Schema()
-    S.schemaFromDirt(Sch)
+  def runSchema(self,sch):
+    sch = Schema()
+    sch.schemaFromDirt(sch)
 
   def newLineReset(self):
     self.LexQueue = []
 
   def next(self):
-    self.Value, self.Text = self.Lexer.read()
+    self.value, self.text = self.Lexer.read()
     self.nexted = True
 
   def expect(self,What):
@@ -100,34 +100,40 @@ class Lexi(object):
       return False
 
   def runLexer(self):
-    self.Value      = True
-    self.Level      = 0
+    self.level      = 0
     self.flExpected = False
 
     while 1:
-      self.BrackOpen = False
-      self.nexted = False
-      self.next()
-      #print '[%s] %s' % (self.Value,self.Text) 
-      if self.Value == 'INDENT':
-        self.Level = self.Level + 1
-      if self.Value == 'DEDENT':
-        self.Level = self.Level - 1
-      if self.Value == 'schema':
-        print '[%s] %s' % (self.Value,self.Text[4:])
-        self.runSchema(self.Text[4:])
-      if self.Value == 'block':
-        self.ProParse.ParseBlock(self.Text,self.Level)
-      if self.Value == 'use_fblock':
-        self.ProParse.ParseUseFeatureBlock(self.Text,self.Level)
-      if self.Value == 'fblock':
-        self.ProParse.ParseFeatureBlock(self.Text,self.Level)
-
-      if self.Value is None:
-        break
-      
-      if not self.nexted:
+        self.brackOpen = False
+        self.nexted = False
         self.next()
+         
+        ## here we keep track of the indent level
+        if self.value == 'INDENT':
+            self.level = self.level + 1
+            
+        if self.value == 'DEDENT':
+            self.level = self.level - 1
+            
+        ## if we match the schema block    
+        if self.value == 'schema':
+            print '[%s] %s' % (self.value,self.text[4:])
+            self.runSchema(self.text[4:])
+            
+        if self.Value == 'block':
+            self.ProParse.parseBlock(self.text,self.level)
+            
+        if self.Value == 'use_fblock':
+            self.ProParse.parseUseFeatureBlock(self.Text,self.Level)
+            
+        if self.Value == 'fblock':
+            self.ProParse.parseFeatureBlock(self.Text,self.Level)
+
+        if self.Value is None:
+            break
+      
+        if not self.nexted:
+            self.next()
 
       #self.LexQueue.append(self.Text)
       
@@ -227,22 +233,22 @@ class DirtLexer(Scanner):
   ListBlock = (Str("-") + Opt(Any(" \t")) + Rep(Name|Number|Period))
 
   Lexicon = Lexicon([
-    	(Name,                  'name'),
-    	(Number,                'number'),
-    	(StringLiteral,         'string'),
-      (Punctuation,           'punct'),
-      (Schema,                'schema'),
-      (Block,                 'block'),
-      (wUseFeatureBlock,      'use_fblock'),
-      (FeatureBlock,          'fblock'),
-    	(OpenBracket,           OpenBracketAction),
-    	(CloseBracket,          CloseBracketAction),
-    	(LineTerm,              NewlineAction),
-      (Comment,               IGNORE),
-    	(Spaces,                IGNORE),
-    	(EscapedNewline,        IGNORE),
-    	State('indent', [
+        (Name,                  'name'),
+        (Number,                'number'),
+        (StringLiteral,         'string'),
+        (Punctuation,           'punct'),
+        (Schema,                'schema'),
+        (Block,                 'block'),
+        (wUseFeatureBlock,      'use_fblock'),
+        (FeatureBlock,          'fblock'),
+        (OpenBracket,           OpenBracketAction),
+        (CloseBracket,          CloseBracketAction),
+        (LineTerm,              NewlineAction),
+        (Comment,               IGNORE),
+        (Spaces,                IGNORE),
+        (EscapedNewline,        IGNORE),
+        State('indent', [
               (Indentation + Opt(Comment) + LineTerm, IGNORE),
               (Indentation, IndentationAction),
-    	]),
+        ]),
      ])

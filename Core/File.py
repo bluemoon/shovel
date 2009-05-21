@@ -39,11 +39,10 @@ def mkdirIfAbsent(*args):
     for dirName in args:
         debug("ensuring that dir exists: %s" % dirName,DEBUG)
         if not os.path.exists(dirName):
-            try:
-                debug("creating dir: %s" % dirName,DEBUG)
-                os.makedirs(dirName)
-            except OSError, error:
-                print "Could not create dir %s. Error: %s" % (dirName, error)
+            debug("creating dir: %s" % dirName,DEBUG)
+            os.makedirs(dirName)
+            
+                
 
 
 def rmDirectoryRecursive(path):
@@ -53,8 +52,7 @@ def rmDirectoryRecursive(path):
         if os.path.isdir(fullPath):
             ## Recursively delete
             rmDirectoryRecursive(fullPath)
-        else:
-            os.remove(fullPath)
+        
 
     ## Finally delete the parent
     os.rmdir(path)

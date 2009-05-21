@@ -14,12 +14,13 @@ import yaml
 
 #### Class:Dirt ##############################################################
 class Dirt(object):
-    def dirtExists(self):
-	""" Check to see if the dirt file exists"""
-        if os.path.exists("dirt"):
+    def dirtExists(self,file="dirt"):
+        """ Check to see if the dirt file exists"""
+        if os.path.exists(file):
             return True
         else:
             return False
+        
     def loadDirt(self):
         """ Load the dirt File """
         dirtFile = open('dirt', 'r')

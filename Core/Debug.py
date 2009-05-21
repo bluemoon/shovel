@@ -7,7 +7,7 @@
 
 ## Local includes
 from Core.Configurator import Configurator
-from Core.Utils        import deprecated
+#from Core.Utils        import deprecated
 ## System includes
 import inspect
 import os
@@ -86,7 +86,7 @@ def GreaterThan(Level):
 	if Level == "INFO":
 		pass
 		
-@deprecated
+#@deprecated
 def Debug(Print,Level="DEBUG"):
 	Current = inspect.currentframe()
 	Outer   = inspect.getouterframes(Current)

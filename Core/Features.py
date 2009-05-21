@@ -11,7 +11,7 @@
 #### Local Includes ##########################################################
 from Core.Loader       import CoreHandler
 from Core.Configurator import Configurator
-
+from Core.Exceptions   import FeatureError
 #### Class:Features ##########################################################
 class Features(object):
 	def __init__(self):
@@ -41,4 +41,4 @@ class Features(object):
 						DyF = DynamicFunction(DyC,Name)
 						
 		else:
-			pass
+			raise FeatureError
