@@ -12,14 +12,10 @@
 import imp
 import sys
 
-#### Class:Singleton #########################################################
-class Singleton:
-	__shared_state = {}
-	def __init__(self):
-		self.__dict__ = self.__shared_state
+import Core.singleton
 
 #### Class:CoreHandler #######################################################
-class CoreHandler:
+class CoreHandler(singleton.Singleton):
 	class __impl:
 		def __init__(self):
 			self.command={}

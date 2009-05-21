@@ -88,6 +88,7 @@ class Shovel(object):
         if self.options.dirt:
             self.config.PutGlobal("dirt",self.options.dirt)
             
+        ## Otherwise you get the default ;)
         else:
             self.config.PutGlobal("dirt",'dirt')
         ## For sandbox installs
@@ -111,7 +112,9 @@ class Shovel(object):
         ## For the specified lexer
         if self.options.lexer:
             self.config.PutGlobal("lexer",self.options.lexer)
-        
+        else:
+            self.config.PutGlobal("lexer",'yaml')
+            
         ## Clean up the tmp/ directory    
         if self.options.clean:
             print "Cleaning up."
