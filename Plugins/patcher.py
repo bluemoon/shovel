@@ -11,7 +11,7 @@ import os
 import subprocess
 
 from Core.Configurator import Configurator
-from Core.Debug import Debug,GetDebug
+from Core.Debug import *
 
 def ExtractNameFromTar(Tar):
 	Tar = Tar.split(".")[:-2]
@@ -50,10 +50,10 @@ class patcher(object):
 			PatchLevel =  File.split('@')
 			pLevel = PatchLevel[1].split(':')[1]
 			pFile  = PatchLevel[0]
-			Patch = subprocess.Popen('patch -p%d < %s' % (int(pLevel),CWD+"/"+pFile),shell=True,stdout=None,stderr=None)
+			Patch = subprocess.Popen('patch -p%d < %s' % (int(pLevel),CWD+"/"+pFile), shell=True, stdout=None, stderr=None)
 			Patch.wait()
 			if Patch.returncode > 0:
-				Debug("Patch didn't return 0!","WARNING")
+				debug("Patch didn't return 0!",WARNING)
 		os.chdir(CWD)
 		#Debug(Config["link"],"DEBUG")
 	

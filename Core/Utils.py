@@ -8,7 +8,8 @@
 ##############################################################################
 
 #### System Imports ##########################################################
-import sys, os
+import sys
+import os
 import termios, fcntl, struct, sys
 import warnings
 import functools
@@ -39,9 +40,6 @@ def deprecated(func):
         del current
         return func(*args, **kwargs)
     return new_func
-
-
-
 
 
 
@@ -89,35 +87,37 @@ def pprint(string, label, color=None, labelColor=None):
         
         if label:
             ## gets the label length and appends 2 for the brackets
-			labelMsgLen = len(label.splitlines()[0]) + 2
+            labelMsgLen = len(label.splitlines()[0]) + 2
         
         ## gets the string length
         stringLen = len(string.splitlines()[0])
         ## builds a pad string
         padding = padChar * (totalLen - (stringLen + labelMsgLen + endPadLen))
         endPad  = padChar * endPadLen
-		
-		## only label coloring			 
+
+        ## only label coloring			 
         if labelColor and not color:
             sys.stdout.write("%s%s[%s%s%s]%s\n" %
             (string, padding, ColorList[labelColor.upper()], label, 
             ColorList['NORMAL'], endPad))	
         
-		## if we have color
+        ## if we have color
         if color:
             sys.stdout.write("%s%s%s%s[%s%s%s]%s\n" %
             (ColorList[color.upper()], string, ColorList['NORMAL'], padding,
             ColorList[labelColor.upper()], label, ColorList['NORMAL'], endPad))
 
         
-	    ## no coloring
-	    #else:
-	    #    sys.stdout.write("%s%s[%s]%s\n" % (string, padding, label, endPad)) 
+        ## no coloring
+        #else:
+        #    sys.stdout.write("%s%s[%s]%s\n" % (string, padding, label, endPad)) 
 
     ## if nonpretty is True
     else:
-        print "%s [%s]" % (String,Label)
-		
+        str = "%s [%s]" % (string,label)
+        print str
+        return str
+
 
 
 

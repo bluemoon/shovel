@@ -14,4 +14,5 @@ class TestCoreDebug(unittest.TestCase):
         assert _levelToString(3) == 'DEBUG'
     def test_1_Lneg1_levelToString(self):
         assert _levelToString(-1) == 'ERROR'
-    
+        
+        

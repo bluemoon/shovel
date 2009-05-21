@@ -41,8 +41,10 @@ def _levelToString(level):
 def _dPrint(level, string, iOuter):
     ''' an internal method that prints the debug strings '''
     rLevel = _levelToString(level)
-    print '%s:[%s-%d]: %s' % (rLevel,
+    builtString = '%s:[%s-%d]: %s' % (rLevel,
     os.path.basename(iOuter[1][1]),iOuter[1][2],string)
+    print builtString
+    ## return builtString
     ## we must explicitly delete the frame inspector or it will cause 
     ## unnecessary garbage
 
@@ -72,30 +74,3 @@ def debug(string, level=DEBUG):
     
 
 
-global __Debug
-global _ShovelNew__Debug
-
-__Debug = "INFO"
-_ShovelNew__Debug = "NONE"
-def SetDebug(Level):
-	global _ShovelNew__Debug
-	_ShovelNew__Debug = Level
-def GetDebug():
-	return _ShovelNew__Debug
-def GreaterThan(Level):
-	if Level == "INFO":
-		pass
-		
-#@deprecated
-def Debug(Print,Level="DEBUG"):
-	Current = inspect.currentframe()
-	Outer   = inspect.getouterframes(Current)
-	if __Debug != "NONE" or _ShovelNew__Debug:
-		if _ShovelNew__Debug == "DEBUG":
-			print '%s:[%s-%d]: %s' % (Level,os.path.basename(Outer[1][1]),Outer[1][2],Print)
-		if _ShovelNew__Debug == "INFO":
-			if Level == "WARNING" or Level == "INFO" or Level == "ERROR":
-				print '%s:[%s-%d]: %s' % (Level,os.path.basename(Outer[1][1]),Outer[1][2],Print)
-		if _ShovelNew__Debug == "WARNING":		
-			if Level == _ShovelNew__Debug or Level == "ERROR":
-				print '%s:[%s-%d]: %s' % (Level,os.path.basename(Outer[1][1]),Outer[1][2],Print)

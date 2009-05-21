@@ -51,26 +51,25 @@ class TestConfigurator(unittest.TestCase):
         Config.PutConfig('p1',True)
         assert self.Config.GetConfig('p1') == True
         
-    def test_9_false_GetOutYaml(self):
+    def test_9_false_ConfiguratorGetOutYaml(self):
         yaml = self.Config.GetOutYaml('feature')
-        print yaml
-        assert yaml == []
+        assert yaml == False
         
-    def test_10_CreateOutYaml(self):
+    def test_a10_ConfiguratorCreateOutYaml(self):
         yaml = self.Config.CreateOutYaml('feature')
         test = []
         assert yaml == test
         
-    def test_11_AppendOutYaml(self):
+    def test_a11_ConfiguratorAppendOutYaml(self):
         self.Config.AppendOutYaml('global','value')
         outYaml = self.Config.GetOutYaml('global')
         assert outYaml == ['value']
         
-    def test_12_putModuleLoaded(self):
+    def test_a12_Configurator_putModuleLoaded(self):
         modules = self.Config.putModuleLoaded('Module')
         assert modules == {'Module': []}
         
-    def test_13_deleteModuleLoaded(self):
+    def test_a13_Configurator_deleteModuleLoaded(self):
         out = self.Config.deleteModuleLoaded('Module')
         assert out == True
         

@@ -13,7 +13,7 @@ import os
 ## Local imports
 from Lib.Plex import *
 
-from Core.Exception import SchemaNotFound
+from Core.Exceptions import SchemaNotFound
 
 
 class Schema(object):
@@ -23,7 +23,8 @@ class Schema(object):
         if schSplit[0] == 'strict':
             self.schemaStrict = True
         self.schemaName = schSplit[1]
-        self.schemaLoad(self.schemaName)
+        return self.schemaName
+        ## self.schemaLoad(self.schemaName)
 
     def schemaLoad(self, schema):
         if os.path.exists("Schema/" + schema):

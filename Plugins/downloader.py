@@ -1,6 +1,6 @@
 from threading import Thread
 from Core.Configurator import Configurator
-from Core.Debug import Debug,GetDebug
+from Core.Debug import *
 from Core.Utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
 import os
 import urllib

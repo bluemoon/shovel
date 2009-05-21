@@ -29,7 +29,7 @@ except ImportError:
 ##
 sys.path.append('Core')
 from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
-from Core.Configurator  import Configurator,feature
+from Core.Configurator  import Configurator
 from Core.Loader        import CoreHandler
 from Core.Debug         import *
 from Core.Dependencies  import Dependencies

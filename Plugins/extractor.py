@@ -1,5 +1,5 @@
 from Core.Configurator import Configurator
-from Core.Debug import Debug
+from Core.Debug import *
 import os
 import sys
 import tarfile
@@ -29,7 +29,7 @@ class extractor:
 					except EOFError,e:
 						print "The file appears to be corrupt, run with",
 						print "--clean and then retry building"
-						Debug(e,"ERROR")
+						debug(e, ERROR)
 						sys.exit(0)
 				if End[-1] == "gz":
 					tar = tarfile.open(name="tmp/downloads/" + File,mode='r:gz')
@@ -38,5 +38,5 @@ class extractor:
 					except EOFError,e:
 						print "The file appears to be corrupt, run with",
 						print "--clean and then retry building"
-						Debug(e,"ERROR")
+						debug(e, ERROR)
 						sys.exit(0)
