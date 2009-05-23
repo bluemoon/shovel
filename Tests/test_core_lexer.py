@@ -1,6 +1,8 @@
 import unittest
-import Core.Lexer
+import sys
+sys.path.append('../')
 
+import Core.Lexer
 from Core.Exceptions import SchemaNotFound
 
 class TestCoreLexer(unittest.TestCase):

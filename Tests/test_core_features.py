@@ -2,6 +2,7 @@
 import unittest
 import sys
 
+sys.path.append('../')
 from Core.Exceptions import FeatureError
 
 class TestCoreFeatures(unittest.TestCase):
