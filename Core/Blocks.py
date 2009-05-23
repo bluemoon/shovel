@@ -9,11 +9,13 @@
 
 #### Class:Blocks ############################################################
 class Blocks(object):
-	def ParseBlock(self,Yaml,Reverse=False):
-		Block = []
-		if hasattr(Yaml, 'keys'):
-			for Blocks in Yaml.keys():
-			 	Block.append(Blocks)
-		if Reverse:
-			Block.reverse()
-		return Block
+    ''' parses yaml '''
+    def ParseBlock(self, yaml, reverse=False):
+        ''' parses a block of yaml '''
+        block = []
+        if hasattr(yaml, 'keys'):
+            for blocks in yaml.keys():
+                block.append(blocks)
+            if reverse:
+                block.reverse()
+            return block
