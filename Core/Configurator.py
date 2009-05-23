@@ -11,87 +11,89 @@
 class Configurator:
     class __impl:
         def __init__(self):
-            self.Packages   = {}
-            self.Modules    = {}
-            self.Features   = []
-            self.BigPackage = {}
-            self.Globals    = {}
-            self.Out        = {}
+            self.packages   = {}
+            self.modules    = {}
+            self.features   = []
+            self.bigPackage = {}
+            self.globals    = {}
+            self.out        = {}
         
+        ## rename to getAllOut
         def GetAllOut(self):
-            return self.Out
+            return self.out
 
-        def GetOutYaml(self,Global):
-            if self.Out.has_key(Global):
-                return self.Out[Global]
+        def GetOutYaml(self, gYaml):
+            if self.out.has_key(gYaml):
+                return self.out[gYaml]
             else:
                 return False
             
-        def CreateOutYaml(self,Global):
-            self.Out[Global] = []
-            return self.Out[Global]
+        def CreateOutYaml(self, gYaml):
+            self.out[gYaml] = []
+            return self.out[gYaml]
             
-        def AppendOutYaml(self,Global,Value):
-            if not self.Out.has_key(Global):
-                self.CreateOutYaml(Global)
-            self.Out[Global].append(Value)
+        def AppendOutYaml(self, gYaml, value):
+            if not self.out.has_key(gYaml):
+                self.CreateOutYaml(gYaml)
+                
+            self.out[gYaml].append(value)
             
-        def GetGlobal(self,Global):
-            if self.Globals.has_key(Global):
-                return self.Globals[Global]
+        def GetGlobal(self, glbl):
+            if self.globals.has_key(glbl):
+                return self.globals[glbl]
             else:
                 return False
 
-        def PutGlobal(self,Global,Value):
-            self.Globals[Global] = Value
+        def PutGlobal(self, glbl, value):
+            self.globals[glbl] = value
         
         def getGlobalDump(self):
-            return self.Globals
+            return self.globals
 
-        def setGlobalDump(self,yaml):
-            self.Globals = yaml
+        def setGlobalDump(self, yaml):
+            self.globals = yaml
 
-        def GetPackage(self,Package):
-            return self.BigPackage[Package]
+        def GetPackage(self, package):
+            return self.bigPackage[package]
         
-        def PutPackage(self,Package,Yaml):
-            self.BigPackage[Package] = Yaml
+        def PutPackage(self, package, yaml):
+            self.bigPackage[package] = yaml
 
-        def FindInPackage(self,Search,Package):
-            for Lots in self.BigPackage[Package]:
-                if hasattr(Lots,'keys'):
-                    if Lots.has_key(Search):
-                        return Lots[Search]
+        def FindInPackage(self, search, package):
+            for lots in self.bigPackage[package]:
+                if hasattr(lots,'keys'):
+                    if lots.has_key(search):
+                        return lots[search]
 
-        def GetConfig(self,Package):
-            return self.Packages[Package]
+        def GetConfig(self, package):
+            return self.packages[package]
 
-        def PutConfig(self,Package,Yaml):
-            self.Packages[Package] = Yaml
+        def PutConfig(self, package, yaml):
+            self.packages[package] = yaml
 
-        def getModuleLoaded(self,Module):
-            for FindModule in self.Modules.keys():
-                if FindModule == Module:
-                    return Module
+        def getModuleLoaded(self, module):
+            for findModule in self.modules.keys():
+                if findModule == module:
+                    return module
 
-        def putModuleLoaded(self,Module):
-            self.Modules[Module] = []
-            return self.Modules
+        def putModuleLoaded(self, module):
+            self.modules[module] = []
+            return self.modules
         
-        def deleteModuleLoaded(self,Module):
+        def deleteModuleLoaded(self, module):
             return True
 
-        def getFeature(self,Feature):
-            for F in self.Features:
-                if F == Feature:
+        def getFeature(self, feature):
+            for feat in self.features:
+                if feat == feature:
                     return True
 
-        def deleteFeature(self,Feature):
+        def deleteFeature(self, feature):
             pass
         
-        def putFeature(self,Fture):
-            self.Features.append(Fture)
-            return self.Features
+        def putFeature(self, feature):
+            self.features.append(feature)
+            return self.features
 
     __instance = None
     def __init__(self):
