@@ -12,10 +12,8 @@
 import imp
 import sys
 
-import Core.singleton
-
 #### Class:CoreHandler #######################################################
-class CoreHandler(singleton.Singleton):
+class CoreHandler:
 	class __impl:
 		def __init__(self):
 			self.command={}
