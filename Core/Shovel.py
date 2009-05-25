@@ -37,7 +37,7 @@ from Core.Blocks        import Blocks
 from Core.Dirt          import Dirt
 from Core.Features      import Features
 from Core.Plugin        import Plugin
-from Core.File		    import rmDirectoryRecursive
+from Core.File		import rmDirectoryRecursive
 from Core.Utils         import pprint,deprecated
 from Core.Lexer         import Lexi
 
@@ -52,7 +52,7 @@ try:
 except ImportError:
     debug("Psyco not loaded.",INFO)
 else:
-	debug("Psyco Enabled!",INFO)
+    debug("Psyco Enabled!",INFO)
 
 ##
 # Global version string
@@ -64,22 +64,14 @@ class Shovel(object):
     def __init__(self):
         self.config = Configurator()
         self.plugins  = Plugin()
-    
+	
+        
     def Arguments(self):
         ''' Handles all of the arguments to the program'''
         import optparse
     
         ## Usage string
-        usage = "usage: %prog [options] module"
-	parser = optparse.OptionParser(usage=usage,version=VERSION)
-        parser.add_option('-d','--dirt',action="store",dest="dirt",help="Specify the dirt file")
-        parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
-        parser.add_option('--set-config',action="store_true", dest='config',help='Sets the config file')
-        parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
-        parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
-        parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
-        parser.add_option('--lexer',action="store",dest="lexer",help="Use the specified lexer")
-        parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
+        parser = self.parseOptions()
         
         self.options, self.remainder = parser.parse_args()
         
@@ -132,6 +124,20 @@ class Shovel(object):
             fHandle.write(yOut)
             fHandle.close()
 
+    
+    def parseOptions(self):
+        usage = "usage: %prog [options] module"
+        parser = optparse.OptionParser(usage=usage,version=VERSION)
+        parser.add_option('-d','--dirt',action="store",dest="dirt",help="Specify the dirt file")
+        parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
+        parser.add_option('--set-config',action="store_true", dest='config',help='Sets the config file')
+        parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
+        parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
+        parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
+        parser.add_option('--lexer',action="store",dest="lexer",help="Use the specified lexer")
+        parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
+        return parser
+
             
     def Main(self):
         self.plugins.LoadAll()
@@ -175,6 +181,8 @@ class Shovel(object):
                 lexi = Lexi()
                 lexi.loadLexer(str(dirtFile))
                 lexi.runLexer()   
+
+		
             
         
 
