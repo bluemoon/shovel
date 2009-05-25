@@ -72,8 +72,7 @@ class Shovel(object):
     
         ## Usage string
         parser = self.parseOptions()
-        
-        self.options, self.remainder = parser.parse_args()
+	self.options, self.remainder = parser.parse_args()
         
         
         ## Specifying your own dirt file
@@ -138,7 +137,9 @@ class Shovel(object):
         parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
         return parser
 
-            
+
+        
+    
     def Main(self):
         self.plugins.LoadAll()
         
@@ -184,6 +185,11 @@ class Shovel(object):
 
 		
             
+        
+        
+
+        
+        
         
 
 if __name__ == "__main__":
