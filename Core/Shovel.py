@@ -71,7 +71,7 @@ class Shovel(object):
     
         ## Usage string
         usage = "usage: %prog [options] module"
-        parser = optparse.OptionParser(usage=usage,version=VERSION)
+		parser = optparse.OptionParser(usage=usage,version=VERSION)
         parser.add_option('-d','--dirt',action="store",dest="dirt",help="Specify the dirt file")
         parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
         parser.add_option('--set-config',action="store_true", dest='config',help='Sets the config file')
