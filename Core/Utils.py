@@ -10,7 +10,7 @@
 #### System Imports ##########################################################
 import sys
 import os
-import termios, fcntl, struct, sys
+import termios, fcntl, struct
 import warnings
 import functools
 import inspect
@@ -46,7 +46,7 @@ def deprecated(func):
 ##
 # The terminal color list
 #
-ColorList = {
+colorList = {
   'USE' : True,
   'BOLD'  :'\x1b[01;1m',
   'RED'   :'\x1b[01;91m',
@@ -98,14 +98,14 @@ def pprint(string, label, color=None, labelColor=None):
         ## only label coloring			 
         if labelColor and not color:
             sys.stdout.write("%s%s[%s%s%s]%s\n" %
-            (string, padding, ColorList[labelColor.upper()], label, 
-            ColorList['NORMAL'], endPad))	
+            (string, padding, colorList[labelColor.upper()], label, 
+            colorList['NORMAL'], endPad))	
         
         ## if we have color
         if color:
             sys.stdout.write("%s%s%s%s[%s%s%s]%s\n" %
-            (ColorList[color.upper()], string, ColorList['NORMAL'], padding,
-            ColorList[labelColor.upper()], label, ColorList['NORMAL'], endPad))
+            (colorList[color.upper()], string, colorList['NORMAL'], padding,
+            colorList[labelColor.upper()], label, colorList['NORMAL'], endPad))
 
         
         ## no coloring
@@ -114,7 +114,7 @@ def pprint(string, label, color=None, labelColor=None):
 
     ## if nonpretty is True
     else:
-        str = "%s [%s]" % (string,label)
+        str = "%s [%s]" % (string, label)
         print str
         return str
 
@@ -180,11 +180,11 @@ __version__ = "2.2"
 # 2004-??-??: v0.1 first version
 
 
-import sys, time
+## import sys, time
 from array import array
 try:
     from fcntl import ioctl
-    import termios
+    ## import termios
 except ImportError:
     pass
 import signal

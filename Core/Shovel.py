@@ -51,8 +51,8 @@ class Shovel(object):
         ## Usage string
         parser = self.parseOptions()
 	self.options, self.remainder = parser.parse_args()
-        
-        
+	
+	
         ## Specifying your own dirt file
         if self.options.dirt:
             self.config.PutGlobal("dirt",self.options.dirt)
