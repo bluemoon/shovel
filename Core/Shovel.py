@@ -5,17 +5,11 @@
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 #### System Includes #########################################################
-from threading import Thread
 import sys
 import os
 import yaml
-import threading
-import imp
-import re
-import fnmatch
-import time
 import subprocess
-import inspect
+import optparse
 
 from yaml import load, dump
 try:
@@ -27,22 +21,12 @@ except ImportError:
 ####
 ## From Core
 ##
-sys.path.append('Core')
-from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
+
 from Core.Configurator  import Configurator
-from Core.Loader        import CoreHandler
 from Core.Debug         import *
-from Core.Dependencies  import Dependencies
-from Core.Blocks        import Blocks
-from Core.Dirt          import Dirt
-from Core.Features      import Features
 from Core.Plugin        import Plugin
 from Core.File		import rmDirectoryRecursive
-from Core.Utils         import pprint,deprecated
 from Core.Lexer         import Lexi
-
-
-import Plugins
 
 ## Attempt to speed this up a little
 try:
@@ -68,7 +52,7 @@ class Shovel(object):
         
     def Arguments(self):
         ''' Handles all of the arguments to the program'''
-        import optparse
+        
     
         ## Usage string
         parser = self.parseOptions()
@@ -184,13 +168,6 @@ class Shovel(object):
                 lexi.runLexer()   
 
 		
-            
-        
-        
-
-        
-        
-        
 
 if __name__ == "__main__":
   M = Shovel()
