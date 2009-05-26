@@ -55,7 +55,7 @@ class yamlParser(object):
         self.commands = self.getCommands()
         
         ## Compare those to whats leftover from optparse
-        remain = self.ArgumentRemainders(remainder)
+        remain = self.argumentRemainders(remainder)
         
         self.getAllUse()
         ## If not, run all the blocks
@@ -73,7 +73,7 @@ class yamlParser(object):
         if All:
             for cmds in self.commands:
                 self.runBlock(cmds)
-                self.DependencyRunner(cmds)
+                self.depRunner(cmds)
                 
         ## If value hasnt changed, raise ParseError
 		if not All:
@@ -81,7 +81,7 @@ class yamlParser(object):
         ## Otherwise run specified block
         else:         
             self.runBlock(All)
-            self.DependencyRunner(All)
+            self.depRunner(All)
                 
     def getOs(self):
         osBlock = self.parseOsBlock()
@@ -110,7 +110,7 @@ class yamlParser(object):
 		for B in Block:
 			self.commands.append(B)
 			
-    def ArgumentRemainders(self,remainder):
+    def argumentRemainders(self,remainder):
         for remainders in remainder:
             if remainders in self.commands:
                 return True
@@ -121,7 +121,7 @@ class yamlParser(object):
             #print map(use,a) 		
             pass
             
-    def WorkRunner(self,Block,Work):
+    def workRunner(self,Block,Work):
         debug("block: "+Block + " work: " +Work,DEBUG)
         for work in self.dirtY[self.os[0]][Block][Work]:
             if hasattr(work,'keys'):
@@ -138,23 +138,23 @@ class yamlParser(object):
             else:
                 raise ParseError
 				
-    def DependencyRunner(self,Block):
-        for Runner in self.dirtY[self.os[0]][Block]:
-            if hasattr(self.dirtY[self.os[0]][Block][Runner],'keys'):
+    def depRunner(self,Block):
+        for runner in self.dirtY[self.os[0]][Block]:
+            if hasattr(self.dirtY[self.os[0]][Block][runner],'keys'):
                 raise ParseError
             else:
-                for List in self.dirtY[self.os[0]][Block][Runner]:
-                    if hasattr(List,'keys'):
-                        if List.has_key('dependencies'):
-                            if hasattr(List['dependencies'],'keys'):
-                                if List['dependencies'].has_key('use'):
+                for lst in self.dirtY[self.os[0]][Block][runner]:
+                    if hasattr(lst,'keys'):
+                        if lst.has_key('dependencies'):
+                            if hasattr(lst['dependencies'],'keys'):
+                                if lst['dependencies'].has_key('use'):
                                     pass
                             else:
-                                for Deps in List['dependencies']:
-                                    debug("[" +Runner + "] depends on: " + Deps, INFO)
-                                    self.deps.DependencyGeneratorAdd(Runner,Deps)
+                                for Deps in lst['dependencies']:
+                                    debug("[" +runner + "] depends on: " + Deps, INFO)
+                                    self.deps.DependencyGeneratorAdd(runner,Deps)
                         else:
-                            self.deps.DependencyGeneratorAdd(Runner)
+                            self.deps.DependencyGeneratorAdd(runner)
                     else:
                         raise ParseError
 						
@@ -165,7 +165,7 @@ class yamlParser(object):
 			
         while Rev:
             Work = Rev.pop()
-            self.WorkRunner(Block,Work)
+            self.workRunner(Block,Work)
 			
     def runFeatureBlock(self,Block):
         Counter = 0
