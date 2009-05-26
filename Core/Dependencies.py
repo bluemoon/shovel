@@ -11,24 +11,24 @@
 #### Class:Dependencies ######################################################
 class Dependencies:
     def __init__(self):
-        self.DependencyList = {}
+        self.depList = {}
         
-    def BuildCoreDependencies(self, CoreDep):
-        self.DependencyList = CoreDep
+    def buildCoreDeps(self, coreDep):
+        self.depList = coreDep
 
-    def DependencyGeneratorAdd(self, Dependant, DependsOn=None):
-        if DependsOn == None:
-            self.DependencyList[Dependant] = []
+    def depGenAdd(self, dependant, dependsOn=None):
+        if dependsOn == None:
+            self.depList[dependant] = []
         else:
-            self.DependencyList[Dependant] = []
-            self.DependencyList[Dependant].append(DependsOn)
+            self.depList[dependant] = []
+            self.depList[dependant].append(dependsOn)
 
     def dependencyGenRun(self):
-        D = dict((k, set(self.DependencyList[k])) for k in self.DependencyList)
+        lstDict = dict((k, set(self.depList[k])) for k in self.depList)
         R = []
-        while D:
-            t = set(i for v in D.values() for i in v)-set(D.keys())
-            t.update(k for k, v in D.items() if not v)
+        while lstDict:
+            t = set(i for v in lstDict.values() for i in v)-set(lstDict.keys())
+            t.update(k for k, v in lstDict.items() if not v)
             R.append(t)
-            D = dict(((k, v-t) for k, v in D.items() if v))
+            lstDict = dict(((k, v-t) for k, v in lstDict.items() if v))
         return R

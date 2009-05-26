@@ -17,17 +17,18 @@ import fnmatch
 from Core.Loader       import CoreHandler
 from Core.Configurator import Configurator
 from Core.Debug        import *
-from Core.Terminal     import TermGreen,TermOrange,TermEnd
+from Core.Terminal import TermGreen
+from Core.Terminal import TermEnd
 
 import Plugins
 
 #### Class:Plugin ############################################################
 class Plugin:
 	def __init__(self):
-		self.Loader = CoreHandler()
-		self.Config = Configurator()
+		self.loader = CoreHandler()
+		self.config = Configurator()
 				
-	def LoadAll(self,Folder=None):
+	def loadAll(self, folder=None):
 		Dir = os.path.join(os.path.dirname(__file__)).split("/")[:-2]
 		def locate(pattern, root=Plugins.__dict__['__path__'][0]):
 			for path, dirs, files in os.walk(root):
@@ -35,25 +36,26 @@ class Plugin:
 					yield filename
 					
 		for Py in locate("*.py",Plugins.__dict__['__path__'][0]):
-			self.LoadAbsolute(Py)
+			self.loadAbsolute(Py)
 			
-	def LoadAbsolute(self,AbsPath):
-		AbsSplit = AbsPath.split('/')
-		File = AbsSplit[-1:]
-		nFile = File[0].split(".") 
-		Module = self.Load(nFile[0],"/".join(AbsSplit[:-1]))
-		self.Config.putModuleLoaded(nFile[0])
+	def loadAbsolute(self, absPath):
+		absSplit = absPath.split('/')
+		file = absSplit[-1:]
+		nFile = file[0].split(".") 
+		module = self.load(nFile[0],"/".join(absSplit[:-1]))
+		self.config.putModuleLoaded(nFile[0])
 		
-	def Load(self,Name=None,Folder=None):
-		self.Config.putFeature('shovel.'+Name.lower())
-		self.Loader.Load(Name,Folder)
-		Loader = self.Loader.GetModule(Name)
-   		try:
-			if Name != "__init__":
-				for Function in Loader.__dict__[Name].__dict__:
-					if Function[0:2] != '__':
-						self.Config.putFeature('shovel.'+Name.lower()+"." +Function)
-						debug('Loaded: '+ TermGreen +'shovel.'+Name.lower()+"." +Function + TermEnd,INFO)
-		except AttributeError:
-			pass
+	def load(self, name=None, folder=None):
+	    self.config.putFeature('shovel.'+name.lower())
+	    self.loader.Load(name,folder)
+	    loader = self.loader.GetModule(name)
+	    try:
+		if name != "__init__":
+		    for Function in loader.__dict__[name].__dict__:
+			if Function[0:2] != '__':
+			    self.config.putFeature('shovel.'+name.lower()+"." +Function)
+			    debug('Loaded: '+ TermGreen +'shovel.'+name.lower()+"." +Function + TermEnd,INFO)
+
+	    except AttributeError:
+		pass
 

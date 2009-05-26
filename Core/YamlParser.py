@@ -5,6 +5,9 @@ from Core.Configurator  import Configurator
 from Core.Features      import Features
 from Core.Exceptions    import ParseError, DirtFileDoesntExist
 from Core.Debug         import *
+from Core.Terminal      import TermOrange
+from Core.Terminal      import TermEnd
+from Core.Terminal      import TermGreen
 ## System imports
 import os
 import yaml
@@ -28,23 +31,23 @@ class yamlParser(object):
         self.config   = Configurator()
         self.features = Features()
         
-    def dirtExists(self,File):
+    def dirtExists(self, file):
 	""" Check to see if the dirt file exists"""
-        if os.path.exists(File):
+        if os.path.exists(file):
             return True
         else:
             return False
     
-    def loadDirt(self,File):
-        """ Load the dirt File """
-        if self.dirtExists(File):
-            dirtFile = open(File, 'r')
+    def loadDirt(self, file):
+        """ Load the dirt file """
+        if self.dirtExists(file):
+            dirtFile = open(file, 'r')
             dFile = dirtFile.read()
             self.dirtY = yaml.load(dFile,Loader=Loader)
         else:
             raise DirtFileDoesntExist
     
-    def main(self,fileName,remainder):
+    def main(self, fileName, remainder):
         ''' the main code for the yaml parser '''
         self.loadDirt(fileName)
         
@@ -60,28 +63,28 @@ class yamlParser(object):
         self.getAllUse()
         ## If not, run all the blocks
         if not remain:
-            self.run(All=True)
+            self.run(all=True)
             
         ## Otherwise run the specified block    
         else:
             for remain in remainder:
                 self.run(remain)
     
-    def run(self,All=False):
+    def run(self, all=False):
         ''' this is the main runner for the yaml parser '''
         ## Run all of the blocks
-        if All:
+        if all:
             for cmds in self.commands:
                 self.runBlock(cmds)
                 self.depRunner(cmds)
                 
         ## If value hasnt changed, raise ParseError
-		if not All:
+		if not all:
 		    raise ParseError
         ## Otherwise run specified block
         else:         
-            self.runBlock(All)
-            self.depRunner(All)
+            self.runBlock(all)
+            self.depRunner(all)
                 
     def getOs(self):
         osBlock = self.parseOsBlock()
@@ -121,29 +124,29 @@ class yamlParser(object):
             #print map(use,a) 		
             pass
             
-    def workRunner(self,Block,Work):
-        debug("block: "+Block + " work: " +Work,DEBUG)
-        for work in self.dirtY[self.os[0]][Block][Work]:
+    def workRunner(self, block, work):
+        debug("block: "+block + " work: " +work,DEBUG)
+        for work in self.dirtY[self.os[0]][block][work]:
             if hasattr(work,'keys'):
-                for Keys in work.keys():
-                    if hasattr(work[Keys],'keys'):
-                        if work[Keys].has_key('use'):
-                            if self.config.getFeature(work[Keys]['use']):
-                                self.config.PutPackage(Work,self.dirtY[self.os[0]][Block][Work])
-                                self.features.RunFeature(work[Keys],Work)
+                for keys in work.keys():
+                    if hasattr(work[keys],'keys'):
+                        if work[keys].has_key('use'):
+                            if self.config.getFeature(work[keys]['use']):
+                                self.config.PutPackage(work,self.dirtY[self.os[0]][block][work])
+                                self.features.RunFeature(work[keys],work)
                             else:
-                                debug("Not loaded: "+work[Keys]['use'],ERROR)
+                                debug("Not loaded: "+work[keys]['use'],ERROR)
                     else:
                         raise ParseError
             else:
                 raise ParseError
 				
-    def depRunner(self,Block):
-        for runner in self.dirtY[self.os[0]][Block]:
-            if hasattr(self.dirtY[self.os[0]][Block][runner],'keys'):
+    def depRunner(self, block):
+        for runner in self.dirtY[self.os[0]][block]:
+            if hasattr(self.dirtY[self.os[0]][block][runner],'keys'):
                 raise ParseError
             else:
-                for lst in self.dirtY[self.os[0]][Block][runner]:
+                for lst in self.dirtY[self.os[0]][block][runner]:
                     if hasattr(lst,'keys'):
                         if lst.has_key('dependencies'):
                             if hasattr(lst['dependencies'],'keys'):
@@ -152,59 +155,59 @@ class yamlParser(object):
                             else:
                                 for Deps in lst['dependencies']:
                                     debug("[" +runner + "] depends on: " + Deps, INFO)
-                                    self.deps.DependencyGeneratorAdd(runner,Deps)
+                                    self.deps.depGenAdd(runner,Deps)
                         else:
-                            self.deps.DependencyGeneratorAdd(runner)
+                            self.deps.depGenAdd(runner)
                     else:
                         raise ParseError
 						
-        DepList = self.deps.dependencyGenRun()
-        Rev = []
-        for RevDep in DepList[0]:
-            Rev.append(RevDep)
+        depList = self.deps.dependencyGenRun()
+        rev = []
+        for revDep in depList[0]:
+            rev.append(revDep)
 			
-        while Rev:
-            Work = Rev.pop()
-            self.workRunner(Block,Work)
+        while rev:
+            work = rev.pop()
+            self.workRunner(block, work)
 			
-    def runFeatureBlock(self,Block):
-        Counter = 0
-        for Runner in self.Blocks.ParseBlock(self.dirtY[Block],True):
-            debug(Runner, DEBUG)
-            List = self.dirtY[Block][Runner]
-            List.reverse()
-            print List.pop()
-            for subRunner in self.dirtY[Block][Runner]:
+    def runFeatureBlock(self, block):
+        for runner in self.block.ParseBlock(self.dirtY[block],True):
+
+            debug(runner, DEBUG)
+
+            list = self.dirtY[block][runner]
+            list.reverse()
+            
+            for subRunner in self.dirtY[block][runner]:
                 for mF in self.blocks.ParseBlock(subRunner):
                     if hasattr(subRunner[mF],'keys'):
                         if subRunner[mF].has_key('use'):
-                            print subRunner[mF]['use']
-                            Feature = self.config.getFeature(subRunner[mF]['use'])
-                            if Feature:
+			    feature = self.config.getFeature(subRunner[mF]['use'])
+                            if feature:
                                 self.features.RunFeature(subRunner[mF],subRunner)
                     if subRunner.has_key('use'):
                         print subRunner['use']
 
 	
-    def runBlock(self,Block):
-        for Runner in self.blocks.ParseBlock(self.dirtY[self.os[0]][Block]):
-            sub = self.blocks.ParseBlock(self.dirtY[self.os[0]][Block][Runner])
-            for SubRunner in sub:
-                if SubRunner == 'use':
-                    Name = self.features.SplitClass(self.dirtY[self.os[0]][Block][Runner][SubRunner])
-                    Feature = self.config.getFeature(self.dirtY[self.os[0]][Block][Runner][SubRunner])
-                    if not Feature: 
-                        debug("Feature " +TermOrange + self.dirtY[Block][Runner][SubRunner] + TermEnd + " is not available", WARNING)
+    def runBlock(self, block):
+        for runner in self.blocks.ParseBlock(self.dirtY[self.os[0]][block]):
+            sub = self.blocks.ParseBlock(self.dirtY[self.os[0]][block][runner])
+            for subRunner in sub:
+                if subRunner == 'use':
+		    feature = self.config.getFeature(self.dirtY[self.os[0]][block][runner][subRunner])
+                    if not feature: 
+                        debug("feature " + TermOrange + self.dirtY[block][runner][subRunner] + TermEnd + " is not available", WARNING)
                     else:
-                        debug("Instance created: "+ TermGreen + self.dirtY[Block][Runner][SubRunner] + TermEnd, INFO)
-                for uberSubRunner in self.blocks.ParseBlock(self.dirtY[self.os[0]][Block][Runner][SubRunner]):
+                        debug("Instance created: "+ TermGreen + self.dirtY[block][runner][subRunner] + TermEnd, INFO)
+                for uberSubRunner in self.blocks.ParseBlock(self.dirtY[self.os[0]][block][runner][subRunner]):
                     if uberSubRunner == 'use':
-                        Name = self.features.SplitClass(self.dirtY[self.os[0]][Block][Runner][SubRunner][uberSubRunner])
-                        Feature = self.config.getFeature(self.dirtY[self.os[0]][Block][Runner][SubRunner]['use'])
-                        if not Feature:
-                            debug("Feature "+ TermOrange+ self.dirtY[self.os[0]][Block][Runner][SubRunner][uberSubRunner]+TermEnd + " is not available", WARNING)
+                        name = self.features.SplitClass(self.dirtY[self.os[0]][block][runner][subRunner][uberSubRunner])
+                        feature = self.config.getFeature(self.dirtY[self.os[0]][block][runner][subRunner]['use'])
+                        if not feature:
+                            debug("feature "+ TermOrange+ self.dirtY[self.os[0]][block][runner][subRunner][uberSubRunner]+TermEnd + " is not available", WARNING)
                         else:
-                            debug("Instance created: "+ TermGreen + self.dirtY[self.os[0]][Block][Runner][SubRunner][uberSubRunner] + TermEnd, INFO)
+			    
+                            debug("Instance created: "+ TermGreen + self.dirtY[self.os[0]][block][runner][subRunner][uberSubRunner] + TermEnd, INFO)
                     else:
                         pass
                         

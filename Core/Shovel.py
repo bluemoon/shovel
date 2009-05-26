@@ -11,12 +11,6 @@ import yaml
 import subprocess
 import optparse
 
-from yaml import load, dump
-try:
-    from yaml import CLoader as Loader
-    from yaml import CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
     
 ####
 ## From Core
@@ -110,22 +104,22 @@ class Shovel(object):
     
     def parseOptions(self):
         usage = "usage: %prog [options] module"
-        parser = optparse.OptionParser(usage=usage,version=VERSION)
-        parser.add_option('-d','--dirt',action="store",dest="dirt",help="Specify the dirt file")
-        parser.add_option('-v', action="store", dest="verbose",help="Changes the verbosity level")
-        parser.add_option('--set-config',action="store_true", dest='config',help='Sets the config file')
-        parser.add_option('--np', action="store_true", dest="nonpretty",help="Disables formatting")
-        parser.add_option('--sandbox',action="store_true",dest="sandbox",help="Does a sandbox install")
-        parser.add_option('-c','--clean',action="store_true",dest="clean",help="Cleans the project")
-        parser.add_option('--lexer',action="store",dest="lexer",help="Use the specified lexer")
-        parser.add_option('--internal-tests',action="store_true",dest="tests",help="Run tests")
+        parser = optparse.OptionParser(usage=usage, version=VERSION)
+        parser.add_option('-d', '--dirt', action="store", dest="dirt", help="Specify the dirt file")
+        parser.add_option('-v', action="store", dest="verbose", help="Changes the verbosity level")
+        parser.add_option('--set-config', action="store_true", dest='config', help='Sets the config file')
+        parser.add_option('--np', action="store_true", dest="nonpretty", help="Disables formatting")
+        parser.add_option('--sandbox',action="store_true",dest="sandbox", help="Does a sandbox install")
+        parser.add_option('-c', '--clean',action="store_true",dest="clean", help="Cleans the project")
+        parser.add_option('--lexer', action="store", dest="lexer", help="Use the specified lexer")
+        parser.add_option('--internal-tests', action="store_true", dest="tests", help="Run tests")
         return parser
 
 
         
     
     def Main(self):
-        self.plugins.LoadAll()
+        self.plugins.loadAll()
         
         if os.path.exists('.shovel'):
             dirtFile = open('.shovel', 'r')
