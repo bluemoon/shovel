@@ -158,7 +158,7 @@ class yamlParser(object):
                     else:
                         raise ParseError
 						
-        DepList = self.deps.DependencyGeneratorRun()
+        DepList = self.deps.dependencyGenRun()
         Rev = []
         for RevDep in DepList[0]:
             Rev.append(RevDep)

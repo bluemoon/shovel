@@ -23,7 +23,7 @@ class Dependencies:
             self.DependencyList[Dependant] = []
             self.DependencyList[Dependant].append(DependsOn)
 
-    def DependencyGeneratorRun(self):
+    def dependencyGenRun(self):
         D = dict((k, set(self.DependencyList[k])) for k in self.DependencyList)
         R = []
         while D:
