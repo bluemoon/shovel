@@ -26,7 +26,7 @@ Darwin:
             "--disable-v4l --disable-syncfb --disable-opengl --disable-nls ",
             "--disable-iconvtest --disable-mmx2 --disable-mmx"]
             
-  build:
+  bld:
     cython:
         - pyxine-ng:
             use: shovel.builder.waf
@@ -52,7 +52,7 @@ Linux:
             md5: acd1a210c5a6444e8fd44696469352bb
             configure: ["--with-external-ffmpeg --without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3  --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest  --disable-mmx2"]
             
-  build:
+  bld:
     cython:
         - pyxine-ng:
             use: shovel.builder.waf

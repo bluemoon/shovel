@@ -74,10 +74,6 @@ class Shovel(object):
                 raise Exception('DebugLevelExceeded')
             self.config.PutGlobal("debug",self.options.verbose)
 
-        ## For the new lexer
-        if self.options.parser:
-            self.config.PutGlobal("parser",self.options.parser)
-        
         ## For the specified lexer
         if self.options.lexer:
             self.config.PutGlobal("lexer",self.options.lexer)
