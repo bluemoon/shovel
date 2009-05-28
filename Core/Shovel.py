@@ -21,7 +21,7 @@ from core.debug         import *
 from core.plugin        import Plugin
 from core.file          import rmDirectoryRecursive
 
-from parser.lexer       import Lexi
+from parsers.dirt       import Lexi
 
 ## Attempt to speed this up a little
 try:
@@ -146,7 +146,7 @@ class Shovel(object):
         ## --lexer=lexer-name        
         if lexer and not newLex:
             if lexer == 'yaml':
-                from Core.YamlParser import yamlParser
+                from parsers.pyaml import yamlParser
                 yml = yamlParser()
                 yml.main(str(dirtFile),self.remainder)
             if lexer == 'new':
