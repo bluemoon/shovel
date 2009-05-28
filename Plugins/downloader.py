@@ -37,9 +37,10 @@ class downloader(Thread):
 
   def http(self,Name):
     Config = self.Config.GetConfig(Name)
-    Debug(Config["link"],"DEBUG")
+    debug(Config["link"], DEBUG)
     Download = Config["link"]
     Filename = Config["link"].split("/")[-1:][0]
+    
     try:
       Md5 = Config["md5"]
     except Exception, E:
@@ -53,7 +54,8 @@ class downloader(Thread):
 		
     if not tmp:
       os.mkdir('tmp')
-    Debug(os.getcwd(),"DEBUG")
+      
+    debug(os.getcwd(), DEBUG)
 		
     self.Config.CreateOutYaml(Name)
 		
@@ -73,12 +75,12 @@ class downloader(Thread):
         pbar.finish()
         print
         urllib.urlcleanup()
-        Debug("Folder tmp is pre-existing","INFO")
+        debug("Folder tmp is pre-existing", INFO)
         data = 'Preexisting'
       if data is False:
-        Debug('Remote-retrieval: Download failure.',"ERROR")
+        debug('Remote-retrieval: Download failure.', ERROR)
       elif data is None:
-        Debug('Input error: No data for string.',"ERROR")
+        debug('Input error: No data for string.', ERROR)
 				
       urllib.urlcleanup()
       if data is False:
@@ -95,7 +97,7 @@ class downloader(Thread):
         raise Exception('md5DigestError') 
 		  
     Down = {"downloader":True}		
-    self.Config.AppendOutYaml(Name,Down)
+    self.Config.AppendOutYaml(Name, Down)
 
 
   def svn(self,Name):

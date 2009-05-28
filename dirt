@@ -12,9 +12,8 @@ Darwin:
                         "--disable-mmx --disable-mmx2"]
         
     xine-lib:
-        - dependencies:
-            - ffmpeg
-        - build:
+         - build:
+            dependencies: ['ffmpeg']
             use: shovel.pbuilder.build
             link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2
             md5: acd1a210c5a6444e8fd44696469352bb
@@ -44,17 +43,16 @@ Linux:
                         " --disable-mmx2"]
         
     xine-lib:
-        - dependencies:
-            - ffmpeg
         - build:
+            dependencies: ['ffmpeg']
             use: shovel.pbuilder.build
             link: http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2
             md5: acd1a210c5a6444e8fd44696469352bb
             configure: ["--with-external-ffmpeg --without-imagemagick --without-theora --without-sdl --without-caca --without-xcb --disable-vcd --disable-dvdnavtest --disable-gdkpixbuf --disable-mng --disable-a52dec --disable-vidix --disable-dxr3  --disable-fb --disable-aalib --disable-xinerama --disable-xvmc --disable-v4l --disable-syncfb --disable-opengl --disable-nls --disable-iconvtest  --disable-mmx2"]
             
   bld:
-    cython:
-        - pyxine-ng:
-            use: shovel.builder.waf
-            folder: src/cython/pyxine-ng/
+      cython:
+          - pyxine-ng:
+              use: shovel.builder.waf
+              folder: src/cython/pyxine-ng/
 

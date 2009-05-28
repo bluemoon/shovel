@@ -10,10 +10,13 @@
 #### System Imports ##########################################################
 import sys
 import os
-import termios, fcntl, struct
+import termios
+import fcntl
+import struct
 import warnings
 import functools
 import inspect
+import time
 
 from Core.Configurator import Configurator
 from Core.Debug import *

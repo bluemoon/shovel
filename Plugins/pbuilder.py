@@ -1,15 +1,42 @@
 ## This is the pbuilder. or package builder
+from Core.Configurator import Configurator
+
+import builder
+import downloader
+import extractor
+import patcher
 
 class pbuilder(object):
   def __init__(self):
-    ## self.Config = Configurator()
-    pass
+    self.config = Configurator()
     
-  def build(self,Name):
-    pass
+    
+  def build(self, name):
+    config = self.config.GetConfig(name)
+    filename = config["link"].split("/")[-1:][0]
+    
+    configuration = config['configure']
+    
+    try:
+        md5 = config["md5"]
+    except Exception, E:
+        md5 = None
+    
+    d = downloader.downloader()
+    d.http(name)
+    if md5:
+        digest = downloader.md5("tmp/downloads/" + filename, md5)
+        if digest == True:
+            print '[md5]: %s digests match. download fine. ' % (md5)
+        else:
+            print 'Digest failed got: %s expected: %s' % (digest, md5)
+            raise Exception('md5DigestError') 
+    
+    print filename
+    
     '''
-    Config = self.Config.GetConfig(Name)
-    Filename = Config["link"].split("/")[-1:][0]
+    
+    
     Configuration = Config['configure']
     try:
       Md5 = Config["md5"]
