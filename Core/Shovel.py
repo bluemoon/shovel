@@ -15,12 +15,24 @@ import optparse
 ####
 ## From Core
 ##
-
-from Core.Configurator  import Configurator
-from Core.Debug         import *
+sys.path.append('Core/')
+#### From Core ###############################################################
+from Core.Messaging     import CoreMessaging
+from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
+from Core.Configurator  import Configurator,feature
+from Core.Loader        import CoreHandler
+from Core.Debug         import Debug,SetDebug
+from Core.Dependencies  import Dependencies
+from Core.Blocks        import Blocks
+from Core.Dirt          import Dirt
+from Core.Features      import Features
 from Core.Plugin        import Plugin
-from Core.File		import rmDirectoryRecursive
-from Core.Lexer         import Lexi
+from Core.File			import rmDirectoryRecursive
+from Core.Utils			import PPrint
+
+
+from Core.Lexer import Lexi
+
 
 ## Attempt to speed this up a little
 try:
@@ -50,7 +62,7 @@ class Shovel(object):
     
         ## Usage string
         parser = self.parseOptions()
-	self.options, self.remainder = parser.parse_args()
+        self.options, self.remainder = parser.parse_args()
 	
 	
         ## Specifying your own dirt file
@@ -157,7 +169,7 @@ class Shovel(object):
                 lexi.loadLexer(str(dirtFile))
                 lexi.runLexer()   
 
-		
+	
 
 if __name__ == "__main__":
   M = Shovel()

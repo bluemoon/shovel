@@ -24,13 +24,18 @@ class pbuilder(object):
     
     d = downloader.downloader()
     d.http(name)
-    if md5:
-        digest = downloader.md5("tmp/downloads/" + filename, md5)
-        if digest == True:
-            print '[md5]: %s digests match. download fine. ' % (md5)
-        else:
-            print 'Digest failed got: %s expected: %s' % (digest, md5)
-            raise Exception('md5DigestError') 
+    
+    e = extractor.extractor()
+    e.tar(name, filename)
+    
+    Folder = extractor.ExtractNameFromTar(filename)
+    
+    debug('Adding ' + os.getcwd() + '/tmp/sandbox/lib/pkgconfig/ to PKG_CONFIG_PATH')
+    pkgCfg = subprocess.Popen('export PKG_CONFIG_PATH=' + os.getcwd() + '/tmp/sandbox/lib/pkgconfig/',shell=True,stdout=None)
+    pkgCfg.wait()
+    
+    b = builder.builder()
+    b.make(name)
     
     print filename
     

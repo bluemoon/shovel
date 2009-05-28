@@ -2,13 +2,61 @@ from threading import Thread
 from Core.Configurator import Configurator
 from Core.Debug import *
 from Core.Utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
+import Core.File as fileUtils
 import os
 import urllib
 import subprocess
 import sys
-import sys
 
 
+def _reporthook(numblocks, blocksize, filesize, url,pbar):
+  pbar.update((numblocks*blocksize*100)/filesize)
+
+class downloadBase:
+    def download(self):
+        pass
+    def update(self):
+        pass
+        
+class http(downloadBase):
+    def __init__(self):
+        self.config = Configurator()
+        
+    def download(self, name):
+         config = self.config.GetConfig(name)
+         debug(config["link"], DEBUG)
+         download = config["link"]
+         filename = config["link"].split("/")[-1:][0]
+         
+         try:
+             md5 = config["md5"]
+         except Exception, E:
+             md5 = None
+         
+         print "[http] Downloading: " + Filename
+         
+         fileUtils.mkdirIfAbsent('tmp')
+         fileUtils.mkdirIfAbsent('tmp/downloads')
+         
+         debug(os.getcwd(), DEBUG)
+         self.Config.CreateOutYaml(name)
+         
+
+         widgets = [Filename + " ", Percentage(), ' ', Bar(),' ', ETA(), ' ', ' ']
+         pbar = ProgressBar(widgets=widgets).start()
+         data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename,lambda nb, bs, fs, url=Download: _reporthook(nb,bs,fs,url,pbar))
+         pbar.finish()
+         print
+         urllib.urlcleanup()
+         
+         if md5:
+             digest = md5("tmp/downloads/" + filename, md5)
+             if digest == True:
+                 print '[md5]: %s digests match. download fine. ' % (md5)
+             else:
+                 print 'Digest failed got: %s expected: %s' % (digest, md5)		 
+                 raise Exception('md5DigestError') 
+         
 def md5(File,Against):
   import hashlib
   m = hashlib.md5()
@@ -27,8 +75,27 @@ def md5(File,Against):
   else:
     return Digest
 
-def _reporthook(numblocks, blocksize, filesize, url,pbar):
-  pbar.update((numblocks*blocksize*100)/filesize)
+
+    
+class download_meta(type):
+    def __init__(self, downloader):
+        self.type = downloader
+    def __new__(cls, name, bases, attrs):
+        downloaders = {
+            'http': http,
+            'svn' : svn,
+            'git' : git,
+        }.get(self.type, None)
+        if not downloaders:
+            raise Exception, 'Downloader not found'
+        return downloaders
+        
+class download:
+    __metaclass__ = download_meta
+    
+
+
+
 
 class downloader(Thread):
   def __init__(self):
