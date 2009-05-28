@@ -11,9 +11,9 @@ import re
 import os
 
 ## Local imports
-from Lib.Plex import *
+from lib.Plex import *
 
-from Core.Exceptions import SchemaNotFound
+from core.exceptions import SchemaNotFound
 
 
 class Schema(object):

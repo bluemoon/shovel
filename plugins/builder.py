@@ -12,10 +12,10 @@ import os
 import subprocess
 import re
 #### Local Imports ###########################################################
-from Core.Configurator import Configurator
-from Core.Debug        import *
-from Core.Terminal     import TermGreen,TermEnd
-from Core.Utils	       import pprint
+from core.configurator import Configurator
+from core.debug        import *
+from core.terminal     import TermGreen,TermEnd
+from core.utils	       import pprint
 
 class make:
   def __init__(self):

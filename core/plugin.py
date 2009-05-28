@@ -20,7 +20,7 @@ from core.debug        import *
 from core.terminal import TermGreen
 from core.terminal import TermEnd
 
-import Plugins
+import plugins as Plugins
 
 #### Class:Plugin ############################################################
 '''plugins = {

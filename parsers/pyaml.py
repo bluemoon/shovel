@@ -1,13 +1,13 @@
 ## Core imports
-from Core.Blocks        import Blocks
-from Core.Dependencies  import Dependencies
-from Core.Configurator  import Configurator
-from Core.Features      import Features
-from Core.Exceptions    import ParseError, DirtFileDoesntExist
-from Core.Debug         import *
-from Core.Terminal      import TermOrange
-from Core.Terminal      import TermEnd
-from Core.Terminal      import TermGreen
+from core.blocks        import Blocks
+from core.dependencies  import Dependencies
+from core.configurator  import Configurator
+from core.features      import Features
+from core.exceptions    import ParseError, DirtFileDoesntExist
+from core.debug         import *
+from core.terminal      import TermOrange
+from core.terminal      import TermEnd
+from core.terminal      import TermGreen
 ## System imports
 import os
 import yaml

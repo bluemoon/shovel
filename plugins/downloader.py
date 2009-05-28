@@ -1,8 +1,8 @@
 from threading import Thread
-from Core.Configurator import Configurator
-from Core.Debug import *
-from Core.Utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
-import Core.File as fileUtils
+from core.configurator import Configurator
+from core.debug import *
+from core.utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
+import core.file as fileUtils
 import os
 import urllib
 import subprocess
@@ -78,14 +78,12 @@ def md5(File,Against):
 
     
 class download_meta(type):
-    def __init__(self, downloader):
-        self.type = downloader
     def __new__(cls, name, bases, attrs):
         downloaders = {
             'http': http,
-            'svn' : svn,
-            'git' : git,
-        }.get(self.type, None)
+            #'svn' : svn,
+            #'git' : git,
+        }.get('http', None)
         if not downloaders:
             raise Exception, 'Downloader not found'
         return downloaders
