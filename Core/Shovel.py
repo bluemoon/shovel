@@ -16,11 +16,12 @@ import optparse
 ## From Core
 ##
 
-from Core.Configurator  import Configurator
-from Core.Debug         import *
-from Core.Plugin        import Plugin
-from Core.File		import rmDirectoryRecursive
-from Core.Lexer         import Lexi
+from core.configurator  import Configurator
+from core.debug         import *
+from core.plugin        import Plugin
+from core.file          import rmDirectoryRecursive
+
+from parser.lexer       import Lexi
 
 ## Attempt to speed this up a little
 try:
@@ -50,7 +51,7 @@ class Shovel(object):
     
         ## Usage string
         parser = self.parseOptions()
-	self.options, self.remainder = parser.parse_args()
+        self.options, self.remainder = parser.parse_args()
 	
 	
         ## Specifying your own dirt file
@@ -126,10 +127,6 @@ class Shovel(object):
         self.Arguments()
         ## Debug tests
         
-        ## debug('testing info',INFO)
-        ## debug('testing warning',WARNING)
-        ## debug('testing debug',DEBUG)
-        
         newLex   = self.config.GetGlobal('parser')
         dirtFile = self.config.GetGlobal('dirt')
         lexer    = self.config.GetGlobal('lexer')
@@ -155,7 +152,7 @@ class Shovel(object):
             if lexer == 'new':
                 lexi = Lexi()
                 lexi.loadLexer(str(dirtFile))
-                lexi.runLexer()   
+                lexi.runLexer()
 
 		
 

@@ -10,7 +10,7 @@
 ## System Includes
 import os
 ## Local Includes
-from Core.Debug import *
+from core.debug import *
 
 def touch(file):
     tfile = open(file, 'w')
