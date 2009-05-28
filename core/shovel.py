@@ -15,20 +15,23 @@ import optparse
 ####
 ## From Core
 ##
-sys.path.append('Core/')
+sys.path.append('core/')
 #### From Core ###############################################################
-from core.messaging     import CoreMessaging
-from core.terminal      import TermGreen,TermOrange,TermBlue,TermEnd
-from core.configurator  import Configurator,feature
+from core.terminal      import TermGreen
+from core.terminal      import TermOrange
+from core.terminal      import TermBlue
+from core.terminal      import TermEnd
+
+from core.configurator  import Configurator
 from core.loader        import CoreHandler
-from core.debug         import Debug,SetDebug
+from core.debug         import *
 from core.dependencies  import Dependencies
 from core.blocks        import Blocks
 from core.dirt          import Dirt
 from core.features      import Features
 from core.plugin        import Plugin
 from core.file			import rmDirectoryRecursive
-from core.utils			import PPrint
+#from core.utils			import PPrint
 
 
 from parsers.dirt import Lexi
@@ -40,9 +43,9 @@ try:
     import psyco
     psyco.full()
 except ImportError:
-    debug("Psyco not loaded.",INFO)
+    debug("Psyco not loaded.", INFO)
 else:
-    debug("Psyco Enabled!",INFO)
+    debug("Psyco Enabled!", INFO)
 
 ##
 # Global version string
@@ -67,30 +70,30 @@ class Shovel(object):
 	
         ## Specifying your own dirt file
         if self.options.dirt:
-            self.config.PutGlobal("dirt",self.options.dirt)
+            self.config.PutGlobal("dirt", self.options.dirt)
             
         ## Otherwise you get the default ;)
         else:
-            self.config.PutGlobal("dirt",'dirt')
+            self.config.PutGlobal("dirt", 'dirt')
         ## For sandbox installs
         if self.options.sandbox:
-            self.config.PutGlobal("sandbox",True)
+            self.config.PutGlobal("sandbox", True)
     
         ## Disable formatting
         if self.options.nonpretty:
-            self.config.PutGlobal("nonpretty",True)
+            self.config.PutGlobal("nonpretty", True)
         
         ## For debug verbosity
         if self.options.verbose:
             if int(self.options.verbose) > 3 or int(self.options.verbose) < 0:
                 raise Exception('DebugLevelExceeded')
-            self.config.PutGlobal("debug",self.options.verbose)
+            self.config.PutGlobal("debug", self.options.verbose)
 
         ## For the specified lexer
         if self.options.lexer:
-            self.config.PutGlobal("lexer",self.options.lexer)
+            self.config.PutGlobal("lexer", self.options.lexer)
         else:
-            self.config.PutGlobal("lexer",'yaml')
+            self.config.PutGlobal("lexer", 'yaml')
             
         ## Clean up the tmp/ directory    
         if self.options.clean:
