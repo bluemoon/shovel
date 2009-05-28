@@ -9,10 +9,10 @@
 ##############################################################################
 
 #### Local Includes ##########################################################
-from Core.Loader       import CoreHandler
-from Core.Configurator import Configurator
-from Core.Exceptions   import FeatureError
-from Core.Debug        import *
+from core.loader       import CoreHandler
+from core.configurator import Configurator
+from core.exceptions   import FeatureError
+from core.debug        import *
 
 #### Class:Features ##########################################################
 class Features(object):

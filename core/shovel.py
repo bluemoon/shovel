@@ -17,21 +17,21 @@ import optparse
 ##
 sys.path.append('Core/')
 #### From Core ###############################################################
-from Core.Messaging     import CoreMessaging
-from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
-from Core.Configurator  import Configurator,feature
-from Core.Loader        import CoreHandler
-from Core.Debug         import Debug,SetDebug
-from Core.Dependencies  import Dependencies
-from Core.Blocks        import Blocks
-from Core.Dirt          import Dirt
-from Core.Features      import Features
-from Core.Plugin        import Plugin
-from Core.File			import rmDirectoryRecursive
-from Core.Utils			import PPrint
+from core.messaging     import CoreMessaging
+from core.terminal      import TermGreen,TermOrange,TermBlue,TermEnd
+from core.configurator  import Configurator,feature
+from core.loader        import CoreHandler
+from core.debug         import Debug,SetDebug
+from core.dependencies  import Dependencies
+from core.blocks        import Blocks
+from core.dirt          import Dirt
+from core.features      import Features
+from core.plugin        import Plugin
+from core.file			import rmDirectoryRecursive
+from core.utils			import PPrint
 
 
-from Core.Lexer import Lexi
+from parsers.dirt import Lexi
 
 
 ## Attempt to speed this up a little

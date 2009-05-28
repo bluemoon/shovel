@@ -14,11 +14,11 @@ import sys
 import fnmatch
 
 #### Local Imports ###########################################################
-from Core.Loader       import CoreHandler
-from Core.Configurator import Configurator
-from Core.Debug        import *
-from Core.Terminal import TermGreen
-from Core.Terminal import TermEnd
+from core.loader       import CoreHandler
+from core.configurator import Configurator
+from core.debug        import *
+from core.terminal import TermGreen
+from core.terminal import TermEnd
 
 import Plugins
 
