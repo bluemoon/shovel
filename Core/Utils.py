@@ -18,8 +18,8 @@ import functools
 import inspect
 import time
 
-from core.configurator import Configurator
-from core.debug import *
+from Core.Configurator import Configurator
+from Core.Debug import *
 
 ##
 # deprecated decorator

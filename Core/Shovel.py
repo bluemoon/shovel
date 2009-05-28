@@ -15,13 +15,24 @@ import optparse
 ####
 ## From Core
 ##
+sys.path.append('Core/')
+#### From Core ###############################################################
+from Core.Messaging     import CoreMessaging
+from Core.Terminal      import TermGreen,TermOrange,TermBlue,TermEnd
+from Core.Configurator  import Configurator,feature
+from Core.Loader        import CoreHandler
+from Core.Debug         import Debug,SetDebug
+from Core.Dependencies  import Dependencies
+from Core.Blocks        import Blocks
+from Core.Dirt          import Dirt
+from Core.Features      import Features
+from Core.Plugin        import Plugin
+from Core.File			import rmDirectoryRecursive
+from Core.Utils			import PPrint
 
-from core.configurator  import Configurator
-from core.debug         import *
-from core.plugin        import Plugin
-from core.file          import rmDirectoryRecursive
 
-from parsers.dirt       import Lexi
+from Core.Lexer import Lexi
+
 
 ## Attempt to speed this up a little
 try:
@@ -127,6 +138,10 @@ class Shovel(object):
         self.Arguments()
         ## Debug tests
         
+        ## debug('testing info',INFO)
+        ## debug('testing warning',WARNING)
+        ## debug('testing debug',DEBUG)
+        
         newLex   = self.config.GetGlobal('parser')
         dirtFile = self.config.GetGlobal('dirt')
         lexer    = self.config.GetGlobal('lexer')
@@ -146,15 +161,15 @@ class Shovel(object):
         ## --lexer=lexer-name        
         if lexer and not newLex:
             if lexer == 'yaml':
-                from parsers.pyaml import yamlParser
+                from Core.YamlParser import yamlParser
                 yml = yamlParser()
                 yml.main(str(dirtFile),self.remainder)
             if lexer == 'new':
                 lexi = Lexi()
                 lexi.loadLexer(str(dirtFile))
-                lexi.runLexer()
+                lexi.runLexer()   
 
-		
+	
 
 if __name__ == "__main__":
   M = Shovel()
