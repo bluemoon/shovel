@@ -23,4 +23,4 @@ class TestBlocks(unittest.TestCase):
     def test_os_SubBlocks(self):
         dirt = self.Dirt.loadDirt()
         blocks = self.Blocks.ParseBlock(dirt['Linux'])
-        assert blocks == ['pre.flight', 'build']
+        assert blocks == ['pre.flight', 'bld']
