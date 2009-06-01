@@ -46,6 +46,7 @@ class plugin:
         
     def load(self, use):
         #reduce(dict.get, use.split(self.splitString), )
+        pass
 class Plugin:
     def __init__(self):
         self.loader = CoreHandler()
