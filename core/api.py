@@ -15,7 +15,7 @@ class api(object):
     ''' this is the plugin api '''
     
     class file(object):
-    ''' this is a subclass to the api for all of the file operations '''    
+    ''' this is a subclass to the api for all of the file  '''    
         @accepts('file_', str)
         def touch(self, file_):
             ''' touch a file, like the unix command touch
@@ -59,25 +59,32 @@ class api(object):
             
             
     class config(object):
+        ''' this is a subclass to the api for all of the config methods '''
         def __init__(self):
             self.config = config.Configurator()
             
         def getGlobal(self, glbal):
+            ''' retrieves a global variable from storage. '''
             assert glbal, "there was no global input"
             self.config.GetGlobal(glbal)
     
         def putGlobal(self, glbal, value):
-            """docstring for putGlobal"""
+            ''' puts a global variable in storage so that it
+                can be retrieved from anywhere in the code '''
             assert glbal, "there was no global input"
             assert value, "there was no value"
         
             self.config.PutConfig(glbal, value)
         
     def debug(self, string, level=NONE):
+        ''' this prints debugging code in a fashionable way. '''
         assert string, "there is no debug string"
         debug(string, level)
     
     def pprint(self, string, label, color=None, labelColor=None):
+        ''' formats the code so that the string is on the left and 
+            the label goes on the right side. with padding in the center
+        '''
         assert string, "there is no string value, or it is None!"
         assert lable,  "there is no label or it is None!"
         pprint(string, label, color, labelColor)
