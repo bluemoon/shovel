@@ -1,28 +1,18 @@
-#!/usr/bin/env python
-##############################################################################
-## File: Plugin.py
-## Version: -*-dev-*-
-## Author: Alex Toney (toneyalex@gmail.com)
-## Date: 2009/04/22
-## Copyright (c) 2009 Alex Toney
-## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-##############################################################################
-
-#### System Imports ##########################################################
 import os
 import sys
 import fnmatch
 
-#### Local Imports ###########################################################
+
 from core.loader       import CoreHandler
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug        import *
 from core.terminal import TermGreen
 from core.terminal import TermEnd
 
 import plugins as Plugins
 
-#### Class:Plugin ############################################################
+
+
 '''plugins = {
     'shovel':{
         'systools' : {
@@ -39,27 +29,51 @@ import plugins as Plugins
         
     }
 } '''
-class plugin:
-    def __init__(self):
-        """docstring for __init__"""
-        self.splitString = '.'
-        
-    def load(self, use):
-        #reduce(dict.get, use.split(self.splitString), )
-        pass
-class Plugin:
-    def __init__(self):
-        self.loader = CoreHandler()
-        self.config = Configurator()
-	
-    def loadAll(self, folder=None):
-        Dir = os.path.join(os.path.dirname(__file__)).split("/")[:-2]
-        def locate(pattern, root=Plugins.__dict__['__path__'][0]):
+
+def locate(pattern, root):
             for path, dirs, files in os.walk(root):
                 for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
                     yield filename
-
-        for Py in locate("*.py",Plugins.__dict__['__path__'][0]):
+                    
+def alignDirectories(directory1, directory2):
+    for path in directory1:
+        for path2 in directory2:
+            if not path == path2:
+                break
+                
+        
+class plugin:
+    def __init__(self):
+        """dostring for __init__"""
+        self.splitString = '.'
+       
+    def getAll(self):
+        import plugins
+        ''' gets all of the plugins '''
+        rPath =  plugins.__dict__['__path__'][0]
+        ## it should turn out something like
+        ## shovel.sys.http.download => [plugins]/sys/http.py[function:download]
+        for loadable in locate('*.py', rPath):
+            pyElement = loadable.split('/')[-1:]
+            ## i only want the end element
+            if pyElement[0] != '__init__.py':
+                print loadable
+            
+            cwd = os.getcwd()
+            listDirectory = cwd.split('/')
+            
+                
+            
+        
+        
+class Plugin:
+    def __init__(self):
+        self.loader = CoreHandler()
+        self.config = configurator()
+	
+    def loadAll(self, folder=None):
+        Dir = os.path.join(os.path.dirname(__file__)).split("/")[:-2]
+        for Py in locate("*.py", Plugins.__dict__['__path__'][0]):
             self.loadAbsolute(Py)
 
     def loadAbsolute(self, absPath):

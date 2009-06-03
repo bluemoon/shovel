@@ -6,8 +6,7 @@
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Local includes
-from core.configurator import Configurator
-#from Core.Utils        import deprecated
+from core.configurator import configurator
 ## System includes
 import inspect
 import os

@@ -7,8 +7,7 @@
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 ##############################################################################
 
-#### Class:Configurator ######################################################
-class Configurator:
+class configurator:
     class __impl:
         def __init__(self):
             self.packages   = {}
@@ -19,32 +18,32 @@ class Configurator:
             self.out        = {}
         
         ## rename to getAllOut
-        def GetAllOut(self):
+        def getAllOut(self):
             return self.out
 
-        def GetOutYaml(self, gYaml):
+        def getOutYaml(self, gYaml):
             if self.out.has_key(gYaml):
                 return self.out[gYaml]
             else:
                 return False
             
-        def CreateOutYaml(self, gYaml):
+        def createOutYaml(self, gYaml):
             self.out[gYaml] = []
             return self.out[gYaml]
             
-        def AppendOutYaml(self, gYaml, value):
+        def appendOutYaml(self, gYaml, value):
             if not self.out.has_key(gYaml):
                 self.CreateOutYaml(gYaml)
                 
             self.out[gYaml].append(value)
             
-        def GetGlobal(self, glbl):
+        def getGlobal(self, glbl):
             if self.globals.has_key(glbl):
                 return self.globals[glbl]
             else:
                 return False
 
-        def PutGlobal(self, glbl, value):
+        def putGlobal(self, glbl, value):
             self.globals[glbl] = value
         
         def getGlobalDump(self):
@@ -53,22 +52,22 @@ class Configurator:
         def setGlobalDump(self, yaml):
             self.globals = yaml
 
-        def GetPackage(self, package):
+        def getPackage(self, package):
             return self.bigPackage[package]
         
-        def PutPackage(self, package, yaml):
+        def putPackage(self, package, yaml):
             self.bigPackage[package] = yaml
 
-        def FindInPackage(self, search, package):
+        def findInPackage(self, search, package):
             for lots in self.bigPackage[package]:
                 if hasattr(lots,'keys'):
                     if lots.has_key(search):
                         return lots[search]
 
-        def GetConfig(self, package):
+        def getConfig(self, package):
             return self.packages[package]
 
-        def PutConfig(self, package, yaml):
+        def putConfig(self, package, yaml):
             self.packages[package] = yaml
 
         def getModuleLoaded(self, module):
@@ -97,9 +96,9 @@ class Configurator:
 
     __instance = None
     def __init__(self):
-        if Configurator.__instance is None:
-            Configurator.__instance = Configurator.__impl()
-            self.__dict__['_Configurator__instance'] = Configurator.__instance
+        if configurator.__instance is None:
+            configurator.__instance = configurator.__impl()
+            self.__dict__['_configurator__instance'] = configurator.__instance
 
     def __getattr__(self, attr):
         return getattr(self.__instance, attr)
