@@ -13,8 +13,9 @@ import core.file as _file
 
 class api(object):
     ''' this is the plugin api '''
+    
     class file(object):
-        
+    ''' this is a subclass to the api for all of the file operations '''    
         @accepts('file_', str)
         def touch(self, file_):
             ''' touch a file, like the unix command touch
