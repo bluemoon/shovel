@@ -2,4 +2,4 @@ import unittest
 import sys
 sys.path.append('../')
 
-import Plugins.builder
+import plugins.sys.builder

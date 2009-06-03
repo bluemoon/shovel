@@ -1,5 +1,5 @@
 ## This is the pbuilder. or package builder
-from Core.Configurator import Configurator
+from core.configurator import Configurator
 
 import builder
 import downloader

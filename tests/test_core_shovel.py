@@ -1,4 +1,4 @@
 import unittest
 import sys
 sys.path.append('../')
-import Core.Shovel
+import core.shovel

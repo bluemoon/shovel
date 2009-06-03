@@ -1,7 +1,7 @@
 import unittest
 import sys
 sys.path.append('../')
-import Plugins.patcher
+import plugins.sys.patcher
 
 class TestPluginsPatcher(unittest.TestCase):
     pass

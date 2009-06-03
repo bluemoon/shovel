@@ -2,8 +2,8 @@ import unittest
 import sys
 sys.path.append('../')
 
-import Core.Utils as util
-import Core.Configurator
+import core.utils as util
+import core.configurator
 
 class TestCoreUtils(unittest.TestCase):
     def setUp(self):

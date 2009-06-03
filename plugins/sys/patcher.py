@@ -10,8 +10,8 @@ import re
 import os
 import subprocess
 
-from Core.Configurator import Configurator
-from Core.Debug import *
+from core.configurator import Configurator
+from core.debug import *
 
 def ExtractNameFromTar(Tar):
 	Tar = Tar.split(".")[:-2]

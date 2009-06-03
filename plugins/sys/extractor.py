@@ -1,5 +1,6 @@
-from Core.Configurator import Configurator
-from Core.Debug import *
+from core.configurator import Configurator
+from core.debug import *
+
 import os
 import sys
 import tarfile

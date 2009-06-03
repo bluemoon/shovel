@@ -5,9 +5,9 @@ import stat
 import subprocess
 import re
 
-import Core.File as file
+import core.file as file
 
-from Core.Debug import *
+from core.debug import *
 ## to build with gcc:
 ##  
 ##

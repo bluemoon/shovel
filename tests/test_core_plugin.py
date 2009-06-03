@@ -1,4 +1,4 @@
 import unittest
 import sys
 sys.path.append('../')
-import Core.Plugin
+import core.plugin

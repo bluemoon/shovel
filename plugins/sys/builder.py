@@ -12,15 +12,17 @@ import os
 import subprocess
 import re
 #### Local Imports ###########################################################
-from core.configurator import Configurator
-from core.debug        import *
-from core.terminal     import TermGreen,TermEnd
-from core.utils	       import pprint
+#from core.configurator import Configurator
+#from core.debug        import *
+#from core.terminal     import TermGreen,TermEnd
+#from core.utils	    import pprint
+
+import core.api as api
 
 class make:
   def __init__(self):
-    self.Config = Configurator()
-    self.cwd = os.getcwd()
+    self.config = api.config()
+    self.cwd    = os.getcwd()
     self.sandbox_path = 'tmp/sandbox'
     
   def Configure(self, Directory, Configure):
@@ -28,9 +30,10 @@ class make:
     if self.Config.GetGlobal("sandbox"):
       if not os.path.exists(self.sandbox_path):
         os.mkdir(self.sandbox_path)
-      NewConfigure = "--prefix="+ self.cwd +"/" + self.sandbox_path  +" " + " ".join(Configure)
-      debug(NewConfigure, DEBUG)
-      Configure = NewConfigure
+        
+      confString = '--prefix=%s/%s %s' % (self.cwd, self.sandbox_path, join)
+      debug(confString, DEBUG)
+      Configure = confString
       
     # Otherwise pass the normal configure options
     else:

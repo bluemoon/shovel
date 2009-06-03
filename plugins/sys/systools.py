@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-from Core.Configurator import Configurator
-from Core.Debug import *
+from core.configurator import Configurator
+from core.debug import *
 
 class systools:
 	def __init__(self):
@@ -11,6 +11,6 @@ class systools:
 		p = subprocess.Popen("/usr/bin/env pkg-config",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 		while p.stdout.readline():
 			if p.stdout.readline() != "Must specify package names on the command line":
-				debug("pkg-config not found!",ERROR)
+				debug("pkg-config not found!", ERROR)
 			else:
-				debug("pkg-config found!",INFO)
+				debug("pkg-config found!", INFO)
