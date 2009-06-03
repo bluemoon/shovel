@@ -1,32 +1,22 @@
-RELEASE: Rusty Coal Shovel
+RELEASE: Shovel-0.0.1
   1. DONE: Optparse arguments
-  2.         
- 
- 
- 
- 
- 
- 
+  2. recipes!
+  3. fix the plugin namespace
  
  
  All:
      1. Get all the code to follow the 80 character line limit
      2. More comments!
-     3. Write more tests!
+     [/]3. Write more tests!
  
  Shovel Core:
      [x]1. Write a class to take over for lots of if's on argv input
 
-     [/] 2. Remove the actual parsing from this class, seperate it so that 
+     [x]2. Remove the actual parsing from this class, seperate it so that 
         it is easier to update
 
-     3. I think it would be quite interesting to support different versions of 
-        the parser, so say you add the metadata 0.0.1-dev or whatever and you 
-        have version 0.1.0-dev installed it would automatically parse it right.
-        because i am pretty convinced i will have major changes to the yaml
-        structures.
 
-     4. String parsing ie. {d:sandbox} or {d:sandbox:build:ffmpeg} or {i:os}
+     [0.1.0] 4. String parsing ie. {d:sandbox} or {d:sandbox:build:ffmpeg} or {i:os}
         or {b:pre.flight:ffmpeg:link}
 
         where:
@@ -66,17 +56,17 @@ RELEASE: Rusty Coal Shovel
       Requires class instance ->
      [x] 2. Then a function will pass over each class and use __dict__
             to determine the functions and will add to the configurator
-      3. Support better namespacing and inheritance for the plugin names
+     [/] 3. Support better namespacing and inheritance for the plugin names
  Downloader:
      [x] 1. Progress bar for urllib
 
  Patcher:
      [x] 1. Actually get this to work
-     2. I would like to have it automatically figure out the strip by aligning
+     [0.1.0] 2. I would like to have it automatically figure out the strip by aligning
         the directories up (this really is doable)
 
  Builder:
-     1. Find a more elegant way for stderr to be run
+     [0.1.0]1. Find a more elegant way for stderr to be run
      [x] 2. Support options to enable/disable the parsing of gcc
 
 
