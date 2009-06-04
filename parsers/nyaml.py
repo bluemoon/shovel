@@ -1,4 +1,5 @@
 import os
+import sys
 import yaml
 
 import core.recipe
@@ -19,7 +20,8 @@ class nyaml:
     def load(self, fileName):
         """ Load the dirt fileName """
         if not os.path.exists(fileName):
-            pass
+            print 'no file inputted!...'
+            sys.exit(-1)
         else:
             dirtFile = open(fileName, 'r')
             dFile = dirtFile.read()
