@@ -4,7 +4,7 @@ from core.configurator import configurator
 import imp
 import sys
 
-import recipes.cbuilder
+import recipes
 
 class recipe(object):
     def __init__(self):
@@ -15,12 +15,9 @@ class recipe(object):
         ''' runner, arguments: recipeLocation '''
         try:
             module = sys.modules['recipes.' + recipeName]
-        except KeyError:	
-            ## ImportError: No frozen submodule named recipes.cbuilder
-            ## file, pathname, description = imp.find_module(recipeName, recipeLocation)
-            ## debug('%s %s %s %s' % (recipeName, file, pathname, description), DEBUG)
-            ## module = imp.load_module(recipeName, file, pathname, description)
-            pass
+        except KeyError:
+            __import__('recipes.' + recipeName)
+            module = sys.modules['recipes.' + recipeName]
             
         ## if the recipe has requirements
         if 'requires' in module.__dict__ and isinstance(module.__dict__['requires'], list):

@@ -1,4 +1,4 @@
-import core.api
+import core.api as api
 
 requires = ['shovel.sys.builder']
 
@@ -9,4 +9,5 @@ def run(*arguments):
 
 class cbuilder(object):
     def build(self):
-        pass
+        api.debug('debugging test!', api.DEBUG)
+        
