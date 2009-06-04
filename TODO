@@ -2,8 +2,22 @@ RELEASE: Shovel-0.0.1
   1. DONE: Optparse arguments
   2. recipes!
   3. fix the plugin namespace
- 
- 
+
+plugins:
+    steps:
+        iterate the directory
+        add all python files to the master list
+
+recipes:
+    steps:
+        check to see what plugins need to be loaded
+        compare that to the master list to see if we have them
+        fail if we dont
+        otherwise,
+        pass options to plugin
+        run plugin
+         
+
  All:
      1. Get all the code to follow the 80 character line limit
      2. More comments!
