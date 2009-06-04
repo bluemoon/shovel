@@ -1,0 +1,23 @@
+---^strict:mosaic
+[Darwin]:
+  [pre.flight]:
+    [ffmpeg]:
+      dependencies: !use[shovel.systools.pkgconfig]
+      download[shovel.download.http]:
+        link: http://ffmpeg.mplayerhq.hu/releases/ffmpeg-0.5.tar.bz2
+      extract[shovel.extractor.tar]:
+        file: @splitHttpName({b:download:link})
+      build[shovel.builder.make]:
+        folder: @splitTarName({b:extract:file})
+        configure: ["--enable-postproc --enable-gpl --disable-vhook --enable-shared"]
+[Linux]:
+  [pre.flight]:
+    [ffmpeg]:
+      dependencies: !use[shovel.systools.pkgconfig]
+      download[shovel.download.http]:
+        link: http://ffmpeg.mplayerhq.hu/releases/ffmpeg-0.5.tar.bz2
+      extract[shovel.extractor.tar]:
+        file: @splitHttpName({b:download:link})
+      build[shovel.builder.make]:
+        folder: @splitTarName({b:extract:file})
+        configure: ["--enable-postproc --enable-gpl --disable-vhook --enable-shared"]
