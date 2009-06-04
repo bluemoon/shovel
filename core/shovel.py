@@ -174,9 +174,11 @@ class shovel(object):
         ## --lexer=lexer-name        
         if lexer and not newLex:
             if lexer == 'yaml':
-                #from parsers.pyaml import yamlParser
-                #yml = yamlParser()
-                #yml.main(str(dirtFile),self.remainder)
+                from parsers.nyaml import nyaml
+                yml = nyaml()
+                yml.load(str(dirtFile))
+                yml.run()
+                #yml.main(str(dirtFile), self.remainder)
                 pass
             if lexer == 'new':
                 #lexi = Lexi()

@@ -11,82 +11,77 @@
 import os
 import subprocess
 import re
-#### Local Imports ###########################################################
-#from core.configurator import Configurator
-#from core.debug        import *
-#from core.terminal     import TermGreen,TermEnd
-#from core.utils	    import pprint
 
 import core.api as api
 
 class make:
-  def __init__(self):
-    self.config = api.config()
-    self.cwd    = os.getcwd()
-    self.sandbox_path = 'tmp/sandbox'
-    
-  def Configure(self, Directory, Configure):
-    # If sandox is passed, prepare to build a sandbox
-    if self.Config.GetGlobal("sandbox"):
-      if not os.path.exists(self.sandbox_path):
-        os.mkdir(self.sandbox_path)
+    def __init__(self):
+        self.config = api.config()
+        self.file   = api.file()
+        self.cwd    = os.getcwd()
+        self.sandbox_path = 'tmp/sandbox'
         
-      confString = '--prefix=%s/%s %s' % (self.cwd, self.sandbox_path, join)
-      debug(confString, DEBUG)
-      Configure = confString
+    def configure(self, directory, configure):
+        # If sandox is passed, prepare to build a sandbox
+        if self.config.getGlobal("sandbox"):
+            file.mkdirIfAbsent(self.sandbox_path)
+        
+        confString = '--prefix=%s/%s %s' % (self.cwd, self.sandbox_path, join)
+        debug(confString, DEBUG)
+        configure = confString
       
-    # Otherwise pass the normal configure options
-    else:
-      Configure = " ".join(Configure)
-      
-    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
-    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
-    debug("Configuring...", INFO)
-    
-    # If it has prepared options ie. --prefix.....
-    if Configure:
-      print "[make] Configure Options: " + Configure
-      p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=None)
-      p.wait()
-    # Otherwise configure it normally
-    else:
-      p = subprocess.Popen('./configure',shell=True,stdout=None)
-      p.wait()
-    
-    debug("Changing to directory: " + self.cwd , DEBUG)
-    os.chdir(self.cwd)
-    
-  def Build(self, Directory):
-    debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
-    os.chdir(self.cwd + '/tmp/downloads/' + Directory)
-    #Debug("Building:" + Name,"INFO")
-    #print "[make] Building: " + Name
-    regex = re.compile('[a-zA-Z0-9/_]*\.c')
-    if self.Config.GetGlobal("nonpretty"):
-      MakeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
-    else:
-      MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-      while MakeSub.poll() is None:
-        Read = MakeSub.stdout.readline()
-        match = regex.findall(Read)
-        if match:
-          pprint("Compiling: " + match[0],"ok",None,"GREEN")
+        # otherwise pass the normal configure options
         else:
-          pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
+            configure = " ".join(configure)
+      
+        debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + directory, DEBUG)
+        os.chdir(self.cwd + '/tmp/downloads/' + directory)
+        debug("Configuring...", INFO)
+    
+        # If it has prepared options ie. --prefix.....
+        if Configure:
+            print "[make] Configure Options: " + Configure
+            p = subprocess.Popen('./configure ' + Configure,shell=True,stdout=None)
+            p.wait()
+        # Otherwise configure it normally
+        else:
+            p = subprocess.Popen('./configure',shell=True,stdout=None)
+            p.wait()
+    
+        debug("Changing to directory: " + self.cwd , DEBUG)
+        os.chdir(self.cwd)
+    
+    def Build(self, Directory):
+        debug("Changing to directory: " + self.cwd + '/tmp/downloads/' + Directory, DEBUG)
+        os.chdir(self.cwd + '/tmp/downloads/' + Directory)
+        #Debug("Building:" + Name,"INFO")
+        #print "[make] Building: " + Name
+        regex = re.compile('[a-zA-Z0-9/_]*\.c')
+        if self.Config.GetGlobal("nonpretty"):
+            MakeSub = subprocess.Popen('make',shell=True,stdout=None,stderr=None)
+        else:
+            MakeSub = subprocess.Popen('make',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            while MakeSub.poll() is None:
+                Read = MakeSub.stdout.readline()
+                match = regex.findall(Read)
+                if match:
+                    pprint("Compiling: " + match[0],"ok",None,"GREEN")
+                else:
+                    pprint("Out: "+Read[:-1],"!!","BLUE","BLUE")
           
-    MakeSub.wait()
-    # Make sure the build returns a valid code and doesnt fail
-    debug("Build Return Code: %d" % (MakeSub.returncode), INFO)
-    if MakeSub.returncode > 0:
-      raise Exception('BuildError')
+        MakeSub.wait()
+        # Make sure the build returns a valid code and doesnt fail
+        debug("Build Return Code: %d" % (MakeSub.returncode), INFO)
+        if MakeSub.returncode > 0:
+            raise Exception('BuildError')
     
-    if self.Config.GetGlobal("sandbox"):
-      debug("Sandbox Install", INFO)
-      SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-      SB.wait()
+        if self.Config.GetGlobal("sandbox"):
+            debug("Sandbox Install", INFO)
+            SB = subprocess.Popen('make install',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            SB.wait()
     
-    debug("Changing to directory: " + self.cwd, DEBUG)
-    os.chdir(self.cwd)
+        debug("Changing to directory: " + self.cwd, DEBUG)
+        os.chdir(self.cwd)
     
 class waf:
   def __init__(self):
