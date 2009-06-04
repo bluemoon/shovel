@@ -1,6 +1,7 @@
 pre.flight:
     ffmpeg:
         recipe: cbuilder
+        test: crap
     xine:
         recipe: cbuilder
 
@@ -9,5 +10,5 @@ commit:
     recipe: test -> commit
     test_directory: tests
     test_command: nosetests
-    test_pylint: True
+    #test_pylint: true
         
