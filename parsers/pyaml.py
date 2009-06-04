@@ -1,13 +1,12 @@
 ## Core imports
-from core.blocks        import Blocks
-from core.dependencies  import Dependencies
-from core.configurator  import Configurator
+from core.dependencies  import dependencies
+from core.configurator  import configurator
 from core.features      import Features
 from core.exceptions    import ParseError, DirtFileDoesntExist
 from core.debug         import *
-from core.terminal      import TermOrange
-from core.terminal      import TermEnd
-from core.terminal      import TermGreen
+from core.utils         import TermOrange
+from core.utils         import TermEnd
+from core.utils         import TermGreen
 ## System imports
 import os
 import yaml
@@ -66,10 +65,9 @@ class yamlParser(object):
     def __init__(self):
         self.commands = []
         self._os      = os.uname()
-        self.blocks   = Blocks()
-        self.deps     = Dependencies()
-        self.config   = Configurator()
-        self.features = Features()
+        self.deps     = dependencies()
+        self.config   = configurator()
+        self.features = features()
         self.gen      = yamlGenerators()
         
         
@@ -171,7 +169,7 @@ class yamlParser(object):
                 
                 feature = self.config.getFeature(gen['fb'][1])
                 if feature:
-                    self.config.PutPackage(work, gen['feature'])
+                    self.config.putPackage(work, gen['feature'])
                     lst = [gen['os'], gen['block'], gen['subblock']]
                     features = yamlReduce(self.dirtY, lst)[0][gen['feature']]
                     self.features.RunFeature(gen['fb'][1], gen['subblock'], features)

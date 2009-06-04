@@ -1,5 +1,5 @@
 from threading import Thread
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug import *
 from core.utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
 import core.file as fileUtils
@@ -20,10 +20,10 @@ class downloadBase:
         
 class http(downloadBase):
     def __init__(self):
-        self.config = Configurator()
+        self.config = configurator()
         
     def download(self, name):
-         config = self.config.GetConfig(name)
+         config = self.config.getConfig(name)
          debug(config["link"], DEBUG)
          download = config["link"]
          filename = config["link"].split("/")[-1:][0]
@@ -95,13 +95,12 @@ class download:
 
 
 
-class downloader(Thread):
+class downloader:
   def __init__(self):
-    self.Config = Configurator()
-    Thread.__init__(self)
+    self.Config = configurator()
 
-  def http(self,Name):
-    Config = self.Config.GetConfig(Name)
+  def http(self, Name):
+    Config = self.Config.getConfig(Name)
     debug(Config["link"], DEBUG)
     Download = Config["link"]
     Filename = Config["link"].split("/")[-1:][0]
@@ -122,7 +121,7 @@ class downloader(Thread):
       
     debug(os.getcwd(), DEBUG)
 		
-    self.Config.CreateOutYaml(Name)
+    self.Config.createOutYaml(Name)
 		
     if not os.path.exists("tmp/downloads/" +Filename):
       if lib is False:

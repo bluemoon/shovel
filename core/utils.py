@@ -18,8 +18,17 @@ import functools
 import inspect
 import time
 
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug import *
+
+
+### For the term coloring ###
+TermGreen  = "\033[1;32m"
+TermOrange = '\033[93m'
+TermBlue   = '\033[94m'
+TermRed    = '\033[91m'
+TermEnd    = "\033[1;m"
+
 
 ##
 # deprecated decorator
@@ -68,7 +77,7 @@ colorList = {
 ## this is replacing PPrint
 def pprint(string, label, color=None, labelColor=None):
     """ a pretty print that prints with padding and right aligned text """
-    config = Configurator()
+    config = configurator()
     ##
     ## If the user doesnt pass --np
     if config.GetGlobal('nonpretty') != True:

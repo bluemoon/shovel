@@ -6,12 +6,10 @@ import fnmatch
 from core.loader       import CoreHandler
 from core.configurator import configurator
 from core.debug        import *
-from core.terminal import TermGreen
-from core.terminal import TermEnd
+from core.utils        import TermGreen
+from core.utils        import TermEnd
 
 import plugins as Plugins
-
-
 
 '''plugins = {
     'shovel':{
@@ -85,7 +83,7 @@ class Plugin:
 
     def load(self, name=None, folder=None):
         self.config.putFeature('shovel.'+name.lower())
-        self.loader.Load(name,folder)
+        self.loader.Load(name, folder)
         loader = self.loader.GetModule(name)
         try:
             if name != "__init__":

@@ -1,5 +1,5 @@
 ## This is the pbuilder. or package builder
-from core.configurator import Configurator
+from core.configurator import configurator
 
 import builder
 import downloader
@@ -8,11 +8,11 @@ import patcher
 
 class pbuilder(object):
   def __init__(self):
-    self.config = Configurator()
+    self.config = configurator()
     
     
   def build(self, name):
-    config = self.config.GetConfig(name)
+    config = self.config.getConfig(name)
     filename = config["link"].split("/")[-1:][0]
     
     configuration = config['configure']

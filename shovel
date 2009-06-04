@@ -1,21 +1,21 @@
 #!/usr/bin/env python
-##############################################################################
 ## File: shovel
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/04/22
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-##############################################################################
-import sys
-sys.path.append('core/')
-from core.shovel import Shovel
 
-#### Function:Main ###########################################################
+import sys
+
+sys.path.append('core/')
+
+from core.shovel import shovel
+
 if __name__ == "__main__":
-    M = Shovel()
+    m = shovel()
     try:
-      M.Main()
+      m.main()
     except KeyboardInterrupt:
         print "\nExiting..."
         sys.exit(0)

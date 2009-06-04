@@ -10,7 +10,7 @@ import re
 import os
 import subprocess
 
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug import *
 
 def ExtractNameFromTar(Tar):
@@ -37,8 +37,9 @@ def IntelliPatcher(PatchFile):
 
 class patcher(object):
 	def __init__(self):
-		self.Config = Configurator()
-	def patch(self,Name):
+		self.Config = configurator()
+		
+	def patch(self, Name):
 		Config = self.Config.GetConfig(Name)
 		self.Config.CreateOutYaml(Name)
 		Folder = self.Config.FindInPackage("extract",Name)

@@ -50,7 +50,7 @@ def _dPrint(level, string, iOuter):
     
 def debug(string, level=DEBUG):
     ''' the debug method, a printer for debugging with verbosity control'''
-    config = Configurator()
+    config = configurator()
     ## Get the frames so we know who's calling us from what line
     current = inspect.currentframe(0)
     # print inspect.getframeinfo(current)
@@ -58,7 +58,7 @@ def debug(string, level=DEBUG):
     outer   = inspect.getouterframes(current)
     
     ## get the debug level from our global class
-    dLevel = int(config.GetGlobal('debug'))
+    dLevel = int(config.getGlobal('debug'))
     ## Keep a marker so we dont print the same thing more than once
     hasPrinted = False
     

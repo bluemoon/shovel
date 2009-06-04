@@ -1,4 +1,4 @@
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug import *
 
 import os
@@ -11,7 +11,7 @@ def ExtractNameFromTar(Tar):
 
 class extractor:
     def __init__(self):
-        self.Config = Configurator()
+        self.Config = configurator()
 
     def tar(self, Name, filename=None):
         Tar = {}

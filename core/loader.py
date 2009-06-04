@@ -13,14 +13,16 @@ import imp
 import sys
 
 #### Class:CoreHandler #######################################################
-class CoreHandler:
+class coreHandler:
 	class __impl:
 		def __init__(self):
 			self.command={}
 			self.module_handler={}
-		def AddTest(self,name):
+		
+		def AddTest(self, name):
 			self.command[name] = True    
-		def Load(self,CoreFile,paths):
+			
+		def Load(self, CoreFile, paths):
 			try:
 				return sys.modules[CoreFile]
 			except KeyError:
@@ -44,10 +46,12 @@ class CoreHandler:
 			finally:
 				if fp:
 					fp.close()
-		def Unload(self,Module):
+		
+		def Unload(self, Module):
 			self.module_handler[Module] = False
 			return True
-		def Reload(self,Module):
+		
+		def Reload(self, Module):
 			if self.GetModule(Module) == False:
 				return False
 			else:
@@ -57,25 +61,29 @@ class CoreHandler:
 					I = self.CreateInstance(mod)
 				except Exception, e:
 					pass
-				return True        
-		def GetModule(self,module):
+				return True
+		  
+		def GetModule(self, module):
 			if self.module_handler.has_key(module):
 				return self.module_handler[module]
 			else:
 				return False
-		def MatchCoreFiles(self,CoreFile):
+				
+		def MatchCoreFiles(self, CoreFile):
 			if self.module_handler.has_key(CoreFile) == True:
 				return CoreFile
 			else:
-				return False                        
-		def CreateInstance(self,Module):
+				return False    
+    
+		def CreateInstance(self, Module):
 			if self.GetModule(Module.__name__) != False:
 				Dummy = getattr(Module,Module.__name__)
 				D = Dummy()
 				return D
 			else:
 				return False
-		def ReloadInternal(self,Internal):
+				
+		def ReloadInternal(self, Internal):
 			if sys.modules.has_key(Internal):
 				reload(Internal)
 				return True

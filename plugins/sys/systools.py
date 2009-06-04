@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from core.configurator import Configurator
+from core.configurator import configurator
 from core.debug import *
 
 class systools:

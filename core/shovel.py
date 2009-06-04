@@ -4,7 +4,8 @@
 ## Date: 2009/05/08
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
-#### System Includes #########################################################
+
+
 import sys
 import os
 import yaml
@@ -16,20 +17,19 @@ import optparse
 ## From Core
 ##
 sys.path.append('core/')
-#### From Core ###############################################################
-from core.terminal      import TermGreen
-from core.terminal      import TermOrange
-from core.terminal      import TermBlue
-from core.terminal      import TermEnd
 
-from core.configurator  import Configurator
-from core.loader        import CoreHandler
+
+from core.utils         import TermGreen
+from core.utils         import TermOrange
+from core.utils         import TermBlue
+from core.utils         import TermEnd
+
+from core.configurator  import configurator
+from core.loader        import coreHandler
 from core.debug         import *
-from core.dependencies  import Dependencies
-from core.blocks        import Blocks
-from core.dirt          import Dirt
-from core.features      import Features
-from core.plugin        import Plugin
+from core.dependencies  import dependencies
+from core.features      import features
+from core.plugin        import plugin
 from core.file			import rmDirectoryRecursive
 #from core.utils			import PPrint
 
@@ -52,14 +52,14 @@ else:
 VERSION = '0.0.1rc3'
 
 
-class Shovel(object):
+class shovel(object):
     ''' main class for the application '''
     def __init__(self):
-        self.config = Configurator()
+        self.config = configurator()
         self.plugins  = Plugin()
 	
         
-    def Arguments(self):
+    def arguments(self):
         ''' Handles all of the arguments to the program'''
         
     
@@ -70,30 +70,37 @@ class Shovel(object):
 	
         ## Specifying your own dirt file
         if self.options.dirt:
-            self.config.PutGlobal("dirt", self.options.dirt)
+            self.config.putGlobal("dirt", self.options.dirt)
+        
+        if self.options.recipe:
+            import core.recipe as recipe
+            r = recipe.recipe()
+            r.runner('cbuilder','recipes')
+            
             
         ## Otherwise you get the default ;)
         else:
-            self.config.PutGlobal("dirt", 'dirt')
+            self.config.putGlobal("dirt", 'dirt')
         ## For sandbox installs
         if self.options.sandbox:
-            self.config.PutGlobal("sandbox", True)
+            self.config.putGlobal("sandbox", True)
     
         ## Disable formatting
         if self.options.nonpretty:
-            self.config.PutGlobal("nonpretty", True)
+            self.config.putGlobal("nonpretty", True)
         
         ## For debug verbosity
         if self.options.verbose:
             if int(self.options.verbose) > 3 or int(self.options.verbose) < 0:
                 raise Exception('DebugLevelExceeded')
-            self.config.PutGlobal("debug", self.options.verbose)
+
+            self.config.putGlobal("debug", self.options.verbose)
 
         ## For the specified lexer
         if self.options.lexer:
-            self.config.PutGlobal("lexer", self.options.lexer)
+            self.config.putGlobal("lexer", self.options.lexer)
         else:
-            self.config.PutGlobal("lexer", 'yaml')
+            self.config.putGlobal("lexer", 'yaml')
             
         ## Clean up the tmp/ directory    
         if self.options.clean:
@@ -103,7 +110,7 @@ class Shovel(object):
             
         ## Run internal tests
         if self.options.tests:
-            self.config.PutGlobal("tests",self.options.tests)
+            self.config.putGlobal("tests",self.options.tests)
         
         ## For setting a config file
         if self.options.config:
@@ -123,13 +130,15 @@ class Shovel(object):
         parser.add_option('--sandbox',action="store_true",dest="sandbox", help="Does a sandbox install")
         parser.add_option('-c', '--clean',action="store_true",dest="clean", help="Cleans the project")
         parser.add_option('--lexer', action="store", dest="lexer", help="Use the specified lexer")
+        parser.add_option('--recipe', action='store_true', dest='recipe')
         parser.add_option('--internal-tests', action="store_true", dest="tests", help="Run tests")
+        
         return parser
 
 
         
     
-    def Main(self):
+    def main(self):
         self.plugins.loadAll()
         
         if os.path.exists('.shovel'):
@@ -138,17 +147,17 @@ class Shovel(object):
             self.config.setGlobalDump(yaml.load(dFile,Loader=Loader))
         
         ## Parse the arguments
-        self.Arguments()
+        self.arguments()
         ## Debug tests
         
         ## debug('testing info',INFO)
         ## debug('testing warning',WARNING)
         ## debug('testing debug',DEBUG)
         
-        newLex   = self.config.GetGlobal('parser')
-        dirtFile = self.config.GetGlobal('dirt')
-        lexer    = self.config.GetGlobal('lexer')
-        tests    = self.config.GetGlobal('tests')
+        newLex   = self.config.getGlobal('parser')
+        dirtFile = self.config.getGlobal('dirt')
+        lexer    = self.config.getGlobal('lexer')
+        tests    = self.config.getGlobal('tests')
         
         ## --internal-tests
         if tests:
@@ -167,6 +176,7 @@ class Shovel(object):
                 from parsers.pyaml import yamlParser
                 yml = yamlParser()
                 yml.main(str(dirtFile),self.remainder)
+                
             if lexer == 'new':
                 lexi = Lexi()
                 lexi.loadLexer(str(dirtFile))
@@ -175,9 +185,9 @@ class Shovel(object):
 	
 
 if __name__ == "__main__":
-  M = Shovel()
+  m = shovel()
   try:
-    M.Main()
+    m.main()
   except KeyboardInterrupt:
     print '\nExiting...'
     sys.exit(0)		
