@@ -11,7 +11,7 @@ class recipe(object):
         self.runFunction = 'run'
         self.config = configurator()
         
-    def runner(self, recipeName, recipeLocation, *arguments):
+    def runner(self, recipeName, *arguments):
         ''' runner, arguments: recipeLocation '''
         try:
             module = sys.modules['recipes.' + recipeName]

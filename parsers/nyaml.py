@@ -1,9 +1,10 @@
 import os
-
 import yaml
 
+import core.recipe
+
 def yGen(dictionary):
-    for block, a in dictionary.items():
+    for block, a in reversed(dictionary.items()):
         for subblock, b in a.items():
             yield {
                 'block'    : block,
@@ -12,6 +13,9 @@ def yGen(dictionary):
                 }
 
 class nyaml:
+    def __init__(self):
+        self.recipe = core.recipe.recipe()
+        
     def load(self, fileName):
         """ Load the dirt fileName """
         if not os.path.exists(fileName):
@@ -23,5 +27,13 @@ class nyaml:
             
     def run(self):
         for gen in yGen(self.dyaml):
-            print gen
+            if isinstance(gen['keys'], dict):         
+                if 'recipe' in gen['keys']:
+                    self.recipe.runner(gen['keys']['recipe'])
+            elif isinstance(gen['keys'], bool):
+                pass
+            elif '->' in gen['keys']:
+                pass
+                
+                
         
