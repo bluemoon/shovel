@@ -56,13 +56,11 @@ class shovel(object):
     ''' main class for the application '''
     def __init__(self):
         self.config = configurator()
-        self.plugins  = Plugin()
+        self.plugins  = plugin()
 	
         
     def arguments(self):
         ''' Handles all of the arguments to the program'''
-        
-    
         ## Usage string
         parser = self.parseOptions()
         self.options, self.remainder = parser.parse_args()
@@ -139,20 +137,17 @@ class shovel(object):
         
     
     def main(self):
-        self.plugins.loadAll()
+        self.plugins.getAll()
         
+        ## check to see if we have a config file
         if os.path.exists('.shovel'):
             dirtFile = open('.shovel', 'r')
             dFile = dirtFile.read()
+            ## set those options to the config
             self.config.setGlobalDump(yaml.load(dFile,Loader=Loader))
-        
+            
         ## Parse the arguments
         self.arguments()
-        ## Debug tests
-        
-        ## debug('testing info',INFO)
-        ## debug('testing warning',WARNING)
-        ## debug('testing debug',DEBUG)
         
         newLex   = self.config.getGlobal('parser')
         dirtFile = self.config.getGlobal('dirt')
