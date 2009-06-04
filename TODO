@@ -5,17 +5,16 @@ RELEASE: Shovel-0.0.1
 
 plugins:
     steps:
-        iterate the directory
-        add all python files to the master list
+        [x] iterate the directory
+        [x] add all python files to the master list
 
 recipes:
     steps:
-        check to see what plugins need to be loaded
-        compare that to the master list to see if we have them
-        fail if we dont
-        otherwise,
-        pass options to plugin
-        run plugin
+        [x] check to see what plugins need to be loaded
+        [x] compare that to the master list to see if we have them
+        [x] fail if we dont
+        
+        
          
 
  All:

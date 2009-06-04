@@ -10,27 +10,11 @@ from core.utils        import TermEnd
 
 import plugins as Plugins
 
-'''plugins = {
-    'shovel':{
-        'systools' : {
-            'builder':{
-                'waf' :['configure','build'],
-                'make':['configure','build'],
-                
-            },
-            'downloader':{
-                'http': ['download'],
-                'svn' : ['checkout',]
-            }
-        }
-        
-    }
-} '''
 
 def locate(pattern, root):
-            for path, dirs, files in os.walk(root):
-                for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
-                    yield filename
+    for path, dirs, files in os.walk(root):
+        for filename in [os.path.abspath(os.path.join(path, filename)) for filename in files if fnmatch.fnmatch(filename, pattern)]:
+            yield filename
                     
 def pathDifference(directory1, directory2):
     ''' accepts list input as in ['usr','home'] and ['usr','home','stuff']
@@ -57,7 +41,7 @@ class plugin:
     def __init__(self):
         """dostring for __init__"""
         self.splitString = '.'
-        
+        self.config = configurator()
         
     def getAll(self):
         import plugins
@@ -85,5 +69,7 @@ class plugin:
                 useString = '.'.join(diffList)
                 ## concat it so
                 ## 'shovel.path.path.file'
+                debug(useString, DEBUG)
+                ## print useString
                 self.config.putFeature(useString)
                 

@@ -70,10 +70,7 @@ class shovel(object):
         if self.options.dirt:
             self.config.putGlobal("dirt", self.options.dirt)
         
-        if self.options.recipe:
-            import core.recipe as recipe
-            r = recipe.recipe()
-            r.runner('cbuilder','recipes')
+        
             
             
         ## Otherwise you get the default ;)
@@ -92,7 +89,7 @@ class shovel(object):
             if int(self.options.verbose) > 3 or int(self.options.verbose) < 0:
                 raise Exception('DebugLevelExceeded')
 
-            self.config.putGlobal("debug", self.options.verbose)
+            self.config.putGlobal("debug", int(self.options.verbose))
 
         ## For the specified lexer
         if self.options.lexer:
@@ -116,6 +113,11 @@ class shovel(object):
             fHandle = open('.shovel', 'w')
             fHandle.write(yOut)
             fHandle.close()
+            
+        if self.options.recipe:
+            import core.recipe as recipe
+            r = recipe.recipe()
+            r.runner('cbuilder','recipes')
 
     
     def parseOptions(self):
@@ -154,6 +156,10 @@ class shovel(object):
         lexer    = self.config.getGlobal('lexer')
         tests    = self.config.getGlobal('tests')
         
+        import core.recipe as recipe
+        r = recipe.recipe()
+        r.runner('cbuilder','recipes')
+        
         ## --internal-tests
         if tests:
             Pry = subprocess.Popen('pry Tests -v',shell=True,stdout=None,stderr=None)
@@ -168,14 +174,15 @@ class shovel(object):
         ## --lexer=lexer-name        
         if lexer and not newLex:
             if lexer == 'yaml':
-                from parsers.pyaml import yamlParser
-                yml = yamlParser()
-                yml.main(str(dirtFile),self.remainder)
-                
+                #from parsers.pyaml import yamlParser
+                #yml = yamlParser()
+                #yml.main(str(dirtFile),self.remainder)
+                pass
             if lexer == 'new':
-                lexi = Lexi()
-                lexi.loadLexer(str(dirtFile))
-                lexi.runLexer()   
+                #lexi = Lexi()
+                #lexi.loadLexer(str(dirtFile))
+                #lexi.runLexer()   
+                pass
 
 	
 
