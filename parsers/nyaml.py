@@ -30,21 +30,23 @@ class nyaml:
     def run(self):
         #print [[[j for j in k if 'recipe' not in j] for k in x.items()] for x in yGen(self.dyaml)]
         #print dict((x for x in v if 'recipe' in v ) for k,v in self.dyaml.items())
-        block = {}        
+        block = {}
+        for block, a in reversed(self.dyaml.items()):
+            for subblock, b in a.items():
+                if isinstance(b, dict):
+                    for feature, v in b.items():
+                        if 'recipe' not in feature:
+                            print feature, v
+                else:
+                    if 'recipe' not in subblock:
+                        print subblock
+
         for generated in yGen(self.dyaml):
             if 'recipe' not in generated['keys']:
                 if 'recipe' not in generated['subblock']:
-                    print generated                   
-                    #try:
-                    #    block[generated['block']].append({generated['subblock']:generated['keys']})
-                    #except KeyError:
-                    #    block[generated['block']] = []
-                    #    if generated['subblock'] not in block[generated['block']]:
-                    #        block[generated['block']].append(generated['subblock'])
+                    pass
 
-                    #    block[generated['block']][generated['subblock']].append(generated['keys'])
 
-        print block
         for gen in yGen(self.dyaml):
             if isinstance(gen['keys'], dict):         
                 if 'recipe' in gen['keys']:
