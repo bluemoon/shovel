@@ -4,7 +4,7 @@ import sys
 sys.path.append('../')
 import core.shovel
 
-class testCoreShovel(object):
+class testCoreShovel(unittest.TestCase):
     def setUp(self):
         self.mock = mox.Mox()
         
@@ -18,5 +18,16 @@ class testCoreShovel(object):
         shovel = core.shovel.shovel()
         self.mock.StubOutWithMock(shovel, 'arguments')
         shovel.arguments().AndReturn('')
+        
         self.mock.ReplayAll()
-        shovel.main()
+        
+        try:
+            shovel.main()
+        except SystemExit, e:
+            self.assertEquals(type(e), type(SystemExit()))
+        except Exception, e:
+            self.fail('unexpected exception: %s' % e)
+        else:
+            self.fail('SystemExit exception expected')
+            
+            

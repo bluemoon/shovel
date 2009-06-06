@@ -10,6 +10,7 @@ class recipe(object):
     def __init__(self):
         self.runFunction = 'run'
         self.config = configurator()
+        
     def _run(self, module, arguments): 
         attr = getattr(module, self.runFunction)
         out = attr(arguments)   
