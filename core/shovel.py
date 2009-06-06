@@ -49,7 +49,7 @@ else:
 
 ##
 # Global version string
-VERSION = '0.0.1rc3'
+VERSION = '0.0.1rc4'
 
 
 class shovel(object):
@@ -70,9 +70,6 @@ class shovel(object):
         if self.options.dirt:
             self.config.putGlobal("dirt", self.options.dirt)
         
-        
-            
-            
         ## Otherwise you get the default ;)
         else:
             self.config.putGlobal("dirt", 'dirt')
@@ -157,9 +154,6 @@ class shovel(object):
         lexer    = self.config.getGlobal('lexer')
         tests    = self.config.getGlobal('tests')
         
-        import core.recipe as recipe
-        r = recipe.recipe()
-        r.runner('cbuilder')
         
         ## --internal-tests
         if tests:

@@ -14,7 +14,7 @@ from core.debug        import *
 
 class features(object):
     def __init__(self):
-        self.Loader = CoreHandler()
+        self.Loader = coreHandler()
         self.Config = configurator()
 
         ### For searches ###

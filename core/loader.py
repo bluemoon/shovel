@@ -91,9 +91,9 @@ class coreHandler:
 	
     __instance = None
     def __init__(self):
-        if CoreHandler.__instance is None:
-            CoreHandler.__instance = CoreHandler.__impl()
-            self.__dict__['_CoreHandler__instance'] = CoreHandler.__instance
+        if coreHandler.__instance is None:
+            coreHandler.__instance = coreHandler.__impl()
+            self.__dict__['_coreHandler__instance'] = coreHandler.__instance
 
 
     def __getattr__(self, attr):

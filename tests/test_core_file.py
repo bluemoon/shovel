@@ -1,6 +1,6 @@
 import unittest
 import os
-import Core.File as f
+import core.file as f
 
 class TestCoreFile(unittest.TestCase):
     def test_1_touch(self):
@@ -11,13 +11,13 @@ class TestCoreFile(unittest.TestCase):
         
     def test_2_chdir(self):
         cwd = os.getcwd()
-        f.chdir('Tests')
+        f.chdir('tests')
         nCwd = os.getcwd()
-        assert nCwd == cwd + '/Tests'
+        assert nCwd == cwd + '/tests'
         f.chdir(cwd)
         
     def test_3_fail_condChroot(self):
-        self.assertRaises(NameError,f.condChroot,'blah')
+        self.assertRaises(NameError, f.condChroot,'blah')
         
     def test_4_mkdirIfAbsent(self):
         f.mkdirIfAbsent('test')

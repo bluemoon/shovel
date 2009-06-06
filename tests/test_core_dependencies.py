@@ -6,8 +6,8 @@ import sys
 class TestCoreDependencies(unittest.TestCase):
     def setUp(self):
         sys.path.append('../')
-        from Core.Dependencies import Dependencies
-        self.depend = Dependencies()
+        from core.dependencies import dependencies
+        self.depend = dependencies()
     def test_1_letter_orderDependencies(self):
         self.depend.depGenAdd('a')
         self.depend.depGenAdd('b','a')

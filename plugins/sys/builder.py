@@ -26,9 +26,9 @@ class make:
         if self.config.getGlobal("sandbox"):
             file.mkdirIfAbsent(self.sandbox_path)
         
-        confString = '--prefix=%s/%s %s' % (self.cwd, self.sandbox_path, join)
-        debug(confString, DEBUG)
-        configure = confString
+            confString = '--prefix=%s/%s %s' % (self.cwd, self.sandbox_path, join)
+            debug(confString, DEBUG)
+            configure = confString
       
         # otherwise pass the normal configure options
         else:
