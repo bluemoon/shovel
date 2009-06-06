@@ -1,13 +1,28 @@
 import core.api as api
+requires = ['shovel.sys.builder','shovel.sys.downloader']
 
-requires = ['shovel.sys.builder']
+import plugins.sys.downloader as download
 
 def run(*arguments):
-    """docstring for run"""
+    """run"""
+    a = api.api()
+    d = download.downloader()
+    args = a.handleArguments(arguments)
+    
+    if args.has_key('link'):
+        if args.has_key('md5'):
+            d.http(args['link'], args['md5'])
+        else:
+            d.http(args['link'])
+
+            
+        
     c = cbuilder()
     c.build()
-    print arguments
+    
+    
 
+    
 class cbuilder(object):
     def build(self):
         api.debug('debugging test!', api.DEBUG)

@@ -55,7 +55,7 @@ VERSION = '0.0.1rc3'
 class shovel(object):
     ''' main class for the application '''
     def __init__(self):
-        self.config = configurator()
+        self.config   = configurator()
         self.plugins  = plugin()
 	
         
@@ -88,8 +88,8 @@ class shovel(object):
         if self.options.verbose:
             if int(self.options.verbose) > 3 or int(self.options.verbose) < 0:
                 raise Exception('DebugLevelExceeded')
-
-            self.config.putGlobal("debug", int(self.options.verbose))
+            else:
+                self.config.putGlobal("debug", int(self.options.verbose))
 
         ## For the specified lexer
         if self.options.lexer:
@@ -117,14 +117,15 @@ class shovel(object):
         if self.options.recipe:
             import core.recipe as recipe
             r = recipe.recipe()
-            r.runner('cbuilder','recipes')
+            r.runner('cbuilder')
 
     
     def parseOptions(self):
         usage = "usage: %prog [options] module"
         parser = optparse.OptionParser(usage=usage, version=VERSION)
         parser.add_option('-d', '--dirt', action="store", dest="dirt", help="Specify the dirt file")
-        parser.add_option('-v', action="store", dest="verbose", help="Changes the verbosity level")
+        parser.add_option('-v', action="store_true", dest="verbose_single", help="Changes the verbosity level")
+        parser.add_option('--verbose', action="store", dest="verbose", help="Changes the verbosity level")
         parser.add_option('--set-config', action="store_true", dest='config', help='Sets the config file')
         parser.add_option('--np', action="store_true", dest="nonpretty", help="Disables formatting")
         parser.add_option('--sandbox',action="store_true",dest="sandbox", help="Does a sandbox install")
@@ -158,7 +159,7 @@ class shovel(object):
         
         import core.recipe as recipe
         r = recipe.recipe()
-        r.runner('cbuilder','recipes')
+        r.runner('cbuilder')
         
         ## --internal-tests
         if tests:

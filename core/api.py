@@ -9,11 +9,22 @@ DEBUG   = 3
 
 from core.utils import pprint
 from core.type import accepts
+from core.dependencies import dependencies
+
 import core.file as _file
 
 class api(object):
     ''' this is the plugin api '''
-    
+    class dependencies(object):
+        def __init__():
+            self.deps = dependencies()
+        
+        def add(dependant, dependsOn=None):
+            self.deps.depGenAdd(self, dependant, dependsOn)
+        
+        def resolve(self):
+            self.deps.dependencyGenRun()
+            
     class file(object):
         ''' this is a subclass to the api for all of the file  '''    
         @accepts('file_', str)
@@ -89,3 +100,19 @@ class api(object):
         assert lable,  "there is no label or it is None!"
         pprint(string, label, color, labelColor)
         
+    def handleArguments(self, arguments):
+        argumentDict = {}
+        for a in self._arg_gen(arguments):
+            debug(a, DEBUG)
+            argumentDict.update(a)
+                
+        return argumentDict
+                
+    def _arg_gen(self, args):
+        for a in args:
+            for b in a:
+                if isinstance(b, list):
+                    for c in b:
+                        yield c
+                else:
+                   yield b

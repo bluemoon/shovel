@@ -57,7 +57,7 @@ class http(downloadBase):
                  print 'Digest failed got: %s expected: %s' % (digest, md5)		 
                  raise Exception('md5DigestError') 
          
-def md5(File,Against):
+def _md5(File,Against):
   import hashlib
   m = hashlib.md5()
   try:
@@ -99,16 +99,10 @@ class downloader:
   def __init__(self):
     self.Config = configurator()
 
-  def http(self, Name):
-    Config = self.Config.getConfig(Name)
-    debug(Config["link"], DEBUG)
-    Download = Config["link"]
-    Filename = Config["link"].split("/")[-1:][0]
-    
-    try:
-      Md5 = Config["md5"]
-    except Exception, E:
-		  Md5 = None
+  def http(self, link, md5=None):
+    debug(link, DEBUG)
+    Download = link
+    Filename = link.split("/")[-1:][0]
 
     
     print "[http] Downloading: " + Filename
@@ -121,12 +115,13 @@ class downloader:
       
     debug(os.getcwd(), DEBUG)
 		
-    self.Config.createOutYaml(Name)
+    ## self.Config.createOutYaml(Name)
 		
     if not os.path.exists("tmp/downloads/" +Filename):
       if lib is False:
         os.mkdir('tmp/downloads/')
         widgets = [Filename + " ", Percentage(), ' ', Bar(),' ', ETA(), ' ', ' ']
+        
         pbar = ProgressBar(widgets=widgets).start()
         data = urllib.urlretrieve(Download, "tmp/downloads/" + Filename,lambda nb, bs, fs, url=Download: _reporthook(nb,bs,fs,url,pbar))
         pbar.finish()
@@ -152,16 +147,16 @@ class downloader:
       else: 
         return True, lib
 
-    if Md5:
-      Digest = md5("tmp/downloads/" + Filename,Md5)
+    if md5:
+      Digest = _md5("tmp/downloads/" + Filename, md5)
       if Digest == True:
-        print '[md5]: %s digests match. download fine. ' % (Md5)
+        print '[md5]: %s digests match. download fine. ' % (md5)
       else:
-        print 'Digest failed got: %s expected: %s' % (Digest,Md5)		 
+        print 'Digest failed got: %s expected: %s' % (Digest, md5)		 
         raise Exception('md5DigestError') 
 		  
     Down = {"downloader":True}		
-    self.Config.AppendOutYaml(Name, Down)
+    ## self.Config.AppendOutYaml(Name, Down)
 
 
   def svn(self,Name):

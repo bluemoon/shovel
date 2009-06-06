@@ -3,6 +3,7 @@ import sys
 import yaml
 
 import core.recipe
+from core.debug import *
 
 def yGen(dictionary):
     for block, a in reversed(dictionary.items()):
@@ -31,34 +32,69 @@ class nyaml:
         #print [[[j for j in k if 'recipe' not in j] for k in x.items()] for x in yGen(self.dyaml)]
         #print dict((x for x in v if 'recipe' in v ) for k,v in self.dyaml.items())
         block = {}
-        for block, a in reversed(self.dyaml.items()):
+        for blck, a in reversed(self.dyaml.items()):
             for subblock, b in a.items():
                 if isinstance(b, dict):
-                    for feature, v in b.items():
+                    for feature, value in b.items():
                         if 'recipe' not in feature:
-                            print feature, v
+                            try:
+                                block[subblock].append({feature:value})
+                            except KeyError:
+                                block[subblock] = []
+                                block[subblock].append({feature:value})
+
                 else:
                     if 'recipe' not in subblock:
-                        print subblock
+                        try:
+                            block[blck].append({subblock:b})
+                        except KeyError:
+                            block[blck] = []
+                            block[blck].append({subblock:b})
 
-        for generated in yGen(self.dyaml):
-            if 'recipe' not in generated['keys']:
-                if 'recipe' not in generated['subblock']:
-                    pass
 
 
         for gen in yGen(self.dyaml):
             if isinstance(gen['keys'], dict):         
                 if 'recipe' in gen['keys']:
                     try:
-                        self.recipe.runner(gen['keys']['recipe'], block[gen['block']])
+                        debug(block[gen['subblock']], DEBUG)
+                        if block.has_key(gen['subblock']):
+                            self.recipe.runner(gen['keys']['recipe'], block[gen['subblock']])
+                        if block.has_key(gen['block']):
+                            self.recipe.runner(gen['keys']['recipe'], block[gen['block']])
+                            
                     except KeyError:
                         self.recipe.runner(gen['keys']['recipe'])
 
             elif isinstance(gen['keys'], bool):
                 pass
             elif '->' in gen['keys']:
-                pass
+                thenCount = 1
+                thenList = gen['keys'].split('->')
+                then = []
+                for thenItr in thenList:
+                    if not thenCount % 2:
+                        if thenItr[:1] == ' ':
+                            thenItr = thenItr[1:]
+                    else:
+                        if thenItr[:-1] == ' ':
+                            thenItr = thenItr[-1:]
+                            
+                    then.append(thenItr)
+                    thenCount = thenCount + 1  
+                    
+                for recipe in then:
+                    try:
+                        if block.has_key(gen['subblock']):
+                            self.recipe.runner(gen['keys'], block[gen['subblock']])
+                        if block.has_key(gen['block']):
+                            self.recipe.runner(gen['keys'], block[gen['block']])
+                        
+                    except Exception, E:
+                        debug(E, ERROR)
+                        debug('%s failed so any dependants will not run' % (recipe), ERROR)
+                        sys.exit(-1)
+                        
                 
                 
         

@@ -13,6 +13,7 @@ class recipe(object):
         
     def runner(self, recipeName, *arguments):
         ''' runner, arguments: recipeLocation '''
+        debug(arguments, DEBUG)
         try:
             module = sys.modules['recipes.' + recipeName]
         except KeyError:

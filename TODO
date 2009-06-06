@@ -3,6 +3,17 @@ RELEASE: Shovel-0.0.1
   2. recipes!
   3. fix the plugin namespace
 
+
+running steps:
+    [x] check config
+    [x] parse command line options
+    [x] check plugins
+    [x] add all of the plugins to a master list
+    [x] load the appropriate parser
+    [x] gather the arguments from the recipe
+    [x] call the plugin with arguments from the recipe
+
+
 plugins:
     steps:
         [x] iterate the directory
