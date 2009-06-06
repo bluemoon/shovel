@@ -29,8 +29,7 @@ class nyaml:
             self.dyaml = yaml.load(dFile)
             
     def run(self):
-        #print [[[j for j in k if 'recipe' not in j] for k in x.items()] for x in yGen(self.dyaml)]
-        #print dict((x for x in v if 'recipe' in v ) for k,v in self.dyaml.items())
+        ''' runs all of the blocks of yaml code '''
         block = {}
         for blck, a in reversed(self.dyaml.items()):
             for subblock, b in a.items():

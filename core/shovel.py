@@ -1,4 +1,4 @@
-## File: Shovel.py
+## File: shovel.py
 ## Version: -*-dev-*-
 ## Author: Alex Toney (toneyalex@gmail.com)
 ## Date: 2009/05/08
