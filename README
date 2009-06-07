@@ -1,3 +1,7 @@
+Shovel is/will be a development tool that you can tell it what you want done in a 
+descriptor file and it will do those tasks if they are recipes. Its currently in 
+development stages and may be quite unstable.
+
 To install:
 
 # python setup.py bdist_egg
