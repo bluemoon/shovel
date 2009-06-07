@@ -1,0 +1,8 @@
+To install:
+
+# python setup.py bdist_egg
+# easy_install dist/shovel-<version>-<pythonversion>.egg 
+
+Using shovel:
+
+# shovel --help
