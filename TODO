@@ -4,27 +4,33 @@ RELEASE: Shovel-0.0.1
   3. DONE: fix the plugin namespace
   4. Clean up plugins
 
-running steps:
-    [x] check config
-    [x] parse command line options
-    [x] check plugins
-    [x] add all of the plugins to a master list
-    [x] load the appropriate parser
-    [x] gather the arguments from the recipe
-    [x] call the plugin with arguments from the recipe
 
+key: [ ] not done, broken [B], [/] partial, [D] to be deleted/removed, [x] done working and has test 
+plugin status:
+    [ ]python/distutils
+    [ ]python/nosetests
+    [ ]python/pyflakes
+    [ ]python/pylint
+    [ ]python/unittest
 
-plugins:
-    steps:
-        [x] iterate the directory
-        [x] add all python files to the master list
+    [ ]rcs/bzr
+    [ ]rcs/cvs
+    [ ]rcs/git
+    [ ]rcs/hg
+    [/]rcs/svn
+    
+    [/]sys/builder
+    [B]sys/chroot
+    [ ]sys/downloader
+    [ ]sys/extractor
+    [ ]sys/patcher
+    [D]sys/pbuilder
+    [ ]sys/systools
 
-recipes:
-    steps:
-        [x] check to see what plugins need to be loaded
-        [x] compare that to the master list to see if we have them
-        [x] fail if we dont
-        
+recipe status:
+    [ ] cbuilder
+    [ ] commit
+    [ ] test       
         
          
 
