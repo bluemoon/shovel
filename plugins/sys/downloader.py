@@ -1,13 +1,14 @@
 from threading import Thread
 from core.configurator import configurator
 from core.debug import *
-from core.utils import ProgressBar,RotatingMarker,ETA,FileTransferSpeed,Percentage,Bar
+from core.utils import ProgressBar, RotatingMarker, ETA, FileTransferSpeed, Percentage, Bar
 import core.file as fileUtils
 import os
 import urllib
 import subprocess
 import sys
 
+import core.api as api
 
 def _reporthook(numblocks, blocksize, filesize, url,pbar):
   pbar.update((numblocks*blocksize*100)/filesize)
@@ -116,7 +117,7 @@ class downloader:
     debug(os.getcwd(), DEBUG)
 		
     ## self.Config.createOutYaml(Name)
-		
+	
     if not os.path.exists("tmp/downloads/" +Filename):
       if lib is False:
         os.mkdir('tmp/downloads/')
@@ -161,10 +162,10 @@ class downloader:
 
   def svn(self,Name):
     Config = self.Config.GetConfig(Name)
-    Debug(Config["link"],"DEBUG")
+    debug(Config["link"], DEBUG)
     Download = Config["link"]
     Filename = Config["as"]
-    Debug(Filename,"DEBUG")
+    debug(Filename, DEBUG)
     print "[svn] Checking out: " + Filename
     if not os.path.isdir(Filename):
       svnBuild = '/usr/bin/env svn co ' + Download + " tmp/downloads/" + Filename

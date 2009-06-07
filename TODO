@@ -2,7 +2,7 @@ RELEASE: Shovel-0.0.1
   1. DONE: Optparse arguments
   2. DONE: recipes!
   3. DONE: fix the plugin namespace
-
+  4. Clean up plugins
 
 running steps:
     [x] check config
@@ -80,7 +80,7 @@ recipes:
       Requires class instance ->
      [x] 2. Then a function will pass over each class and use __dict__
             to determine the functions and will add to the configurator
-     [/] 3. Support better namespacing and inheritance for the plugin names
+     [x] 3. Support better namespacing and inheritance for the plugin names
  Downloader:
      [x] 1. Progress bar for urllib
 
