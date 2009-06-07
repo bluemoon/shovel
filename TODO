@@ -6,6 +6,24 @@ RELEASE: Shovel-0.0.1
 
 
 key: [ ] not done, broken [B], [/] partial, [D] to be deleted/removed, [x] done working and has test 
+
+core cleanup/documentation status:
+    [x] core/api
+    [/] core/configurator
+    [x] core/debug
+    [/] core/dependencies
+    [/] core/exceptions
+    [/] core/features
+    [x] core/file
+    [/] core/loader
+    [x] core/plugin
+    [x] core/recipe
+    [x] core/shovel
+    [D] core/singleton
+    [/] core/type
+    [/] core/utils
+
+
 plugin status:
     [ ]python/distutils
     [ ]python/nosetests
