@@ -5,7 +5,7 @@ RELEASE: Shovel-0.0.1
   4. Clean up plugins
 
 
-key: [ ] not done, broken [B], [/] partial, [D] to be deleted/removed, [x] done working and has test 
+key: [ ] not done, broken [B], [/] partial, [D] to be deleted/removed, [x] done, working and has test 
 
 core cleanup/documentation status:
     [x] core/api
