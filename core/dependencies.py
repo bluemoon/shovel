@@ -5,7 +5,7 @@
 ## Copyright (c) 2009 Alex Toney
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 
-
+## this class resolves dependencies
 class dependencies:
     def __init__(self):
         self.depList = {}
@@ -15,12 +15,15 @@ class dependencies:
 
     def depGenAdd(self, dependant, dependsOn=None):
         if dependsOn == None:
+            ## create a blank dictionary
             self.depList[dependant] = []
         else:
+            ## create a dictionary and then append
             self.depList[dependant] = []
             self.depList[dependant].append(dependsOn)
 
     def dependencyGenRun(self):
+        ## fancy fancy dictionary comprehension 
         lstDict = dict((k, set(self.depList[k])) for k in self.depList)
         R = []
         while lstDict:

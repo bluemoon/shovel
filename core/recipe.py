@@ -11,7 +11,7 @@ class recipe(object):
         self.runFunction = 'run'
         self.config = configurator()
         
-    def _run(self, module, arguments): 
+    def run(self, module, arguments): 
         attr = getattr(module, self.runFunction)
         out = attr(arguments)   
         
@@ -37,4 +37,4 @@ class recipe(object):
         ## run the run function, run()    
         for function in module.__dict__:
             if function == self.runFunction:
-                self._run(module, arguments)
+                self.run(module, arguments)

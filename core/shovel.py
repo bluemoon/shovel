@@ -49,7 +49,7 @@ else:
 
 ##
 # Global version string
-VERSION = '0.0.1rc4'
+VERSION = '0.0.1'
 
 
 class shovel(object):
@@ -62,10 +62,10 @@ class shovel(object):
     def arguments(self):
         ''' Handles all of the arguments to the program'''
         ## Usage string
+
         parser = self.parseOptions()
-        self.options, self.remainder = parser.parse_args()
-	
-	
+        self.options, self.remainder  = parser.parse_args()
+        
         ## Specifying your own dirt file
         if self.options.dirt:
             self.config.putGlobal("dirt", self.options.dirt)
@@ -134,8 +134,6 @@ class shovel(object):
         return parser
 
 
-        
-    
     def main(self):
         self.plugins.getAll()
         

@@ -22,41 +22,55 @@ class coreHandler:
             self.command[name] = True    
 			
         def Load(self, CoreFile, paths):
+            ## 
             try:
+                ## check to see if we already have the module loaded
                 return sys.modules[CoreFile]
             except KeyError:
                 pass
+                ## otherwise dont fail
             try:
                 fp, filename, desc = imp.find_module(CoreFile, [paths])
             except ImportError:
                 return False
             try:
+                ## try to load it
                 mod = imp.load_module(CoreFile, fp, filename, desc)
                 self.module_handler[CoreFile] = mod
                 try:
+                    ## create an instance of that module
                     I = self.CreateInstance(mod)
                 except Exception, e:
                     return e
+                    ## return e if we fail
                 try:
                     if len(e) <= 0:
+                        ## see if we fail
                         return self.module_handler[CoreFile]
                 except UnboundLocalError:
+                    ## return the module that was loaded
                     return self.module_handler[CoreFile]
             finally:
                 if fp:
+                    ## close up the file handler
                     fp.close()
 		
         def Unload(self, Module):
+            ## remove the module
             self.module_handler[Module] = False
             return True
 		
         def Reload(self, Module):
+            ## reload a given module
             if self.GetModule(Module) == False:
+                ## if the module isnt there
                 return False
             else:
+                ## otherwise reload the module
                 reload(self.GetModule(Module))
                 mod = self.module_handler[Module]
                 try:
+                    ## create a new instance of the module
                     I = self.CreateInstance(mod)
                 except Exception, e:
                     pass

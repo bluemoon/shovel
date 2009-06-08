@@ -9,11 +9,11 @@ key: [ ] not done, broken [B], [/] partial, [D] to be deleted/removed, [x] done,
 
 core cleanup/documentation status:
     [x] core/api
-    [/] core/configurator
+    [x] core/configurator
     [x] core/debug
-    [/] core/dependencies
-    [/] core/exceptions
-    [/] core/features
+    [x] core/dependencies
+    [x] core/exceptions
+    [x] core/features
     [x] core/file
     [/] core/loader
     [x] core/plugin

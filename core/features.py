@@ -17,7 +17,7 @@ class features(object):
         self.Loader = coreHandler()
         self.Config = configurator()
 
-        ### For searches ###
+    ### For searches ###
     def splitByClass(self, Search):
         Temp = Search.split(".")
         return ".".join(Temp[:2])
@@ -29,21 +29,4 @@ class features(object):
     def splitFunction(self, Search):
         Temp = Search.split(".")
         return Temp[-1:][0]
-        
-    ### End Searches ###
-    #def RunFeature(self, use, name, yaml):
-    #    debug(use,  DEBUG)
-    #    debug(name, DEBUG)
-    #    debug(yaml, DEBUG)
-    #    
-    #    Module = self.Loader.GetModule(self.splitClass(use))
-    #    if hasattr(Module, self.splitClass(use)):
-    #        self.Config.putConfig(name, yaml)
-    #        debug('class: ' + self.splitClass(use), DEBUG)
-    #        DynamicClass = getattr(Module, self.splitClass(use))
-    #        DyC = DynamicClass()
-    #        debug('function: ' + self.splitFunction(use), DEBUG)
-    #        DynamicFunction = getattr(DynamicClass, self.splitFunction(use))
-    #        DyF = DynamicFunction(DyC, name)
-
         
