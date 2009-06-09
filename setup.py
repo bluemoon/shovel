@@ -9,4 +9,5 @@ setup(
   author = "Alex Toney",
   author_email = "toneyalex@gmail.com",
   license = "GPLv2",
+  test_suite = 'nose.collector'
 )
