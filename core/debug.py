@@ -11,6 +11,7 @@ from core.configurator import configurator
 import inspect
 import os
 
+
 ## Static values for debugging
 ERROR   = -1
 NONE    = 0
@@ -65,7 +66,7 @@ def debug(string, level=DEBUG):
     if dLevel > NONE:
         if dLevel >= level and not hasPrinted:
             hasPrinted = True
-            _dPrint(level,string,outer)
+            _dPrint(level, string, outer)
 
     ## we must explicitly delete the frame inspector or it will cause 
     ## unnecessary garbage

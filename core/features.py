@@ -6,16 +6,7 @@
 ## License: GPLv2 (http://www.gnu.org/licenses/gpl-2.0.html)
 
 
-#### Local Includes ##########################################################
-from core.loader       import coreHandler
-from core.configurator import configurator
-from core.exceptions   import FeatureError
-from core.debug        import *
-
 class features(object):
-    def __init__(self):
-        self.Loader = coreHandler()
-        self.Config = configurator()
 
     ### For searches ###
     def splitByClass(self, Search):

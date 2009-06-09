@@ -1,18 +1,20 @@
 import sys
 import unittest
-
+import mox
 sys.path.append('../')
-from core.debug import _levelToString
+from core.debug import _levelToString, _dPrint
 from core.debug import *
-import StringIO
+import core.debug
+from core.configurator import configurator
+import inspect
+
 
 class TestCoreDebug(unittest.TestCase):
     def setUp(self):
-        self.old_value_of_stdout = sys.stdout
-        sys.stdout = StringIO.StringIO()
+        self.mock = mox.Mox()
         
     def tearDown(self):
-        sys.stdout = self.old_value_of_stdout
+        self.mock.UnsetStubs()
         
         
     def test_1_L0_levelToString(self):
@@ -26,10 +28,23 @@ class TestCoreDebug(unittest.TestCase):
     def test_1_Lneg1_levelToString(self):
         assert _levelToString(-1) == 'ERROR'
     def test_2_debug(self):
-        debug('debug test', DEBUG)
-        self.assertEquals('',sys.stdout.getvalue())
-        #self.assertStdoutEquals('')
+        self.mock.StubOutWithMock(inspect, 'currentframe')
+        inspect.currentframe(0).AndReturn('')  
 
+        self.mock.StubOutWithMock(inspect, 'getouterframes')
+        inspect.getouterframes('').AndReturn('')
+
+        #configurator = self.mock.CreateMockAnything()
+        #configurator.getGlobal('debug').AndReturn(3)
+        #self.mock.StubOutWithMock(core.debug, '_dPrint')
+        #debug._dPrint('').AndReturn('')
+
+        self.mock.ReplayAll()
+
+        debug('debug test', DEBUG)
+
+        #self.assertStdoutEquals('')
+        self.mock.VerifyAll()
 
         
     

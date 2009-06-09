@@ -13,10 +13,9 @@ class TestRcsSVN(unittest.TestCase):
     def tearDown(self):
         self.mox.UnsetStubs()
 
-    def test_1_checkout(self):
+    def test_1_Cl_Svn_checkout(self):
         sourceHttp = "http://finchbot.googlecode.com/svn/trunk/"
         location = 'finch'
-        
 
         self.mox.StubOutWithMock(subprocess, 'Popen', True)#, True)
 

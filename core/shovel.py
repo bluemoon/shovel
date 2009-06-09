@@ -35,7 +35,7 @@ from core.file			import rmDirectoryRecursive
 
 
 from parsers.dirt import Lexi
-
+from parsers.nyaml import nyaml
 
 ## Attempt to speed this up a little
 try:
@@ -57,6 +57,7 @@ class shovel(object):
     def __init__(self):
         self.config   = configurator()
         self.plugins  = plugin()
+        self.yml      = nyaml()
 	
         
     def arguments(self):
@@ -147,7 +148,6 @@ class shovel(object):
         ## Parse the arguments
         self.arguments()
         
-        newLex   = self.config.getGlobal('parser')
         dirtFile = self.config.getGlobal('dirt')
         lexer    = self.config.getGlobal('lexer')
         tests    = self.config.getGlobal('tests')
@@ -155,24 +155,17 @@ class shovel(object):
         
         ## --internal-tests
         if tests:
-            Pry = subprocess.Popen('pry Tests -v',shell=True,stdout=None,stderr=None)
+            Pry = subprocess.Popen('pry Tests -v', shell=True, stdout=None, stderr=None)
             Pry.wait()
         
-        ## --new-lex
-        if newLex:
-            lexi = Lexi()
-            lexi.loadLexer(str(dirtFile))
-            lexi.runLexer()
 
         ## --lexer=lexer-name        
-        if lexer and not newLex:
+        if lexer:
             if lexer == 'yaml':
-                from parsers.nyaml import nyaml
-                yml = nyaml()
-                yml.load(str(dirtFile))
-                yml.run()
+                self.yml.load(str(dirtFile))
+                self.yml.run()
                 #yml.main(str(dirtFile), self.remainder)
-                pass
+
             if lexer == 'new':
                 #lexi = Lexi()
                 #lexi.loadLexer(str(dirtFile))
