@@ -37,18 +37,16 @@ class cl_svn(object):
     def __init__(self):
         self.p = object
 
-    def checkout(self, http, location, as_folder):
+    def checkout(self, http, location, as_folder=None):
         if as_folder:
             svnBuild = '/usr/bin/env svn co %s %s %s' % (http, location, as_folder)
         else:
             svnBuild = '/usr/bin/env svn co %s %s' % (http, location)
         self.p = subprocess.Popen(svnBuild, shell=True, stdout=subprocess.PIPE)
-
-        while self.p.stdout.readline():
-            if self.p.stdout.readline() != "\n":
-                print "[svn] " + p.stdout.readline()[:-1]
+        stdout = self.p.communicate()[0] 
+        for each in stdout:
+            print '[svn] %s' % (each)
                 
-        self.p.wait()
     
     def update(self, location):
         svnBuild = '/usr/bin/env svn update %s %s %s' % (http, location, as_folder)
