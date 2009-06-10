@@ -31,6 +31,7 @@ class nyaml:
     def run(self):
         ''' runs all of the blocks of yaml code '''
         block = {}
+
         for blck, a in reversed(self.dyaml.items()):
             for subblock, b in a.items():
                 if isinstance(b, dict):
@@ -90,6 +91,7 @@ class nyaml:
                             self.recipe.runner(gen['keys'], block[gen['block']])
                         
                     except Exception, E:
+                        print E
                         debug(E, ERROR)
                         debug('%s failed so any dependants will not run' % (recipe), ERROR)
                         sys.exit(-1)

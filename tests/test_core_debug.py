@@ -27,6 +27,7 @@ class TestCoreDebug(unittest.TestCase):
         assert _levelToString(3) == 'DEBUG'
     def test_1_Lneg1_levelToString(self):
         assert _levelToString(-1) == 'ERROR'
+
     def test_2_debug(self):
         self.mock.StubOutWithMock(inspect, 'currentframe')
         inspect.currentframe(0).AndReturn('')  
