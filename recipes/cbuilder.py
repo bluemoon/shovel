@@ -19,16 +19,10 @@ def run(*arguments):
     """run"""
     
     a = api.api()
-    d = download.downloader()
     args = a.handleArguments(arguments)
     
     if args.has_key('link'):
-        if args.has_key('md5'):
-            d.http(args['link'], args['md5'])
-        else:
-            d.http(args['link'])
-
-
+        download.http_download(args['link'], 'tmp/downloads')
         if isTar(args['link']):
             pass
         

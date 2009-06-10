@@ -11,4 +11,6 @@ class ParseError(Exception):
     
 class DirtFileDoesntExist(Exception):
     pass
-    
+
+class LocationNonExistant(Exception):
+    pass
