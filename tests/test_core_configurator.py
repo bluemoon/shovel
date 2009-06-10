@@ -16,13 +16,6 @@ class TestConfigurator(unittest.TestCase):
         self.Config.putGlobal('g1',True)
         assert self.Config.GetGlobal('g1') == True
 
-    def test_3_ConfiguratorPutPackage(self):
-        self.Config.putPackage('p1',True)
-        assert self.Config.GetPackage('p1') == True
-
-    def test_4_ConfiguratorPutConfig(self):
-        self.Config.putConfig('c1',True)
-        assert self.Config.GetConfig('c1') == True	
 
     def test_5_ConfiguratorGlobalInstances(self):
         sys.path.append('../Core/')
@@ -52,25 +45,4 @@ class TestConfigurator(unittest.TestCase):
         Config.putConfig('p1', True)
         assert self.Config.getConfig('p1') == True
         
-    def test_9_false_ConfiguratorGetOutYaml(self):
-        yaml = self.Config.getOutYaml('feature')
-        assert yaml == False
-        
-    def test_a10_ConfiguratorCreateOutYaml(self):
-        yaml = self.Config.createOutYaml('feature')
-        test = []
-        assert yaml == test
-        
-    def test_a11_ConfiguratorAppendOutYaml(self):
-        self.Config.appendOutYaml('global','value')
-        outYaml = self.Config.getOutYaml('global')
-        assert outYaml == ['value']
-        
-    def test_a12_Configurator_putModuleLoaded(self):
-        modules = self.Config.putModuleLoaded('Module')
-        assert modules == {'Module': []}
-        
-    def test_a13_Configurator_deleteModuleLoaded(self):
-        out = self.Config.deleteModuleLoaded('Module')
-        assert out == True
         
