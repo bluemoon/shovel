@@ -45,8 +45,7 @@ class TestSysDownloader(unittest.TestCase):
         location = os.getcwd() + '/'
 
         self.mox.StubOutWithMock(urllib, 'urlretrieve', True)
-        urllib.urlretrieve('http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2', 
-        '/home/bluemoon/shovel/xine-lib-1.1.16.tar.bz2')
+        urllib.urlretrieve('http://superb-west.dl.sourceforge.net/sourceforge/xine/xine-lib-1.1.16.tar.bz2', os.getcwd() + '/xine-lib-1.1.16.tar.bz2')
 
         self.mox.StubOutWithMock(urllib, 'urlcleanup')
         urllib.urlcleanup()
